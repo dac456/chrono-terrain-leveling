@@ -3,19 +3,32 @@
 #include <irrlicht.h>
 
 #include <chrono/physics/ChSystem.h>
+#include <chrono_parallel/physics/ChSystemParallel.h>
 #include <chrono_irrlicht/ChIrrAppInterface.h>
 
 //Usually I'm against this, but Chrono classes are all prefixed with 'Ch' so name collision isn't likely
 using namespace chrono;
 
 double dt = 0.3; //Default timestep
+size_t numThreads = 8; //Default thread count
 
 void readArgs(int argc, char* argv[]){
     int current = 1;
     if(argc > 1){
-        if(strcmp(argv[current],"--dt") == 0){
-            if(argv[current+1] != nullptr){
-                dt = atof(argv[current+1]);
+        while(current < argc){
+            if(strcmp(argv[current],"--dt") == 0){
+                if(argv[current+1] != nullptr){
+                    dt = atof(argv[current+1]);
+                    current++;
+                }
+                current++;
+            }
+            if(strcmp(argv[current],"--nt") == 0){
+                if(argv[current+1] != nullptr){
+                    numThreads = atoi(argv[current+1]);
+                    current++;
+                }
+                current++;
             }
         }
     }
@@ -24,8 +37,14 @@ void readArgs(int argc, char* argv[]){
 int main(int argc, char* argv[])
 {
     readArgs(argc, argv);
+    std::cout << "dt: " << dt << std::endl;
+    std::cout << "nt: " << numThreads << std::endl;
     
-    ChSystem system;
+    ChSystemParallelDEM system;
+    CHOMPfunctions::SetNumThreads(numThreads);
+    
+    system.Set_G_acc(ChVector<>(0, 0, -9.81));
+    
     irr::ChIrrAppInterface app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
     
     //Convienience methods for scene setup
