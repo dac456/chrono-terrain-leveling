@@ -1,13 +1,4 @@
-#include <iostream>
-
-#include <irrlicht.h>
-
-#include <chrono/physics/ChSystem.h>
-#include <chrono_parallel/physics/ChSystemParallel.h>
-#include <chrono_irrlicht/ChIrrAppInterface.h>
-
-//Usually I'm against this, but Chrono classes are all prefixed with 'Ch' so name collision isn't likely
-using namespace chrono;
+#include "StaticMesh.h"
 
 double dt = 0.3; //Default timestep
 size_t numThreads = 8; //Default thread count

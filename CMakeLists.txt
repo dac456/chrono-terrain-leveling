@@ -8,11 +8,12 @@ find_package(Chrono
              COMPONENTS Irrlicht Parallel
              CONFIG)
              
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)             
 include_directories(${CHRONO_INCLUDE_DIRS})
 
 file(GLOB_RECURSE HDR RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/*.h)
 file(GLOB_RECURSE SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
 
-add_executable(ctl ${SRC})
+add_executable(ctl ${SRC} ${HDR})
 
 target_link_libraries(ctl ${CHRONO_LIBRARIES})
