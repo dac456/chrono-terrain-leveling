@@ -11,7 +11,7 @@ public:
     StaticMeshFactory(ChSystem* system);
     ~StaticMeshFactory();
   
-    StaticMeshPtr createStaticMesh(std::string name, ChVector<double> position, double mass);
+    StaticMeshPtr createStaticMesh(std::string name, std::string file, ChVector<double> position, double mass);
 };
 
 #endif

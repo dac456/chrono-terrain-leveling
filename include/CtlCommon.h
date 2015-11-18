@@ -9,6 +9,7 @@
 #include <chrono/physics/ChSystem.h>
 #include <chrono_parallel/physics/ChSystemParallel.h>
 #include <chrono_irrlicht/ChIrrAppInterface.h>
+#include <chrono_irrlicht/ChIrrApp.h>
 
 #include <chrono/ChConfig.h>
 #include <chrono/utils/ChUtilsCreators.h>
@@ -17,6 +18,7 @@
 //Usually I'm against this, but Chrono classes are all prefixed with 'Ch' so name collision isn't likely
 using namespace chrono;
 
+typedef ChSharedPtr<ChMaterialSurface> ChMaterialPtr;
 typedef ChSharedPtr<ChMaterialSurfaceDEM> ChDEMMaterialPtr;
 typedef ChSharedPtr<ChBody> ChBodyPtr;
 

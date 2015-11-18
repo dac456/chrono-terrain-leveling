@@ -6,6 +6,8 @@
 class StaticMesh{
 private:
     std::string _name;
+    std::string _file;
+    
     ChVector<double> _position;
     double _mass;
     
@@ -13,7 +15,7 @@ private:
     ChDEMMaterialPtr _material;
     
 public:
-    StaticMesh(std::string name, ChVector<double> position, double mass, ChDEMMaterialPtr material = ChDEMMaterialPtr(0));
+    StaticMesh(std::string name, std::string file, ChVector<double> position, double mass, ChDEMMaterialPtr material = ChDEMMaterialPtr(0));
     ~StaticMesh();
 
     friend class StaticMeshFactory;

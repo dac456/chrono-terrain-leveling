@@ -1,4 +1,4 @@
-#include "StaticMesh.h"
+#include "StaticMeshFactory.h"
 
 double dt = 0.3; //Default timestep
 size_t numThreads = 8; //Default thread count
@@ -32,11 +32,19 @@ int main(int argc, char* argv[])
     std::cout << "nt: " << numThreads << std::endl;
     
     ChSystemParallelDEM system;
+    system.SetParallelThreadNumber(numThreads);
     CHOMPfunctions::SetNumThreads(numThreads);
     
     system.Set_G_acc(ChVector<>(0, 0, -9.81));
     
-    irr::ChIrrAppInterface app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
+    // Set solver parameters
+    system.GetSettings()->solver.max_iteration_bilateral = 100;
+    system.GetSettings()->solver.tolerance = 1e-3;
+
+    system.GetSettings()->collision.narrowphase_algorithm = NARROWPHASE_HYBRID_MPR;
+    system.GetSettings()->collision.bins_per_axis = I3(10, 10, 10);    
+    
+    irr::ChIrrApp app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
     
     //Convienience methods for scene setup
     app.AddTypicalLogo();
@@ -46,7 +54,14 @@ int main(int argc, char* argv[])
     
     app.SetStepManage(true);
     app.SetTimestep(dt);
-    app.SetTryRealtime(true);    
+    app.SetTryRealtime(true);
+    
+    //Initialize factories
+    std::shared_ptr<StaticMeshFactory> smFact = std::make_shared<StaticMeshFactory>(static_cast<ChSystem*>(&system));
+    smFact->createStaticMesh("test", "mycar.obj", ChVector<double>(0,0,0), 50.0);    
+    
+    app.AssetBindAll();
+    app.AssetUpdateAll();    
     
     while(app.GetDevice()->run()){
         app.BeginScene();
