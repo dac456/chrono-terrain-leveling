@@ -27,7 +27,10 @@ typedef ChSharedPtr<ChBody> ChBodyPtr;
 class AssimpLoader;
 class StaticMesh;
 class StaticMeshFactory;
+class TrackedVehicle;
+class TrackedVehicleFactory;
 
 typedef std::shared_ptr<StaticMesh> StaticMeshPtr;
+typedef std::shared_ptr<TrackedVehicle> TrackedVehiclePtr;
 
 #endif

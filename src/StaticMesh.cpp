@@ -20,7 +20,7 @@ StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> posi
     AssimpLoader ai(GetChronoDataFile(_file));
     std::shared_ptr<geometry::ChTriangleMeshConnected> colMesh = ai.toChronoTriMesh();
     
-    /*for(auto& v : colMesh.m_vertices){
+    /*for(auto& v : colMesh->m_vertices){
         v += _position;
     }*/
     
