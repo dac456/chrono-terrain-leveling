@@ -1,12 +1,13 @@
 #include "StaticMesh.h"
+#include "AssimpLoader.h"
 
-StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> position, double mass, ChDEMMaterialPtr material)
+StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> position, double mass, ChMaterialPtr material)
     : _name(name),
       _file(file),
       _position(position),
       _mass(mass),
       _material(material),
-      _body(new ChBody(new collision::ChCollisionModelParallel, ChMaterialSurfaceBase::DEM))
+      _body(new ChBody(new collision::ChCollisionModelParallel, ChMaterialSurfaceBase::DVI))
 {
     if(_material) _body->SetMaterialSurface(_material);
     
@@ -16,24 +17,22 @@ StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> posi
     _body->SetBodyFixed(true);
     
     //Build collision geometery
-    //geometry::ChTriangleMeshConnected colMesh;
-    //colMesh.LoadWavefrontMesh(GetChronoDataFile(_file), true, true);
+    AssimpLoader ai(GetChronoDataFile(_file));
+    std::shared_ptr<geometry::ChTriangleMeshConnected> colMesh = ai.toChronoTriMesh();
     
     /*for(auto& v : colMesh.m_vertices){
         v += _position;
     }*/
     
     _body->GetCollisionModel()->ClearModel();
-    //_body->GetCollisionModel()->AddTriangleMesh(colMesh, true, false, _position);
-    _body->GetCollisionModel()->AddSphere(2.0, _position);
+    _body->GetCollisionModel()->AddTriangleMesh(*colMesh.get(), true, false, _position);
     _body->GetCollisionModel()->BuildModel();
     
     //Create Irrlicht asset
-    //ChSharedPtr<ChTriangleMeshShape> meshAsset(new ChTriangleMeshShape);
-    //meshAsset->SetMesh(colMesh);
-    ChSharedPtr<ChObjShapeFile> meshAsset(new ChObjShapeFile);
-    meshAsset->SetFilename(GetChronoDataFile(_file));
+    ChSharedPtr<ChTriangleMeshShape> meshAsset(new ChTriangleMeshShape);
+    meshAsset->SetMesh(*colMesh);
     _body->AddAsset(meshAsset);
+    
 }
 
 StaticMesh::~StaticMesh(){

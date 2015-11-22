@@ -12,10 +12,10 @@ private:
     double _mass;
     
     ChBodyPtr _body;
-    ChDEMMaterialPtr _material;
+    ChMaterialPtr _material;
     
 public:
-    StaticMesh(std::string name, std::string file, ChVector<double> position, double mass, ChDEMMaterialPtr material = ChDEMMaterialPtr(0));
+    StaticMesh(std::string name, std::string file, ChVector<double> position, double mass, ChMaterialPtr material = ChMaterialPtr(0));
     ~StaticMesh();
 
     friend class StaticMeshFactory;

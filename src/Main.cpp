@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     std::cout << "dt: " << dt << std::endl;
     std::cout << "nt: " << numThreads << std::endl;
     
-    ChSystemParallelDEM system;
+    ChSystemParallelDVI system;
     system.SetParallelThreadNumber(numThreads);
     CHOMPfunctions::SetNumThreads(numThreads);
     
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     
     //Initialize factories
     std::shared_ptr<StaticMeshFactory> smFact = std::make_shared<StaticMeshFactory>(static_cast<ChSystem*>(&system));
-    smFact->createStaticMesh("test", "mycar.obj", ChVector<double>(0,0,0), 50.0);    
+    smFact->createStaticMesh("test", "groundplane.obj", ChVector<double>(0,0,0), 50.0);    
     
     app.AssetBindAll();
     app.AssetUpdateAll();    

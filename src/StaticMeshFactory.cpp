@@ -14,8 +14,8 @@ StaticMeshFactory::~StaticMeshFactory(){
 
 StaticMeshPtr StaticMeshFactory::createStaticMesh(std::string name, std::string file, ChVector<double> position, double mass){
     //Temporary default material
-    ChDEMMaterialPtr mat(new ChMaterialSurfaceDEM);
-    mat->SetYoungModulus(2e6);
+    ChMaterialPtr mat(new ChMaterialSurface);
+    //mat->SetYoungModulus(2e6);
     mat->SetFriction(0.4);
     mat->SetRestitution(0.4);    
     

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
 
 #include <irrlicht.h>
 
@@ -23,6 +24,7 @@ typedef ChSharedPtr<ChMaterialSurfaceDEM> ChDEMMaterialPtr;
 typedef ChSharedPtr<ChBody> ChBodyPtr;
 
 //Forward declare
+class AssimpLoader;
 class StaticMesh;
 class StaticMeshFactory;
 
