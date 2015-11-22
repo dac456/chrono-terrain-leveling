@@ -1,4 +1,4 @@
-#include "AssimpLoader.h"
+#include "AssimpLoader.hpp"
 
 AssimpLoader::AssimpLoader(std::string path){
     Assimp::Importer imp;

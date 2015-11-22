@@ -1,7 +1,7 @@
 #ifndef __TRACKEDVEHICLE_H
 #define __TRACKEDVEHICLE_H
 
-#include "CtlCommon.h"
+#include "CtlCommon.hpp"
 
 class TrackedVehicle{
 private:

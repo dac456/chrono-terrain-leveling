@@ -1,7 +1,7 @@
 #ifndef __STATICMESH_H
 #define __STATICMESH_H
 
-#include "CtlCommon.h"
+#include "CtlCommon.hpp"
 
 class StaticMesh{
 private:

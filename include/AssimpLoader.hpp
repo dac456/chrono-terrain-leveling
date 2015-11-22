@@ -1,7 +1,7 @@
 #ifndef __ASSIMPLOADER_H
 #define __ASSIMPLOADER_H
 
-#include "CtlCommon.h"
+#include "CtlCommon.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

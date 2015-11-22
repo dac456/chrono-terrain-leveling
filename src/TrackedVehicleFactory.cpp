@@ -1,5 +1,5 @@
-#include "TrackedVehicleFactory.h"
-#include "TrackedVehicle.h"
+#include "TrackedVehicleFactory.hpp"
+#include "TrackedVehicle.hpp"
 
 TrackedVehicleFactory::TrackedVehicleFactory(ChSystem* system)
     : _system(system),

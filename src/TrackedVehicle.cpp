@@ -1,5 +1,5 @@
-#include "TrackedVehicle.h"
-#include "AssimpLoader.h"
+#include "TrackedVehicle.hpp"
+#include "AssimpLoader.hpp"
 
 TrackedVehicle::TrackedVehicle(std::string name, std::string bodyFile, std::string wheelFile, double mass)
     : _name(name),

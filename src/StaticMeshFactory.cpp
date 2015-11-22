@@ -1,5 +1,5 @@
-#include "StaticMeshFactory.h"
-#include "StaticMesh.h"
+#include "StaticMeshFactory.hpp"
+#include "StaticMesh.hpp"
 
 StaticMeshFactory::StaticMeshFactory(ChSystem* system)
     : _system(system),

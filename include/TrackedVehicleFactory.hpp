@@ -1,7 +1,7 @@
 #ifndef __TRACKEDVEHICLEFACTORY_H
 #define __TRACKEDVEHICLEFACTORY_H
 
-#include "CtlCommon.h"
+#include "CtlCommon.hpp"
 
 class TrackedVehicleFactory{
 private:

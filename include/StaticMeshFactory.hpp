@@ -1,7 +1,7 @@
 #ifndef __STATICMESHFACTORY_H
 #define __STATICMESHFACTORY_H
 
-#include "CtlCommon.h"
+#include "CtlCommon.hpp"
 
 class StaticMeshFactory{
 private:

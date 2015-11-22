@@ -1,5 +1,5 @@
-#include "StaticMeshFactory.h"
-#include "TrackedVehicleFactory.h"
+#include "StaticMeshFactory.hpp"
+#include "TrackedVehicleFactory.hpp"
 
 double dt = 0.3; //Default timestep
 size_t numThreads = 8; //Default thread count

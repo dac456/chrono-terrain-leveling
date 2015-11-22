@@ -1,5 +1,5 @@
-#include "StaticMesh.h"
-#include "AssimpLoader.h"
+#include "StaticMesh.hpp"
+#include "AssimpLoader.hpp"
 
 StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> position, double mass, ChMaterialPtr material)
     : _name(name),
