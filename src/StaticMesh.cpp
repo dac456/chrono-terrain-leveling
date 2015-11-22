@@ -20,12 +20,13 @@ StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> posi
     AssimpLoader ai(GetChronoDataFile(_file));
     std::shared_ptr<geometry::ChTriangleMeshConnected> colMesh = ai.toChronoTriMesh();
     
-    /*for(auto& v : colMesh->m_vertices){
+    for(auto& v : colMesh->m_vertices){
         v += _position;
-    }*/
+    }
     
     _body->GetCollisionModel()->ClearModel();
-    _body->GetCollisionModel()->AddTriangleMesh(*colMesh.get(), true, false, _position);
+    _body->GetCollisionModel()->AddTriangleMesh(*colMesh.get(), true, true);
+    //_body->GetCollisionModel()->AddBox(20, 0.1, 20, _position);
     _body->GetCollisionModel()->BuildModel();
     
     //Create Irrlicht asset

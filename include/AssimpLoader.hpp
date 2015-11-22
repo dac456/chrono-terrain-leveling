@@ -19,6 +19,9 @@ public:
     AssimpLoader(std::string path);
     ~AssimpLoader();
     
+    ChVectord getMeshDimensions();
+    ChVectord getMeshCentre();
+    
     std::shared_ptr<geometry::ChTriangleMeshConnected> toChronoTriMesh();
     
 };

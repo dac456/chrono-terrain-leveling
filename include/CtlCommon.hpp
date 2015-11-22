@@ -23,6 +23,9 @@ typedef ChSharedPtr<ChMaterialSurface> ChMaterialPtr;
 typedef ChSharedPtr<ChMaterialSurfaceDEM> ChDEMMaterialPtr;
 typedef ChSharedPtr<ChBody> ChBodyPtr;
 
+typedef ChVector<double> ChVectord;
+typedef ChVector<float> ChVectorf;
+
 //Forward declare
 class AssimpLoader;
 class StaticMesh;

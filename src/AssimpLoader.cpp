@@ -45,6 +45,40 @@ AssimpLoader::~AssimpLoader(){
     _indices.clear();
 }
 
+ChVectord AssimpLoader::getMeshDimensions(){
+    ChVectord min(0,0,0);
+    ChVectord max(0,0,0);
+    
+    for(auto& v : _vertices){
+        if(v.x < min.x) min.x = v.x;
+        if(v.y < min.y) min.y = v.y;
+        if(v.z < min.z) min.z = v.z;
+        
+        if(v.x > max.x) max.x = v.x;
+        if(v.y > max.y) max.y = v.y;
+        if(v.z > max.z) max.z = v.z;
+    }
+    
+    return ChVectord(max.x-min.x, max.y-min.y, max.z-min.z);
+}
+
+ChVectord AssimpLoader::getMeshCentre(){
+    ChVectord min(0,0,0);
+    ChVectord max(0,0,0);
+    
+    for(auto& v : _vertices){
+        if(v.x < min.x) min.x = v.x;
+        if(v.y < min.y) min.y = v.y;
+        if(v.z < min.z) min.z = v.z;
+        
+        if(v.x > max.x) max.x = v.x;
+        if(v.y > max.y) max.y = v.y;
+        if(v.z > max.z) max.z = v.z;
+    }
+    
+    return ChVectord((max.x+min.x)/2.0, (max.y+min.y)/2.0, (max.z+min.z)/2.0);
+}
+
 std::shared_ptr<geometry::ChTriangleMeshConnected> AssimpLoader::toChronoTriMesh(){
     std::shared_ptr<geometry::ChTriangleMeshConnected> trimesh = std::make_shared<geometry::ChTriangleMeshConnected>();
     trimesh->m_vertices = _vertices; 

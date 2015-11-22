@@ -59,10 +59,10 @@ int main(int argc, char* argv[])
     
     //Initialize factories
     std::shared_ptr<StaticMeshFactory> smFact = std::make_shared<StaticMeshFactory>(static_cast<ChSystem*>(&system));
-    smFact->createStaticMesh("test", "groundplane.obj", ChVector<double>(0,-1,0), 50.0);   
+    smFact->createStaticMesh("test", "groundplane.obj", ChVector<double>(0,-2,0), 50.0);   
     
     std::shared_ptr<TrackedVehicleFactory> tvFact = std::make_shared<TrackedVehicleFactory>(static_cast<ChSystem*>(&system));
-    tvFact->createTrackedVehicle("zumo", "bulldozerB10.obj", "", 100.0); 
+    tvFact->createTrackedVehicle("zumo", "bulldozerB10.obj", "wheel_view.obj", 100.0); 
     
     app.AssetBindAll();
     app.AssetUpdateAll();    

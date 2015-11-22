@@ -9,20 +9,27 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string bodyFile, std::stri
       _rfWheel(new ChBody(new collision::ChCollisionModelParallel, ChMaterialSurfaceBase::DVI)),
       _rbWheel(new ChBody(new collision::ChCollisionModelParallel, ChMaterialSurfaceBase::DVI))
 {
+    AssimpLoader aiBody(GetChronoDataFile(bodyFile));
+    std::shared_ptr<geometry::ChTriangleMeshConnected> bodyMesh = aiBody.toChronoTriMesh();
+    ChVectord bodyDim = aiBody.getMeshDimensions();
+    ChVectord bodyCentre = aiBody.getMeshCentre();
+    
+    std::cout << bodyDim.x <<  " " << bodyDim.y << " " << bodyDim.z << std::endl;
+    
+    AssimpLoader aiWheel(GetChronoDataFile(wheelFile));
+    std::shared_ptr<geometry::ChTriangleMeshConnected> wheelMesh = aiWheel.toChronoTriMesh();
+    
     //Vehicle Body
     _body->SetMass(mass);
     _body->SetCollide(true);
     _body->SetBodyFixed(false);
     
-    AssimpLoader aiBody(GetChronoDataFile(bodyFile));
-    std::shared_ptr<geometry::ChTriangleMeshConnected> colMesh = aiBody.toChronoTriMesh();
-    
     _body->GetCollisionModel()->ClearModel();
-    _body->GetCollisionModel()->AddBox(1,1,1);
-    _body->GetCollisionModel()->BuildModel();
+    _body->GetCollisionModel()->AddBox(bodyDim.x/2.0, bodyDim.y/2.0, bodyDim.z/2.0, bodyCentre);
+    _body->GetCollisionModel()->BuildModel();  
     
     //Create Irrlicht asset for body
     ChSharedPtr<ChTriangleMeshShape> bodyMeshAsset(new ChTriangleMeshShape);
-    bodyMeshAsset->SetMesh(*colMesh);
+    bodyMeshAsset->SetMesh(*bodyMesh);
     _body->AddAsset(bodyMeshAsset);    
 }
