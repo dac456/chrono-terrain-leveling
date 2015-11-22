@@ -6,6 +6,7 @@
 class StaticMeshFactory{
 private:
     ChSystem* _system;
+    size_t _nextId;
 
 public:
     StaticMeshFactory(ChSystem* system);

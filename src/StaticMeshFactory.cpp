@@ -2,7 +2,8 @@
 #include "StaticMesh.h"
 
 StaticMeshFactory::StaticMeshFactory(ChSystem* system)
-    : _system(system)
+    : _system(system),
+      _nextId(0)
 {
     
 }
@@ -20,8 +21,9 @@ StaticMeshPtr StaticMeshFactory::createStaticMesh(std::string name, std::string 
     mat->SetRestitution(0.4);    
     
     StaticMeshPtr newStaticMesh = std::make_shared<StaticMesh>(name, file, position, mass, mat);
-    newStaticMesh->_body->SetIdentifier(0);
+    newStaticMesh->_body->SetIdentifier(_nextId);
     _system->AddBody(newStaticMesh->_body);
     
+    _nextId++;
     return newStaticMesh;
 }
