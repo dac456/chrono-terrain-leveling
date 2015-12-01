@@ -34,6 +34,12 @@ AssimpLoader::AssimpLoader(std::string path){
                 aiVector3t<double> n = mesh->mNormals[j];
                 _normals.push_back(ChVector<double>(n.x, n.y, n.z));
             }
+            
+            //Load mesh bones
+            for(size_t j=0; j<mesh->mNumBones; j++){
+                aiBone* bone = mesh->mBones[j];
+                std::cout << "BONE: " << bone->mName.C_Str() << std::endl;
+            }
           
         }
     }

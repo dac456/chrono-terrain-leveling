@@ -25,8 +25,8 @@ StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> posi
     }
     
     _body->GetCollisionModel()->ClearModel();
-    _body->GetCollisionModel()->AddTriangleMesh(*colMesh.get(), true, true);
-    //_body->GetCollisionModel()->AddBox(20, 0.1, 20, _position);
+    //_body->GetCollisionModel()->AddTriangleMesh(*colMesh.get(), true, true);
+    _body->GetCollisionModel()->AddBox(20, 0.1, 20, _position);
     _body->GetCollisionModel()->BuildModel();
     
     //Create Irrlicht asset

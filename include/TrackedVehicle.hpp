@@ -12,6 +12,9 @@ private:
     ChBodyPtr _rfWheel;
     ChBodyPtr _rbWheel;
     
+    ChSharedPtr<ChLinkLockRevolute> _lfWheelLink;
+    ChSharedPtr<ChLinkLockRevolute> _rfWheelLink;
+    
 public:
     TrackedVehicle(std::string name, std::string bodyFile, std::string wheelFile, double mass);
     

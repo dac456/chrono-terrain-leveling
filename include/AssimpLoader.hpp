@@ -13,7 +13,9 @@ private:
     
     std::vector<ChVector<double>> _vertices;
     std::vector<ChVector<double>> _normals;
-    std::vector<ChVector<int>> _indices;    
+    std::vector<ChVector<int>> _indices; 
+    
+    std::map<std::string, ChMat44d> _bones; //(name, offsetmat) pair   
 
 public:
     AssimpLoader(std::string path);

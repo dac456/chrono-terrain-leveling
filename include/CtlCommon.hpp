@@ -25,6 +25,8 @@ typedef ChSharedPtr<ChBody> ChBodyPtr;
 
 typedef ChVector<double> ChVectord;
 typedef ChVector<float> ChVectorf;
+typedef ChMatrixNM<double, 4, 4> ChMat44d;
+typedef ChMatrixNM<float, 4 ,4> ChMat44f;
 
 //Forward declare
 class AssimpLoader;
