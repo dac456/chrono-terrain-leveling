@@ -8,13 +8,21 @@
 #include <irrlicht.h>
 
 #include <chrono/physics/ChSystem.h>
+#ifdef SIM_USE_CUDA
 #include <chrono_parallel/physics/ChSystemParallel.h>
+#endif
 #include <chrono_irrlicht/ChIrrAppInterface.h>
 #include <chrono_irrlicht/ChIrrApp.h>
 
 #include <chrono/ChConfig.h>
 #include <chrono/utils/ChUtilsCreators.h>
 #include <chrono/utils/ChUtilsInputOutput.h>
+
+#ifdef SIM_USE_CUDA
+    #define DEFAULT_BODY new collision::ChCollisionModelParallel, ChMaterialSurfaceBase::DVI
+#else
+    #define DEFAULT_BODY ChMaterialSurfaceBase::DVI
+#endif
 
 //Usually I'm against this, but Chrono classes are all prefixed with 'Ch' so name collision isn't likely
 using namespace chrono;
