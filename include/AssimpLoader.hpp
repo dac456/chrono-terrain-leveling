@@ -1,5 +1,5 @@
-#ifndef __ASSIMPLOADER_H
-#define __ASSIMPLOADER_H
+#ifndef __ASSIMPLOADER_HPP
+#define __ASSIMPLOADER_HPP
 
 #include "CtlCommon.hpp"
 

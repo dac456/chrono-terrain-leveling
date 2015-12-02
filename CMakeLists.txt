@@ -12,7 +12,8 @@ find_package(Chrono REQUIRED
 
 find_package(Assimp REQUIRED)
              
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)             
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)   
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/RapidXML)             
 include_directories(${CHRONO_INCLUDE_DIRS})
 include_directories(${ASSIMP_INCLUDE_DIR})
 
