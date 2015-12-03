@@ -15,6 +15,7 @@ public:
     
 private:
     void _load();
+    void _loadNode(rapidxml::xml_node* node);
 
 };
 
