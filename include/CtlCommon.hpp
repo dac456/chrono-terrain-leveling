@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 
+#include <boost/filesystem.hpp>
+
 #include <irrlicht.h>
 
 #include <chrono/physics/ChSystem.h>
