@@ -30,9 +30,18 @@ struct UrdfVisual{
 };
 typedef std::shared_ptr<UrdfVisual> UrdfVisualPtr;
 
+struct UrdfCollision{
+    std::string name;
+    std::pair<ChVectord,ChVectord> origin;
+
+    UrdfGeometryPtr geometry;
+};
+typedef std::shared_ptr<UrdfCollision> UrdfCollisionPtr;
+
 struct UrdfLink{
     std::string name;
     std::vector<UrdfVisualPtr> visuals;
+    std::vector<UrdfCollisionPtr> collisions;
     std::vector<std::shared_ptr<UrdfLink>> links;
 };
 typedef std::shared_ptr<UrdfLink> UrdfLinkPtr;
@@ -57,7 +66,9 @@ private:
     void _loadMaterial(rapidxml::xml_node<>* node);
 
     void _loadVisual(rapidxml::xml_node<>* node, UrdfLinkPtr link);
+    void _loadCollision(rapidxml::xml_node<>* node, UrdfLinkPtr link);
 
+    UrdfGeometryPtr _loadGeometry(rapidxml::xml_node<>* node);
     std::vector<std::string> _split(std::string str, const char delim);
 
 };

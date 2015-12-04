@@ -20,12 +20,25 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                 UrdfGeometryPtr geom = visual->geometry;
                 if(geom->type == "box"){
                     UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
-                    std::cout << boxGeom->dim.x << std::endl;
 
                     ChSharedPtr<ChBoxShape> box(new ChBoxShape);
-                    box->GetBoxGeometry().Pos = ChVector<>(0, 0, 0);
+                    box->GetBoxGeometry().Pos = ChVector<>(visual->origin.first.x, visual->origin.first.y, visual->origin.first.z);
+                    box->GetBoxGeometry().Rot = chrono::Q_from_NasaAngles(ChVectord(visual->origin.second.z, visual->origin.second.x, visual->origin.second.y));
                     box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x, boxGeom->dim.y, boxGeom->dim.z);
                     body->AddAsset(box);
+                }
+            }
+        }
+
+        for(auto collision : link->collisions){
+            if(collision->geometry->type != ""){
+                UrdfGeometryPtr geom = collision->geometry;
+                if(geom->type == "box"){
+                    UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
+
+                    body->GetCollisionModel()->ClearModel();
+                    body->GetCollisionModel()->AddBox(boxGeom->dim.x, boxGeom->dim.y, boxGeom->dim.z, collision->origin.first);
+                    body->GetCollisionModel()->BuildModel();
                 }
             }
         }

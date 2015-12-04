@@ -67,7 +67,7 @@ void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link){
             _loadVisual(current, link);
         }
         if(streq(current->name(), "collision")){
-
+            _loadCollision(current, link);
         }
 
         current = current->next_sibling();
@@ -92,26 +92,63 @@ void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     current = current->first_node();
     while(current){
         if(streq(current->name(), "origin")){
-            URDFDEBUG("origin");
+            std::vector<std::string> xyz = _split(current->first_attribute("xyz")->value(), ' ');
+            std::vector<std::string> rpy = _split(current->first_attribute("rpy")->value(), ' ');
+
+            visual->origin.first = ChVectord(atof(xyz[0].c_str()), atof(xyz[1].c_str()), atof(xyz[2].c_str()));
+            visual->origin.second = ChVectord(atof(rpy[0].c_str()), atof(rpy[1].c_str()), atof(rpy[2].c_str()));
         }
         if(streq(current->name(), "geometry")){
-            rapidxml::xml_node<>* geo = current->first_node();
-
-            if(streq(geo->name(), "box")){
-                URDFDEBUG("box");
-                std::vector<std::string> vec = _split(geo->first_attribute("size")->value(), ' ');
-
-                UrdfBoxPtr boxGeom = std::make_shared<UrdfBox>();
-                boxGeom->dim = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
-
-                visual->geometry = boxGeom;
-            }
+            visual->geometry = _loadGeometry(current);
         }
 
         current = current->next_sibling();
     }
 
     link->visuals.push_back(visual);
+}
+
+void UrdfLoader::_loadCollision(rapidxml::xml_node<>* node, UrdfLinkPtr link){
+    rapidxml::xml_node<>* current = node;
+
+    UrdfCollisionPtr collision = std::make_shared<UrdfCollision>();
+    if(current->first_attribute("name")){
+        collision->name = current->first_attribute("name")->value();
+    }
+
+    current = current->first_node();
+    while(current){
+        if(streq(current->name(), "origin")){
+            std::vector<std::string> xyz = _split(current->first_attribute("xyz")->value(), ' ');
+            std::vector<std::string> rpy = _split(current->first_attribute("rpy")->value(), ' ');
+
+            collision->origin.first = ChVectord(atof(xyz[0].c_str()), atof(xyz[1].c_str()), atof(xyz[2].c_str()));
+            collision->origin.second = ChVectord(atof(rpy[0].c_str()), atof(rpy[1].c_str()), atof(rpy[2].c_str()));
+        }
+        if(streq(current->name(), "geometry")){
+            collision->geometry = _loadGeometry(current);
+        }
+
+        current = current->next_sibling();
+    }
+
+    link->collisions.push_back(collision);
+}
+
+UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
+    rapidxml::xml_node<>* geo = node->first_node();
+    UrdfGeometryPtr out = nullptr;
+
+    if(streq(geo->name(), "box")){
+        std::vector<std::string> vec = _split(geo->first_attribute("size")->value(), ' ');
+
+        UrdfBoxPtr boxGeom = std::make_shared<UrdfBox>();
+        boxGeom->dim = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
+
+        out = boxGeom;
+    }
+
+    return out;
 }
 
 std::vector<std::string> UrdfLoader::_split(std::string str, const char delim){
