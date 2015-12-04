@@ -2,10 +2,12 @@
 #define __CTLCOMMON_H
 
 #include <iostream>
+#include <sstream>
 #include <memory>
 #include <string>
 
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 #include <irrlicht.h>
 
@@ -26,6 +28,8 @@
     #define DEFAULT_BODY ChMaterialSurfaceBase::DVI
 #endif
 
+#define streq(x, y) (strcmp(x, y) == 0)
+
 //Usually I'm against this, but Chrono classes are all prefixed with 'Ch' so name collision isn't likely
 using namespace chrono;
 
@@ -44,6 +48,7 @@ class StaticMesh;
 class StaticMeshFactory;
 class TrackedVehicle;
 class TrackedVehicleFactory;
+class UrdfLoader;
 
 typedef std::shared_ptr<StaticMesh> StaticMeshPtr;
 typedef std::shared_ptr<TrackedVehicle> TrackedVehiclePtr;

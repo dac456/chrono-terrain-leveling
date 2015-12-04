@@ -1,5 +1,6 @@
 #include "StaticMeshFactory.hpp"
 #include "TrackedVehicleFactory.hpp"
+#include "UrdfLoader.hpp" //tmp
 
 double dt = 0.3; //Default timestep
 size_t numThreads = 8; //Default thread count
@@ -31,6 +32,8 @@ int main(int argc, char* argv[])
     readArgs(argc, argv);
     std::cout << "dt: " << dt << std::endl;
     std::cout << "nt: " << numThreads << std::endl;
+
+    UrdfLoader urdf(GetChronoDataFile("urdf/CubeBot.urdf"));
 
     #ifdef SIM_USE_CUDA
     ChSystemParallelDVI system;

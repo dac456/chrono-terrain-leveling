@@ -1,11 +1,11 @@
 #include "UrdfLoader.hpp"
 
+#define URDFDEBUG(x) std::cout << "URDF Loader: " << x << std::endl
+
 UrdfLoader::UrdfLoader(std::string file)
     : _file(file)
 {
-    //TODO:check if file exists
-    _load();
-
+    if(fs::exists(file)) _load();
 }
 
 UrdfLoader::~UrdfLoader(){
@@ -13,33 +13,35 @@ UrdfLoader::~UrdfLoader(){
 }
 
 void UrdfLoader::_load(){
-    std::string buffer;
+    std::stringstream buffer;
 
     std::ifstream fin(_file, std::ios::in);
-    fin >> buffer;
+    std::string s;
+    while(std::getline(fin, s)) buffer << s << std::endl;
     fin.close();
 
     rapidxml::xml_document<> doc;
-    doc.parse<0>(const_cast<char*>(buffer.c_str()));
+    doc.parse<0>(const_cast<char*>(buffer.str().c_str()));
 
-    if(doc.first_node()->name() == "robot"){
-        _loadNode(doc.first_node());
+    if(strcmp(doc.first_node()->name(), "robot") == 0){
+        _loadRobot(doc.first_node()->first_node());
     }
 }
 
-void UrdfLoader::_loadNode(rapidxml::xml_node<>* node){
+void UrdfLoader::_loadRobot(rapidxml::xml_node<>* node){
     rapidxml::xml_node<>* current = node;
 
     while(current){
-        if(current->name() == "robot"){
-            current = current->first_node();
-        }
-        else if(current->name() == "link"){
+        URDFDEBUG(current->name());
+        if(streq(current->name(), "link")){
             UrdfLink link;
             link.name = current->first_attribute("name")->value();
 
             _loadLink(current, &link);
             _links.push_back(link);
+        }
+        if(streq(current->name(), "material")){
+            _loadMaterial(current);
         }
 
         current = current->next_sibling();
@@ -50,22 +52,29 @@ void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLink* link){
     rapidxml::xml_node<>* current = node->first_node();
 
     while(current){
-        if(current->name() == "link"){
+        if(streq(current->name(), "link")){
             UrdfLink child;
             child.name = current->first_attribute("name")->value();
 
             _loadLink(current, &child);
             link->links.push_back(child);
         }
-        else if(current->name() == "visual"){
+        if(streq(current->name(), "visual")){
             _loadVisual(current, link);
         }
-        else if(current->name() == "collision"){
+        if(streq(current->name(), "collision")){
 
         }
 
         current = current->next_sibling();
     }
+}
+
+void UrdfLoader::_loadMaterial(rapidxml::xml_node<>* node){
+    UrdfMaterial mat;
+    //TODO
+    URDFDEBUG("material");
+    _materials.push_back(mat);
 }
 
 void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLink* link){
@@ -78,12 +87,38 @@ void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLink* link){
 
     current = current->first_node();
     while(current){
-        if(current->name() == "geometry"){
+        if(streq(current->name(), "origin")){
+            URDFDEBUG("origin");
+        }
+        if(streq(current->name(), "geometry")){
+            rapidxml::xml_node<>* geo = current->first_node();
 
+            if(streq(geo->name(), "box")){
+                URDFDEBUG("box");
+                std::vector<std::string> vec = _split(geo->first_attribute("size")->value(), ' ');
+
+                UrdfBox boxGeom;
+                boxGeom.dim = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
+
+                visual.geometry = boxGeom;
+            }
         }
 
         current = current->next_sibling();
     }
 
     link->visuals.push_back(visual);
+}
+
+std::vector<std::string> UrdfLoader::_split(std::string str, const char delim){
+    std::vector<std::string> ret;
+
+    while(str.find_first_of(delim) != std::string::npos){
+        std::string tok = str.substr(0, str.find_first_of(delim)+1);
+        ret.push_back(tok);
+        str = str.erase(0, str.find_first_of(delim)+1);
+    }
+    ret.push_back(str);
+
+    return ret;
 }
