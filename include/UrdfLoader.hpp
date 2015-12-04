@@ -8,50 +8,55 @@
 struct UrdfGeometry{
     std::string type;
 };
+typedef std::shared_ptr<UrdfGeometry> UrdfGeometryPtr;
 
 struct UrdfBox : public UrdfGeometry{
     UrdfBox() : UrdfGeometry() { type = "box"; }
     ChVectord dim;
 };
+typedef std::shared_ptr<UrdfBox> UrdfBoxPtr;
 
 struct UrdfMaterial{
     std::string name;
 };
+typedef std::shared_ptr<UrdfMaterial> UrdfMaterialPtr;
 
 struct UrdfVisual{
     std::string name;
     std::pair<ChVectord,ChVectord> origin;
 
-    UrdfGeometry geometry;
-    UrdfMaterial material;
+    UrdfGeometryPtr geometry;
+    UrdfMaterialPtr material;
 };
+typedef std::shared_ptr<UrdfVisual> UrdfVisualPtr;
 
 struct UrdfLink{
     std::string name;
-    std::vector<UrdfVisual> visuals;
-    std::vector<UrdfLink> links;
+    std::vector<UrdfVisualPtr> visuals;
+    std::vector<std::shared_ptr<UrdfLink>> links;
 };
+typedef std::shared_ptr<UrdfLink> UrdfLinkPtr;
 
 class UrdfLoader{
 private:
     std::string _file;
 
-    std::vector<UrdfLink> _links;
-    std::vector<UrdfMaterial> _materials;
+    std::vector<UrdfLinkPtr> _links;
+    std::vector<UrdfMaterialPtr> _materials;
 
 public:
     UrdfLoader(std::string file);
     ~UrdfLoader();
 
-    std::vector<UrdfLink> getLinks();
+    std::vector<UrdfLinkPtr> getLinks();
 
 private:
     void _load();
     void _loadRobot(rapidxml::xml_node<>* node);
-    void _loadLink(rapidxml::xml_node<>* node, UrdfLink* link);
+    void _loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link);
     void _loadMaterial(rapidxml::xml_node<>* node);
 
-    void _loadVisual(rapidxml::xml_node<>* node, UrdfLink* link);
+    void _loadVisual(rapidxml::xml_node<>* node, UrdfLinkPtr link);
 
     std::vector<std::string> _split(std::string str, const char delim);
 

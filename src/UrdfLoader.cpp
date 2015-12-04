@@ -12,7 +12,7 @@ UrdfLoader::~UrdfLoader(){
 
 }
 
-std::vector<UrdfLink> UrdfLoader::getLinks(){
+std::vector<UrdfLinkPtr> UrdfLoader::getLinks(){
     return _links;
 }
 
@@ -38,10 +38,10 @@ void UrdfLoader::_loadRobot(rapidxml::xml_node<>* node){
     while(current){
         URDFDEBUG(current->name());
         if(streq(current->name(), "link")){
-            UrdfLink link;
-            link.name = current->first_attribute("name")->value();
+            UrdfLinkPtr link = std::make_shared<UrdfLink>();
+            link->name = current->first_attribute("name")->value();
 
-            _loadLink(current, &link);
+            _loadLink(current, link);
             _links.push_back(link);
         }
         if(streq(current->name(), "material")){
@@ -52,15 +52,15 @@ void UrdfLoader::_loadRobot(rapidxml::xml_node<>* node){
     }
 }
 
-void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLink* link){
+void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     rapidxml::xml_node<>* current = node->first_node();
 
     while(current){
         if(streq(current->name(), "link")){
-            UrdfLink child;
-            child.name = current->first_attribute("name")->value();
+            UrdfLinkPtr child = std::make_shared<UrdfLink>();
+            child->name = current->first_attribute("name")->value();
 
-            _loadLink(current, &child);
+            _loadLink(current, child);
             link->links.push_back(child);
         }
         if(streq(current->name(), "visual")){
@@ -75,18 +75,18 @@ void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLink* link){
 }
 
 void UrdfLoader::_loadMaterial(rapidxml::xml_node<>* node){
-    UrdfMaterial mat;
+    UrdfMaterialPtr mat = std::make_shared<UrdfMaterial>();
     //TODO
     URDFDEBUG("material");
     _materials.push_back(mat);
 }
 
-void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLink* link){
+void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     rapidxml::xml_node<>* current = node;
 
-    UrdfVisual visual;
+    UrdfVisualPtr visual = std::make_shared<UrdfVisual>();
     if(current->first_attribute("name")){
-        visual.name = current->first_attribute("name")->value();
+        visual->name = current->first_attribute("name")->value();
     }
 
     current = current->first_node();
@@ -101,11 +101,10 @@ void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLink* link){
                 URDFDEBUG("box");
                 std::vector<std::string> vec = _split(geo->first_attribute("size")->value(), ' ');
 
-                //TODO: these values aren't converted properly - check atof and also polymorphism stuff
-                UrdfBox boxGeom;
-                boxGeom.dim = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
+                UrdfBoxPtr boxGeom = std::make_shared<UrdfBox>();
+                boxGeom->dim = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
 
-                visual.geometry = boxGeom;
+                visual->geometry = boxGeom;
             }
         }
 

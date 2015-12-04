@@ -10,16 +10,16 @@ Assembly::Assembly(ChSystem* system)
 Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
     : _system(system)
 {
-    for(auto& link : urdfLoader.getLinks()){
+    for(auto link : urdfLoader.getLinks()){
         ChBodyPtr body = ChBodyPtr(new ChBody(DEFAULT_BODY));
         body->SetBodyFixed(false);
         body->SetCollide(true);
 
-        for(auto& visual : link.visuals){
-            if(visual.geometry.type != ""){
-                UrdfGeometry* geom = &visual.geometry;
+        for(auto visual : link->visuals){
+            if(visual->geometry->type != ""){
+                UrdfGeometryPtr geom = visual->geometry;
                 if(geom->type == "box"){
-                    UrdfBox* boxGeom = static_cast<UrdfBox*>(geom);
+                    UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
                     std::cout << boxGeom->dim.x << std::endl;
 
                     ChSharedPtr<ChBoxShape> box(new ChBoxShape);
