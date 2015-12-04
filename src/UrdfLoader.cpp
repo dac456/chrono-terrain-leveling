@@ -12,6 +12,10 @@ UrdfLoader::~UrdfLoader(){
 
 }
 
+std::vector<UrdfLink> UrdfLoader::getLinks(){
+    return _links;
+}
+
 void UrdfLoader::_load(){
     std::stringstream buffer;
 
@@ -97,6 +101,7 @@ void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLink* link){
                 URDFDEBUG("box");
                 std::vector<std::string> vec = _split(geo->first_attribute("size")->value(), ' ');
 
+                //TODO: these values aren't converted properly - check atof and also polymorphism stuff
                 UrdfBox boxGeom;
                 boxGeom.dim = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
 

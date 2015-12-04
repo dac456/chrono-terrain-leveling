@@ -1,8 +1,9 @@
 #include "StaticMeshFactory.hpp"
 #include "TrackedVehicleFactory.hpp"
 #include "UrdfLoader.hpp" //tmp
+#include "Assembly.hpp" //tmp
 
-double dt = 0.3; //Default timestep
+double dt = 0.01; //Default timestep
 size_t numThreads = 8; //Default thread count
 
 void readArgs(int argc, char* argv[]){
@@ -33,25 +34,23 @@ int main(int argc, char* argv[])
     std::cout << "dt: " << dt << std::endl;
     std::cout << "nt: " << numThreads << std::endl;
 
-    UrdfLoader urdf(GetChronoDataFile("urdf/CubeBot.urdf"));
-
     #ifdef SIM_USE_CUDA
-    ChSystemParallelDVI system;
-    system.SetParallelThreadNumber(numThreads);
-    CHOMPfunctions::SetNumThreads(numThreads);
+        ChSystemParallelDVI system;
+        system.SetParallelThreadNumber(numThreads);
+        CHOMPfunctions::SetNumThreads(numThreads);
     #else
-    ChSystem system;
+        ChSystem system;
     #endif
 
     system.Set_G_acc(ChVector<>(0, -9.81, 0));
 
     // Set solver parameters
     #ifdef SIM_USE_CUDA
-    system.GetSettings()->solver.max_iteration_bilateral = 100;
-    system.GetSettings()->solver.tolerance = 1e-3;
+        system.GetSettings()->solver.max_iteration_bilateral = 100;
+        system.GetSettings()->solver.tolerance = 1e-3;
 
-    system.GetSettings()->collision.narrowphase_algorithm = NARROWPHASE_HYBRID_MPR;
-    system.GetSettings()->collision.bins_per_axis = I3(10, 10, 10);
+        system.GetSettings()->collision.narrowphase_algorithm = NARROWPHASE_HYBRID_MPR;
+        system.GetSettings()->collision.bins_per_axis = I3(10, 10, 10);
     #endif
 
     irr::ChIrrApp app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
@@ -72,6 +71,9 @@ int main(int argc, char* argv[])
 
     std::shared_ptr<TrackedVehicleFactory> tvFact = std::make_shared<TrackedVehicleFactory>(static_cast<ChSystem*>(&system));
     tvFact->createTrackedVehicle("zumo", "tracktor.dae", "trackwheel.dae", 100.0);
+
+    UrdfLoader urdf(GetChronoDataFile("urdf/CubeBot.urdf"));
+    Assembly testAsm(urdf, static_cast<ChSystem*>(&system));
 
     app.AssetBindAll();
     app.AssetUpdateAll();

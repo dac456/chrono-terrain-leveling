@@ -36,6 +36,7 @@ using namespace chrono;
 typedef ChSharedPtr<ChMaterialSurface> ChMaterialPtr;
 typedef ChSharedPtr<ChMaterialSurfaceDEM> ChDEMMaterialPtr;
 typedef ChSharedPtr<ChBody> ChBodyPtr;
+typedef ChSharedPtr<ChAssetLevel> ChAssetLevelPtr;
 
 typedef ChVector<double> ChVectord;
 typedef ChVector<float> ChVectorf;

@@ -10,7 +10,7 @@ struct UrdfGeometry{
 };
 
 struct UrdfBox : public UrdfGeometry{
-    UrdfBox(){ type = "box"; }
+    UrdfBox() : UrdfGeometry() { type = "box"; }
     ChVectord dim;
 };
 
@@ -42,6 +42,8 @@ private:
 public:
     UrdfLoader(std::string file);
     ~UrdfLoader();
+
+    std::vector<UrdfLink> getLinks();
 
 private:
     void _load();
