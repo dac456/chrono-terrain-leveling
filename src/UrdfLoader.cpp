@@ -20,8 +20,7 @@ void UrdfLoader::_load(){
     std::stringstream buffer;
 
     std::ifstream fin(_file, std::ios::in);
-    std::string s;
-    while(std::getline(fin, s)) buffer << s << std::endl;
+    buffer << fin.rdbuf();
     fin.close();
 
     rapidxml::xml_document<> doc;
@@ -133,6 +132,19 @@ void UrdfLoader::_loadCollision(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     }
 
     link->collisions.push_back(collision);
+}
+
+void UrdfLoader::_loadInertia(rapidxml::xml_node<>* node, UrdfLinkPtr link){
+    rapidxml::xml_node<>* current = node->first_node();
+
+    UrdfInertiaPtr inertia = std::make_shared<UrdfInertia>();
+
+    while(current){
+
+        current = current->next_sibling();
+    }
+
+    link->inertias.push_back(inertia);
 }
 
 UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){

@@ -21,6 +21,14 @@ struct UrdfMaterial{
 };
 typedef std::shared_ptr<UrdfMaterial> UrdfMaterialPtr;
 
+struct UrdfInertia{
+    std::pair<ChVectord,ChVectord> origin;
+
+    double mass;
+    //TODO: ixx, ixy, ixz, iyy, iyz, izz
+};
+typedef std::shared_ptr<UrdfInertia> UrdfInertiaPtr;
+
 struct UrdfVisual{
     std::string name;
     std::pair<ChVectord,ChVectord> origin;
@@ -40,8 +48,11 @@ typedef std::shared_ptr<UrdfCollision> UrdfCollisionPtr;
 
 struct UrdfLink{
     std::string name;
+    
     std::vector<UrdfVisualPtr> visuals;
     std::vector<UrdfCollisionPtr> collisions;
+    std::vector<UrdfInertiaPtr> inertias;
+
     std::vector<std::shared_ptr<UrdfLink>> links;
 };
 typedef std::shared_ptr<UrdfLink> UrdfLinkPtr;
@@ -67,6 +78,7 @@ private:
 
     void _loadVisual(rapidxml::xml_node<>* node, UrdfLinkPtr link);
     void _loadCollision(rapidxml::xml_node<>* node, UrdfLinkPtr link);
+    void _loadInertia(rapidxml::xml_node<>* node, UrdfLinkPtr link);
 
     UrdfGeometryPtr _loadGeometry(rapidxml::xml_node<>* node);
     std::vector<std::string> _split(std::string str, const char delim);
