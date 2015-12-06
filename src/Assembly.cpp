@@ -22,7 +22,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
 
                     ChSharedPtr<ChBoxShape> box(new ChBoxShape);
-                    box->GetBoxGeometry().Pos = ChVector<>(visual->origin.first.x, visual->origin.first.y, visual->origin.first.z);
+                    box->GetBoxGeometry().Pos = visual->origin.first;
                     box->GetBoxGeometry().Rot = chrono::Q_from_NasaAngles(ChVectord(visual->origin.second.z, visual->origin.second.x, visual->origin.second.y));
                     box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x, boxGeom->dim.y, boxGeom->dim.z);
                     body->AddAsset(box);
@@ -41,6 +41,12 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     body->GetCollisionModel()->BuildModel();
                 }
             }
+        }
+
+        for(auto inertial : link->inertials){
+            body->SetPos(inertial->origin.first);
+            body->SetMass(inertial->mass);
+            body->SetInertiaXX(inertial->inertiaXX);
         }
 
         _bodies.push_back(body);

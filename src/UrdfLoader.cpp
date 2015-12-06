@@ -6,6 +6,7 @@ UrdfLoader::UrdfLoader(std::string file)
     : _file(file)
 {
     if(fs::exists(file)) _load();
+    else URDFDEBUG("file not found.");
 }
 
 UrdfLoader::~UrdfLoader(){
@@ -67,6 +68,9 @@ void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link){
         }
         if(streq(current->name(), "collision")){
             _loadCollision(current, link);
+        }
+        if(streq(current->name(), "inertial")){
+            _loadInertial(current, link);
         }
 
         current = current->next_sibling();
@@ -134,17 +138,34 @@ void UrdfLoader::_loadCollision(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     link->collisions.push_back(collision);
 }
 
-void UrdfLoader::_loadInertia(rapidxml::xml_node<>* node, UrdfLinkPtr link){
+void UrdfLoader::_loadInertial(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     rapidxml::xml_node<>* current = node->first_node();
 
-    UrdfInertiaPtr inertia = std::make_shared<UrdfInertia>();
+    UrdfInertialPtr inertia = std::make_shared<UrdfInertial>();
 
     while(current){
+        if(streq(current->name(), "origin")){
+            std::vector<std::string> xyz = _split(current->first_attribute("xyz")->value(), ' ');
+            std::vector<std::string> rpy = _split(current->first_attribute("rpy")->value(), ' ');
+
+            inertia->origin.first = ChVectord(atof(xyz[0].c_str()), atof(xyz[1].c_str()), atof(xyz[2].c_str()));
+            inertia->origin.second = ChVectord(atof(rpy[0].c_str()), atof(rpy[1].c_str()), atof(rpy[2].c_str()));
+        }
+        if(streq(current->name(), "mass")){
+            inertia->mass = atof(current->first_attribute("value")->value());
+        }
+        if(streq(current->name(), "inertia")){
+            double ixx = atof(current->first_attribute("ixx")->value());
+            double iyy = atof(current->first_attribute("iyy")->value());
+            double izz = atof(current->first_attribute("izz")->value());
+
+            inertia->inertiaXX = ChVectord(ixx, iyy, izz);
+        }
 
         current = current->next_sibling();
     }
 
-    link->inertias.push_back(inertia);
+    link->inertials.push_back(inertia);
 }
 
 UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
