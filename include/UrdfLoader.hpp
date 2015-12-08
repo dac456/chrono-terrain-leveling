@@ -57,11 +57,23 @@ struct UrdfLink{
 };
 typedef std::shared_ptr<UrdfLink> UrdfLinkPtr;
 
+struct UrdfJoint{
+    std::string name;
+    std::pair<ChVectord,ChVectord> origin;
+
+    UrdfLinkPtr parent;
+    UrdfLinkPtr child;
+
+    std::string type;
+};
+typedef std::shared_ptr<UrdfJoint> UrdfJointPtr;
+
 class UrdfLoader{
 private:
     std::string _file;
 
     std::vector<UrdfLinkPtr> _links;
+    std::vector<UrdfJointPtr> _joints;
     std::vector<UrdfMaterialPtr> _materials;
 
 public:
@@ -69,11 +81,13 @@ public:
     ~UrdfLoader();
 
     std::vector<UrdfLinkPtr> getLinks();
+    UrdfLinkPtr getLink(std::string name);
 
 private:
     void _load();
     void _loadRobot(rapidxml::xml_node<>* node);
     void _loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link);
+    void _loadJoint(rapidxml::xml_node<>* node);
     void _loadMaterial(rapidxml::xml_node<>* node);
 
     void _loadVisual(rapidxml::xml_node<>* node, UrdfLinkPtr link);

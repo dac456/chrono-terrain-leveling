@@ -17,6 +17,16 @@ std::vector<UrdfLinkPtr> UrdfLoader::getLinks(){
     return _links;
 }
 
+UrdfLinkPtr UrdfLoader::getLink(std::string name){
+    for(auto link : _links){
+        if(link->name == name){
+            return link;
+        }
+    }
+
+    return nullptr;
+}
+
 void UrdfLoader::_load(){
     std::stringstream buffer;
 
@@ -43,6 +53,9 @@ void UrdfLoader::_loadRobot(rapidxml::xml_node<>* node){
 
             _loadLink(current, link);
             _links.push_back(link);
+        }
+        if(streq(current->name(), "joint")){
+            _loadJoint(current);
         }
         if(streq(current->name(), "material")){
             _loadMaterial(current);
@@ -75,6 +88,38 @@ void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link){
 
         current = current->next_sibling();
     }
+}
+
+void UrdfLoader::_loadJoint(rapidxml::xml_node<>* node){
+    rapidxml::xml_node<>* current = node->first_node();
+
+    UrdfJointPtr joint = std::make_shared<UrdfJoint>();
+
+    while(current){
+        if(streq(current->name(), "origin")){
+            std::vector<std::string> xyz = _split(current->first_attribute("xyz")->value(), ' ');
+            std::vector<std::string> rpy = _split(current->first_attribute("rpy")->value(), ' ');
+
+            joint->origin.first = ChVectord(atof(xyz[0].c_str()), atof(xyz[1].c_str()), atof(xyz[2].c_str()));
+            joint->origin.second = ChVectord(atof(rpy[0].c_str()), atof(rpy[1].c_str()), atof(rpy[2].c_str()));
+        }
+        if(streq(current->name(), "parent")){
+            joint->parent = getLink(current->first_attribute("link")->value());
+            if(joint->parent == nullptr){
+                URDFDEBUG("link referenced by joint not found");
+            }
+        }
+        if(streq(current->name(), "child")){
+            joint->child = getLink(current->first_attribute("link")->value());
+            if(joint->child == nullptr){
+                URDFDEBUG("link referenced by joint not found");
+            }
+        }
+
+        current = current->next_sibling();
+    }
+
+    _joints.push_back(joint);
 }
 
 void UrdfLoader::_loadMaterial(rapidxml::xml_node<>* node){
