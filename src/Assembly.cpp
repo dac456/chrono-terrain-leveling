@@ -15,6 +15,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
         body->SetName(link->name.c_str());
         body->SetBodyFixed(false);
         body->SetCollide(true);
+        body->GetCollisionModel()->ClearModel();
 
         for(auto visual : link->visuals){
             if(visual->geometry->type != ""){
@@ -37,9 +38,19 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                 if(geom->type == "box"){
                     UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
 
-                    body->GetCollisionModel()->ClearModel();
+                    //body->GetCollisionModel()->ClearModel();
                     body->GetCollisionModel()->AddBox(boxGeom->dim.x, boxGeom->dim.y, boxGeom->dim.z, collision->origin.first);
-                    body->GetCollisionModel()->BuildModel();
+                    //body->GetCollisionModel()->BuildModel();
+                }
+                else if(geom->type == "cylinder"){
+                    UrdfCylinderPtr cylGeom = std::static_pointer_cast<UrdfCylinder>(geom);
+
+                    //body->GetCollisionModel()->ClearModel();
+                    body->GetCollisionModel()->AddCylinder(cylGeom->radius, cylGeom->radius, cylGeom->length, collision->origin.first);
+                    //body->GetCollisionModel()->BuildModel();
+                }
+                else{
+                    std::cout << "Assembly: unknown geometry type" << std::endl;
                 }
             }
         }
@@ -50,6 +61,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
             body->SetInertiaXX(inertial->inertiaXX);
         }
 
+        body->GetCollisionModel()->BuildModel();
         _bodies.push_back(body);
         _system->AddBody(body);
     }
@@ -67,4 +79,5 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
 
 Assembly::~Assembly(){
     _bodies.clear();
+    _links.clear();
 }

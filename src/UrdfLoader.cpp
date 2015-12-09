@@ -229,6 +229,16 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
 
         out = boxGeom;
     }
+    if(streq(geo->name(), "cylinder")){
+        double r = atof(geo->first_attribute("radius")->value());
+        double l = atof(geo->first_attribute("length")->value());
+
+        UrdfCylinderPtr cylGeom = std::make_shared<UrdfCylinder>();
+        cylGeom->radius = r;
+        cylGeom->length = l;
+
+        out = cylGeom;
+    }
 
     return out;
 }

@@ -16,6 +16,13 @@ struct UrdfBox : public UrdfGeometry{
 };
 typedef std::shared_ptr<UrdfBox> UrdfBoxPtr;
 
+struct UrdfCylinder : public UrdfGeometry{
+    UrdfCylinder() : UrdfGeometry() { type = "cylinder"; }
+    double radius;
+    double length;
+};
+typedef std::shared_ptr<UrdfCylinder> UrdfCylinderPtr;
+
 struct UrdfMaterial{
     std::string name;
 };
