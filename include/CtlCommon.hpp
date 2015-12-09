@@ -37,6 +37,7 @@ typedef ChSharedPtr<ChMaterialSurface> ChMaterialPtr;
 typedef ChSharedPtr<ChMaterialSurfaceDEM> ChDEMMaterialPtr;
 typedef ChSharedPtr<ChBody> ChBodyPtr;
 typedef ChSharedPtr<ChAssetLevel> ChAssetLevelPtr;
+typedef ChSharedPtr<ChLink> ChLinkPtr;
 
 typedef ChVector<double> ChVectord;
 typedef ChVector<float> ChVectorf;

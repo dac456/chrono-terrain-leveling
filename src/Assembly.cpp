@@ -12,6 +12,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
 {
     for(auto link : urdfLoader.getLinks()){
         ChBodyPtr body = ChBodyPtr(new ChBody(DEFAULT_BODY));
+        body->SetName(link->name.c_str());
         body->SetBodyFixed(false);
         body->SetCollide(true);
 
@@ -50,10 +51,17 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
         }
 
         _bodies.push_back(body);
+        _system->AddBody(body);
     }
 
-    for(auto& body : _bodies){
-        _system->AddBody(body);
+    for(auto joint : urdfLoader.getJoints()){
+        if(joint->type == "revolute"){
+            ChSharedPtr<ChLinkLockRevolute> chJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
+            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), ChCoordsys<>(joint->origin.first, QUNIT));
+
+            _links.push_back(chJoint);
+            _system->AddLink(chJoint);
+        }
     }
 }
 

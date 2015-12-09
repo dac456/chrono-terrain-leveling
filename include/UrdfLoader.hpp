@@ -61,8 +61,8 @@ struct UrdfJoint{
     std::string name;
     std::pair<ChVectord,ChVectord> origin;
 
-    UrdfLinkPtr parent;
-    UrdfLinkPtr child;
+    std::string parent;
+    std::string child;
 
     std::string type;
 };
@@ -72,7 +72,7 @@ class UrdfLoader{
 private:
     std::string _file;
 
-    std::vector<UrdfLinkPtr> _links;
+    std::vector<UrdfLinkPtr> _links; //TODO: use map instead?
     std::vector<UrdfJointPtr> _joints;
     std::vector<UrdfMaterialPtr> _materials;
 
@@ -82,6 +82,8 @@ public:
 
     std::vector<UrdfLinkPtr> getLinks();
     UrdfLinkPtr getLink(std::string name);
+
+    std::vector<UrdfJointPtr> getJoints();
 
 private:
     void _load();

@@ -27,6 +27,10 @@ UrdfLinkPtr UrdfLoader::getLink(std::string name){
     return nullptr;
 }
 
+std::vector<UrdfJointPtr> UrdfLoader::getJoints(){
+    return _joints;
+}
+
 void UrdfLoader::_load(){
     std::stringstream buffer;
 
@@ -104,14 +108,14 @@ void UrdfLoader::_loadJoint(rapidxml::xml_node<>* node){
             joint->origin.second = ChVectord(atof(rpy[0].c_str()), atof(rpy[1].c_str()), atof(rpy[2].c_str()));
         }
         if(streq(current->name(), "parent")){
-            joint->parent = getLink(current->first_attribute("link")->value());
-            if(joint->parent == nullptr){
+            joint->parent = current->first_attribute("link")->value();
+            if(joint->parent == ""){
                 URDFDEBUG("link referenced by joint not found");
             }
         }
         if(streq(current->name(), "child")){
-            joint->child = getLink(current->first_attribute("link")->value());
-            if(joint->child == nullptr){
+            joint->child = current->first_attribute("link")->value();
+            if(joint->child == ""){
                 URDFDEBUG("link referenced by joint not found");
             }
         }

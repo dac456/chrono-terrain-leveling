@@ -7,6 +7,7 @@ class Assembly{
 private:
     ChSystem* _system;
     std::vector<ChBodyPtr> _bodies;
+    std::vector<ChLinkPtr> _links;
 
 public:
     Assembly(ChSystem* system);
