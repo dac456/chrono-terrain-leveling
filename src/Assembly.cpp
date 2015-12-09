@@ -29,6 +29,15 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x, boxGeom->dim.y, boxGeom->dim.z);
                     body->AddAsset(box);
                 }
+                if(geom->type == "cylinder"){
+                    UrdfCylinderPtr cylGeom = std::static_pointer_cast<UrdfCylinder>(geom);
+
+                    ChSharedPtr<ChCylinderShape> cyl(new ChCylinderShape);
+                    cyl->GetCylinderGeometry().p1 = ChVectord(0, cylGeom->length/2.0, 0);
+                    cyl->GetCylinderGeometry().p2 = ChVectord(0, -cylGeom->length/2.0, 0);
+                    cyl->GetCylinderGeometry().rad = cylGeom->radius;
+                    body->AddAsset(cyl);
+                }
             }
         }
 
