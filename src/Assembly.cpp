@@ -26,7 +26,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     ChSharedPtr<ChBoxShape> box(new ChBoxShape);
                     box->GetBoxGeometry().Pos = visual->origin.first;
                     box->GetBoxGeometry().Rot = chrono::Q_from_NasaAngles(ChVectord(visual->origin.second.z, visual->origin.second.x, visual->origin.second.y));
-                    box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x, boxGeom->dim.y, boxGeom->dim.z);
+                    box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x/2.0, boxGeom->dim.y/2.0, boxGeom->dim.z/2.0);
                     body->AddAsset(box);
                 }
                 if(geom->type == "cylinder"){
@@ -48,7 +48,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
 
                     //body->GetCollisionModel()->ClearModel();
-                    body->GetCollisionModel()->AddBox(boxGeom->dim.x, boxGeom->dim.y, boxGeom->dim.z, collision->origin.first);
+                    body->GetCollisionModel()->AddBox(boxGeom->dim.x/2.0, boxGeom->dim.y/2.0, boxGeom->dim.z/2.0, collision->origin.first);
                     //body->GetCollisionModel()->BuildModel();
                 }
                 else if(geom->type == "cylinder"){
@@ -78,7 +78,17 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
     for(auto joint : urdfLoader.getJoints()){
         if(joint->type == "revolute"){
             ChSharedPtr<ChLinkLockRevolute> chJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
-            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), ChCoordsys<>(joint->origin.first, QUNIT));
+
+            //Set frame of child relative to parent
+            ChFrameMoving<> childFrame(_toChronoCoords(joint->origin.first), chrono::Q_from_NasaAngles(ChVectord(joint->origin.second.z, joint->origin.second.x, joint->origin.second.y)));
+            _system->SearchBody(joint->child.c_str())->ConcatenatePreTransformation(childFrame);
+
+            //Set the axis of revolution
+            //ChFrameMoving<> jointRot(ChVectord(0,0,0), chrono::Q_from_NasaAngles(ChVectord(joint->origin.second.z, joint->origin.second.x, joint->origin.second.y)));
+
+            //ChFrameMoving<> jointFrameAbs = jointRot >> childFrame;
+
+            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), childFrame.GetCoord());
 
             _links.push_back(chJoint);
             _system->AddLink(chJoint);
@@ -89,4 +99,8 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
 Assembly::~Assembly(){
     _bodies.clear();
     _links.clear();
+}
+
+ChVectord Assembly::_toChronoCoords(ChVectord urdfCoords){
+    return ChVectord(urdfCoords.x, urdfCoords.z, urdfCoords.y);
 }

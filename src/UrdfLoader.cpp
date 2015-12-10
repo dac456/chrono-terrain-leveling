@@ -95,9 +95,11 @@ void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link){
 }
 
 void UrdfLoader::_loadJoint(rapidxml::xml_node<>* node){
-    rapidxml::xml_node<>* current = node->first_node();
-
     UrdfJointPtr joint = std::make_shared<UrdfJoint>();
+    joint->name = node->first_attribute("name")->value();
+    joint->type = node->first_attribute("type")->value();
+    
+    rapidxml::xml_node<>* current = node->first_node();
 
     while(current){
         if(streq(current->name(), "origin")){

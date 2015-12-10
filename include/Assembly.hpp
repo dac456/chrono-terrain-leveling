@@ -14,6 +14,9 @@ public:
     Assembly(UrdfLoader urdfLoader, ChSystem* system);
     ~Assembly();
 
+private:
+    ChVectord _toChronoCoords(ChVectord urdfCoords);
+
 };
 
 #endif
