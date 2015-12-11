@@ -243,9 +243,11 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
     }
     if(streq(geo->name(), "mesh")){
         std::string file = geo->first_attribute("filename")->value();
+        std::vector<std::string> vec = _split(geo->first_attribute("scale")->value(), ' ');
 
         UrdfMeshPtr meshGeom = std::make_shared<UrdfMesh>();
-        meshGeom->file = GetChronoDataFile(file);
+        meshGeom->file = GetChronoDataFile(std::string("urdf/") + file);
+        meshGeom->scale = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
 
         out = meshGeom;
     }

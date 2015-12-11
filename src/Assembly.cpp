@@ -27,7 +27,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     ChSharedPtr<ChBoxShape> box(new ChBoxShape);
                     box->GetBoxGeometry().Pos = visual->origin.first;
                     box->GetBoxGeometry().Rot = chrono::Q_from_NasaAngles(ChVectord(visual->origin.second.z, visual->origin.second.x, visual->origin.second.y));
-                    box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x/2.0, boxGeom->dim.y/2.0, boxGeom->dim.z/2.0);
+                    box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x/2.0, boxGeom->dim.z/2.0, boxGeom->dim.y/2.0);
                     body->AddAsset(box);
                 }
                 else if(geom->type == "cylinder"){
@@ -42,7 +42,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                 else if(geom->type == "mesh"){
                     UrdfMeshPtr meshGeom = std::static_pointer_cast<UrdfMesh>(geom);
 
-                    AssimpLoader ai(meshGeom->file);
+                    AssimpLoader ai(meshGeom->file, ChVectord(meshGeom->scale.x, meshGeom->scale.z, meshGeom->scale.y));
                     std::shared_ptr<geometry::ChTriangleMeshConnected> chMesh = ai.toChronoTriMesh();
 
                     ChSharedPtr<ChTriangleMeshShape> mesh(new ChTriangleMeshShape);
@@ -62,7 +62,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
 
                     //body->GetCollisionModel()->ClearModel();
-                    body->GetCollisionModel()->AddBox(boxGeom->dim.x/2.0, boxGeom->dim.y/2.0, boxGeom->dim.z/2.0, collision->origin.first);
+                    body->GetCollisionModel()->AddBox(boxGeom->dim.x/2.0, boxGeom->dim.z/2.0, boxGeom->dim.y/2.0, collision->origin.first);
                     //body->GetCollisionModel()->BuildModel();
                 }
                 else if(geom->type == "cylinder"){
@@ -79,7 +79,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
         }
 
         for(auto inertial : link->inertials){
-            body->SetPos(inertial->origin.first);
+            body->SetPos(_toChronoCoords(inertial->origin.first));
             body->SetMass(inertial->mass);
             body->SetInertiaXX(inertial->inertiaXX);
         }
@@ -98,11 +98,12 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
             _system->SearchBody(joint->child.c_str())->ConcatenatePreTransformation(childFrame);
 
             //Set the axis of revolution
-            //ChFrameMoving<> jointRot(ChVectord(0,0,0), chrono::Q_from_NasaAngles(ChVectord(joint->origin.second.z, joint->origin.second.x, joint->origin.second.y)));
+            ChFrameMoving<> jointRot(ChVectord(0,0,0), chrono::Q_from_NasaAngles(ChVectord(joint->origin.second.z, joint->origin.second.x, joint->origin.second.y)));
 
-            //ChFrameMoving<> jointFrameAbs = jointRot >> childFrame;
+            //Absolute frame for joint
+            ChFrameMoving<> jointFrameAbs = jointRot >> childFrame;
 
-            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), childFrame.GetCoord());
+            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), jointFrameAbs.GetCoord());
 
             _links.push_back(chJoint);
             _system->AddLink(chJoint);

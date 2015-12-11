@@ -26,6 +26,7 @@ typedef std::shared_ptr<UrdfCylinder> UrdfCylinderPtr;
 struct UrdfMesh : public UrdfGeometry{
     UrdfMesh() : UrdfGeometry() { type = "mesh"; }
     std::string file;
+    ChVectord scale;
 };
 typedef std::shared_ptr<UrdfMesh> UrdfMeshPtr;
 
