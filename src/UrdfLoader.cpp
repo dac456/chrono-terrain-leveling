@@ -98,7 +98,7 @@ void UrdfLoader::_loadJoint(rapidxml::xml_node<>* node){
     UrdfJointPtr joint = std::make_shared<UrdfJoint>();
     joint->name = node->first_attribute("name")->value();
     joint->type = node->first_attribute("type")->value();
-    
+
     rapidxml::xml_node<>* current = node->first_node();
 
     while(current){
@@ -240,6 +240,14 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
         cylGeom->length = l;
 
         out = cylGeom;
+    }
+    if(streq(geo->name(), "mesh")){
+        std::string file = geo->first_attribute("filename")->value();
+
+        UrdfMeshPtr meshGeom = std::make_shared<UrdfMesh>();
+        meshGeom->file = GetChronoDataFile(file);
+
+        out = meshGeom;
     }
 
     return out;

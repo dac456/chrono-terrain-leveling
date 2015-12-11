@@ -23,6 +23,12 @@ struct UrdfCylinder : public UrdfGeometry{
 };
 typedef std::shared_ptr<UrdfCylinder> UrdfCylinderPtr;
 
+struct UrdfMesh : public UrdfGeometry{
+    UrdfMesh() : UrdfGeometry() { type = "mesh"; }
+    std::string file;
+};
+typedef std::shared_ptr<UrdfMesh> UrdfMeshPtr;
+
 struct UrdfMaterial{
     std::string name;
 };

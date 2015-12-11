@@ -1,5 +1,6 @@
 #include "Assembly.hpp"
 #include "UrdfLoader.hpp"
+#include "AssimpLoader.hpp"
 
 Assembly::Assembly(ChSystem* system)
     : _system(system)
@@ -29,7 +30,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x/2.0, boxGeom->dim.y/2.0, boxGeom->dim.z/2.0);
                     body->AddAsset(box);
                 }
-                if(geom->type == "cylinder"){
+                else if(geom->type == "cylinder"){
                     UrdfCylinderPtr cylGeom = std::static_pointer_cast<UrdfCylinder>(geom);
 
                     ChSharedPtr<ChCylinderShape> cyl(new ChCylinderShape);
@@ -37,6 +38,19 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     cyl->GetCylinderGeometry().p2 = ChVectord(0, -cylGeom->length/2.0, 0);
                     cyl->GetCylinderGeometry().rad = cylGeom->radius;
                     body->AddAsset(cyl);
+                }
+                else if(geom->type == "mesh"){
+                    UrdfMeshPtr meshGeom = std::static_pointer_cast<UrdfMesh>(geom);
+
+                    AssimpLoader ai(meshGeom->file);
+                    std::shared_ptr<geometry::ChTriangleMeshConnected> chMesh = ai.toChronoTriMesh();
+
+                    ChSharedPtr<ChTriangleMeshShape> mesh(new ChTriangleMeshShape);
+                    mesh->SetMesh(*chMesh);
+                    body->AddAsset(mesh);
+                }
+                else{
+                    std::cout << "Assembly: unknown geometry type (visual)" << std::endl;
                 }
             }
         }
@@ -59,7 +73,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
                     //body->GetCollisionModel()->BuildModel();
                 }
                 else{
-                    std::cout << "Assembly: unknown geometry type" << std::endl;
+                    std::cout << "Assembly: unknown geometry type (collision)" << std::endl;
                 }
             }
         }
