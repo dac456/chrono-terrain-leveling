@@ -10,7 +10,8 @@ UrdfLoader::UrdfLoader(std::string file)
 }
 
 UrdfLoader::~UrdfLoader(){
-
+    _links.clear();
+    _joints.clear();
 }
 
 std::vector<UrdfLinkPtr> UrdfLoader::getLinks(){
@@ -41,16 +42,17 @@ void UrdfLoader::_load(){
     rapidxml::xml_document<> doc;
     doc.parse<0>(const_cast<char*>(buffer.str().c_str()));
 
-    if(strcmp(doc.first_node()->name(), "robot") == 0){
+    if(streq(doc.first_node()->name(), "robot")){
         _loadRobot(doc.first_node()->first_node());
     }
+
+    URDFDEBUG("Loaded " + _file);
 }
 
 void UrdfLoader::_loadRobot(rapidxml::xml_node<>* node){
     rapidxml::xml_node<>* current = node;
 
     while(current){
-        URDFDEBUG(current->name());
         if(streq(current->name(), "link")){
             UrdfLinkPtr link = std::make_shared<UrdfLink>();
             link->name = current->first_attribute("name")->value();
@@ -231,7 +233,7 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
 
         out = boxGeom;
     }
-    if(streq(geo->name(), "cylinder")){
+    else if(streq(geo->name(), "cylinder")){
         double r = atof(geo->first_attribute("radius")->value());
         double l = atof(geo->first_attribute("length")->value());
 
@@ -241,7 +243,7 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
 
         out = cylGeom;
     }
-    if(streq(geo->name(), "mesh")){
+    else if(streq(geo->name(), "mesh")){
         std::string file = geo->first_attribute("filename")->value();
         std::vector<std::string> vec = _split(geo->first_attribute("scale")->value(), ' ');
 
@@ -250,6 +252,9 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
         meshGeom->scale = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
 
         out = meshGeom;
+    }
+    else{
+        URDFDEBUG("unknown geometry type");
     }
 
     return out;
