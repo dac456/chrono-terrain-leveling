@@ -84,6 +84,10 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
             body->SetInertiaXX(inertial->inertiaXX);
         }
 
+        //TODO: generate unique ID
+        body->GetCollisionModel()->SetFamily(3);
+        body->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(3);
+        
         body->GetCollisionModel()->BuildModel();
         _bodies.push_back(body);
         _system->AddBody(body);
