@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     std::shared_ptr<TrackedVehicleFactory> tvFact = std::make_shared<TrackedVehicleFactory>(static_cast<ChSystem*>(&system));
     //tvFact->createTrackedVehicle("zumo", "tracktor.dae", "trackwheel.dae", 100.0);
 
-    UrdfLoader urdf(GetChronoDataFile("urdf/TestBot.urdf"));
+    UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
     Assembly testAsm(urdf, static_cast<ChSystem*>(&system));
 
     app.AssetBindAll();
