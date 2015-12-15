@@ -11,11 +11,12 @@ private:
 
 public:
     Assembly(ChSystem* system);
-    Assembly(UrdfLoader urdfLoader, ChSystem* system);
+    Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system);
     ~Assembly();
 
 private:
     ChVectord _toChronoCoords(ChVectord urdfCoords);
+    ChQuatd _toChronoOrientation(ChVectord urdfOrientation);
 
 };
 

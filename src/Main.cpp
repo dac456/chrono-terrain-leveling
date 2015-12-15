@@ -67,13 +67,13 @@ int main(int argc, char* argv[])
 
     //Initialize factories
     std::shared_ptr<StaticMeshFactory> smFact = std::make_shared<StaticMeshFactory>(static_cast<ChSystem*>(&system));
-    smFact->createStaticMesh("test", "groundplane.obj", ChVector<double>(0,-2,0), 50.0);
+    smFact->createStaticMesh("test", "groundplane.obj", ChVector<double>(0,0,0), 50.0);
 
     std::shared_ptr<TrackedVehicleFactory> tvFact = std::make_shared<TrackedVehicleFactory>(static_cast<ChSystem*>(&system));
     //tvFact->createTrackedVehicle("zumo", "tracktor.dae", "trackwheel.dae", 100.0);
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    Assembly testAsm(urdf, static_cast<ChSystem*>(&system));
+    Assembly testAsm(urdf, ChVectord(0,5,0), static_cast<ChSystem*>(&system));
 
     app.AssetBindAll();
     app.AssetUpdateAll();

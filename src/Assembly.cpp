@@ -8,9 +8,11 @@ Assembly::Assembly(ChSystem* system)
 
 }
 
-Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
+Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
     : _system(system)
 {
+    ChFrameMoving<> initFrame(position, QUNIT);
+
     for(auto link : urdfLoader.getLinks()){
         ChBodyPtr body = ChBodyPtr(new ChBody(DEFAULT_BODY));
         body->SetName(link->name.c_str());
@@ -26,7 +28,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
 
                     ChSharedPtr<ChBoxShape> box(new ChBoxShape);
                     box->GetBoxGeometry().Pos = visual->origin.first;
-                    box->GetBoxGeometry().Rot = chrono::Q_from_NasaAngles(ChVectord(visual->origin.second.z, visual->origin.second.x, visual->origin.second.y));
+                    box->GetBoxGeometry().Rot = _toChronoOrientation(visual->origin.second);
                     box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x/2.0, boxGeom->dim.z/2.0, boxGeom->dim.y/2.0);
                     body->AddAsset(box);
                 }
@@ -87,30 +89,50 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChSystem* system)
         //TODO: generate unique ID
         body->GetCollisionModel()->SetFamily(3);
         body->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(3);
-        
+
         body->GetCollisionModel()->BuildModel();
         _bodies.push_back(body);
         _system->AddBody(body);
     }
 
+    //TODO: Assumes first body is the root - this is a kludge and should be fixed
+    if(_bodies[0]) _bodies[0]->ConcatenatePreTransformation(initFrame);
+
     for(auto joint : urdfLoader.getJoints()){
         if(joint->type == "revolute"){
             ChSharedPtr<ChLinkLockRevolute> chJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
 
+            //Get parent body frame
+            ChFrameMoving<> parentFrame(_system->SearchBody(joint->parent.c_str())->GetCoord());
+
             //Set frame of child relative to parent
-            ChFrameMoving<> childFrame(_toChronoCoords(joint->origin.first), chrono::Q_from_NasaAngles(ChVectord(joint->origin.second.z, joint->origin.second.x, joint->origin.second.y)));
-            _system->SearchBody(joint->child.c_str())->ConcatenatePreTransformation(childFrame);
+            ChFrameMoving<> childFrame(_toChronoCoords(joint->origin.first), _toChronoOrientation(joint->origin.second));
+            ChFrameMoving<> childFrameAbs = childFrame >> parentFrame;
+            _system->SearchBody(joint->child.c_str())->ConcatenatePreTransformation(childFrameAbs);
 
-            //Set the axis of revolution
-            ChFrameMoving<> jointRot(ChVectord(0,0,0), chrono::Q_from_NasaAngles(ChVectord(joint->origin.second.z, joint->origin.second.x, joint->origin.second.y)));
-
-            //Absolute frame for joint
-            ChFrameMoving<> jointFrameAbs = jointRot >> childFrame;
-
-            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), jointFrameAbs.GetCoord());
+            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), childFrameAbs.GetCoord());
 
             _links.push_back(chJoint);
             _system->AddLink(chJoint);
+        }
+        else if(joint->type == "fixed"){
+            ChSharedPtr<ChLinkLockLock> chJoint = ChSharedPtr<ChLinkLockLock>(new ChLinkLockLock);
+
+            //Get parent body frame
+            ChFrameMoving<> parentFrame(_system->SearchBody(joint->parent.c_str())->GetCoord());
+
+            //Set frame of child relative to parent
+            ChFrameMoving<> childFrame(_toChronoCoords(joint->origin.first), _toChronoOrientation(joint->origin.second));
+            ChFrameMoving<> childFrameAbs = childFrame >> parentFrame;
+            _system->SearchBody(joint->child.c_str())->ConcatenatePreTransformation(childFrameAbs);
+
+            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), childFrameAbs.GetCoord());
+
+            _links.push_back(chJoint);
+            _system->AddLink(chJoint);
+        }
+        else{
+            std::cout << "Assembly: unhandled joint type" << std::endl;
         }
     }
 }
@@ -122,4 +144,8 @@ Assembly::~Assembly(){
 
 ChVectord Assembly::_toChronoCoords(ChVectord urdfCoords){
     return ChVectord(urdfCoords.x, urdfCoords.z, urdfCoords.y);
+}
+
+ChQuatd Assembly::_toChronoOrientation(ChVectord urdfOrientation){
+    return chrono::Q_from_NasaAngles(ChVectord(urdfOrientation.z, urdfOrientation.x, -urdfOrientation.y));
 }

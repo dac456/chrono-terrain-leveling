@@ -41,6 +41,8 @@ typedef ChSharedPtr<ChLink> ChLinkPtr;
 
 typedef ChVector<double> ChVectord;
 typedef ChVector<float> ChVectorf;
+typedef ChQuaternion<double> ChQuatd;
+typedef ChQuaternion<float> ChQuatf;
 typedef ChMatrixNM<double, 4, 4> ChMat44d;
 typedef ChMatrixNM<float, 4 ,4> ChMat44f;
 

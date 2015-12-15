@@ -32,7 +32,7 @@ AssimpLoader::AssimpLoader(std::string path, ChVectord scale){
                 _vertices.push_back(ChVector<double>(v.x, v.y, v.z) * scale);
 
                 aiVector3t<double> n = mesh->mNormals[j];
-                _normals.push_back(ChVector<double>(n.x, n.y, n.z));
+                _normals.push_back(ChVector<double>(n.x, n.y, n.z) * scale);
             }
 
             //Load mesh bones
