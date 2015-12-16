@@ -7,8 +7,8 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
       _assembly(assembly)
 {
     ChBodyPtr blWheel, brWheel, flWheel, frWheel;
-    //blWheel = brWheel = flWheel = frWheel = nullptr;
 
+    //Check all bodies in assembly and extract the wheels
     std::vector<ChBodyPtr> bodies = _assembly->getBodies();
     for(auto body : bodies){
         if(std::string(body->GetName()).find("bl_Wheel") != std::string::npos){
@@ -29,6 +29,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
         }
     }
 
+    //If all wheels are present, generate tracks
     if(blWheel && brWheel && flWheel && frWheel){
         std::cout << "Assembly has all wheels" << std::endl;
         ChVectord blPos = blWheel->GetCoord().pos;
@@ -43,10 +44,12 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
         AssimpLoader aiCollision(GetChronoDataFile(shoeColFile), ChVectord(1.8,1.8,1.6));
         _collisionMesh = aiCollision.toChronoTriMesh();
 
+        //Back wheels are origin of track on each side
         std::vector<ChVectord> trackOrigin;
         trackOrigin.push_back(brPos);
         trackOrigin.push_back(blPos);
 
+        //Generate track loop
         for(ChVectord brPos : trackOrigin){
             ChBodyPtr firstShoeBody(new ChBody(DEFAULT_BODY));
             firstShoeBody->SetMass(5.0);
@@ -75,49 +78,53 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             size_t numShoes = ceil(shoeDist / (shoeDim.x-0.1));
 
             double arcLength = CH_C_PI * 0.58;
-            size_t numWrap = floor(arcLength / (shoeDim.x-0.1));
+            size_t numWrap = ceil(arcLength / (shoeDim.x-0.1));
 
             ChBodyPtr previousShoeBody = firstShoeBody;
+            double px = 0.0;
             for(size_t i=1; i<numShoes; i++){
-                ChVectord position = ChVectord(brPos.x + ((shoeDim.x-0.1)*i), brPos.y + 0.58, brPos.z+0.03);
+                px = brPos.x + ((shoeDim.x-0.1)*i);
+                ChVectord position = ChVectord(px, brPos.y + 0.58, brPos.z+0.03);
                 previousShoeBody = _createShoe(previousShoeBody, shoeDim, position);
             }
             double lx, ly;
             lx = ly = 0.0;
+            ChQuatd rotation;
             for(size_t i=0; i<numWrap; i++){
-                double alpha = (CH_C_PI / ((double)(numWrap-1))) * ((double)i);
+                double alpha = (CH_C_PI / ((double)(numWrap))) * ((double)i);
 
-                lx = brPos.x + ((shoeDim.x-0.1)*(numShoes)) + 0.58 * sin(alpha);
+                lx = px + (shoeDim.x-0.1) + 0.58 * sin(alpha);
                 ly = brPos.y + 0.58 * cos(alpha);
                 //position.Set(lx, ly, brPos.z);
                 ChVectord position = ChVectord(lx, ly, brPos.z+0.03);
-                ChQuatd rotation = chrono::Q_from_AngAxis(alpha+0.3, ChVector<>(0, 0, 1));
+                rotation = chrono::Q_from_AngAxis(alpha+0.3, ChVector<>(0, 0, 1));
                 previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, rotation);
             }
-            for(size_t i=1; i<numShoes; i++){
-                ChVectord position = ChVectord(lx - (shoeDim.x-0.1) - ((shoeDim.x-0.1)*i), ly, brPos.z+0.03);
-                previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, QUNIT, false);
+            for(size_t i=1; i<=numShoes; i++){
+                px = lx - ((shoeDim.x-0.1)*i);
+                ChVectord position = ChVectord(px, ly, brPos.z+0.03);
+                previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, rotation);
             }
             for(size_t i=0; i<numWrap-1; i++){
-                double alpha = (CH_C_PI / ((double)(numWrap - 2))) * ((double)i);
+                double alpha = (CH_C_PI / ((double)(numWrap - 1))) * ((double)i);
 
-                lx = brPos.x - 0.58 * sin(alpha);
+                lx = px - (shoeDim.x-0.1) - 0.58 * sin(alpha);
                 ly = brPos.y - 0.58 * cos(alpha);
                 //position.Set(lx, ly, brPos.z);
                 ChVectord position = ChVectord(lx, ly, brPos.z+0.03);
-                ChQuatd rotation = chrono::Q_from_AngAxis(alpha + CH_C_PI, ChVector<>(0, 0, 1));
-                previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, rotation, true);
+                ChQuatd rotation = chrono::Q_from_AngAxis(alpha+0.3 + CH_C_PI, ChVector<>(0, 0, 1));
+                previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, rotation);
             }
 
             ChSharedPtr<ChLinkLockRevolute> finalJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
-            finalJoint->Initialize(firstShoeBody, previousShoeBody, ChCoordsys<>(ChVectord(brPos.x, brPos.y + 0.58, brPos.z+0.03), QUNIT));
+            finalJoint->Initialize(previousShoeBody, firstShoeBody, ChCoordsys<>(ChVectord(brPos.x, brPos.y + 0.58, brPos.z+0.03), QUNIT));
 
             _assembly->getSystem()->AddLink(finalJoint);
         }
     }
 }
 
-ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord shoePosition, ChQuatd shoeRotation, bool top){
+ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord shoePosition, ChQuatd shoeRotation){
     ChBodyPtr nextShoeBody(new ChBody(DEFAULT_BODY));
     nextShoeBody->SetMass(5.0);
     nextShoeBody->SetCollide(true);
@@ -128,17 +135,10 @@ ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoe
     shoeAsset->SetMesh(*_shoeMesh);
     nextShoeBody->AddAsset(shoeAsset);
 
-    ChFrameMoving<> frame;
-    if(top){
-        ChFrameMoving<> baseFrame(shoePosition, Q_from_AngAxis(CH_C_PI, ChVectord(1,0,0)));
-        ChFrameMoving<> rotFrame(ChVectord(0,0,0), shoeRotation);
-        frame = rotFrame >> baseFrame;
-        nextShoeBody->ConcatenatePreTransformation(frame);
-    }
-    else{
-        frame = ChFrameMoving<>(shoePosition, shoeRotation);
-        nextShoeBody->ConcatenatePreTransformation(frame);
-    }
+    ChFrameMoving<> baseFrame(shoePosition, Q_from_AngAxis(CH_C_PI, ChVectord(1,0,0)));
+    ChFrameMoving<> rotFrame(ChVectord(0,0,0), shoeRotation);
+    ChFrameMoving<> frame = rotFrame >> baseFrame;
+    nextShoeBody->ConcatenatePreTransformation(frame);
 
     nextShoeBody->GetCollisionModel()->ClearModel();
     nextShoeBody->GetCollisionModel()->AddTriangleMesh(*(_collisionMesh.get()), false, false);
@@ -151,7 +151,7 @@ ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoe
     _assembly->getSystem()->AddBody(nextShoeBody);
 
     ChSharedPtr<ChLinkLockRevolute> shoeJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
-    shoeJoint->Initialize(previousShoeBody, nextShoeBody, frame.GetCoord());
+    shoeJoint->Initialize(nextShoeBody, previousShoeBody, frame.GetCoord());
 
     _assembly->getSystem()->AddLink(shoeJoint);
 
