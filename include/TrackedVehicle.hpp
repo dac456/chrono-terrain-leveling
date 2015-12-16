@@ -6,19 +6,16 @@
 class TrackedVehicle{
 private:
     std::string _name;
-    ChBodyPtr _body;
-    ChBodyPtr _lfWheel;
-    ChBodyPtr _lbWheel;
-    ChBodyPtr _rfWheel;
-    ChBodyPtr _rbWheel;
-    
-    ChSharedPtr<ChLinkLockRevolute> _lfWheelLink;
-    ChSharedPtr<ChLinkLockRevolute> _rfWheelLink;
-    
+    AssemblyPtr _assembly;
+
+    std::shared_ptr<geometry::ChTriangleMeshConnected> _shoeMesh;
+
 public:
-    TrackedVehicle(std::string name, std::string bodyFile, std::string wheelFile, double mass);
-    
-    
+    TrackedVehicle(std::string name, std::string shoeFile, AssemblyPtr assembly);
+
+private:
+    ChBodyPtr _createShoe(size_t idx, ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord backWheelPos, ChQuatd shoeRotation = QUNIT);
+
     friend class TrackedVehicleFactory;
 };
 

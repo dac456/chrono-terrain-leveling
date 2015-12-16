@@ -14,6 +14,9 @@ public:
     Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system);
     ~Assembly();
 
+    ChSystem* getSystem();
+    std::vector<ChBodyPtr> getBodies();
+
 private:
     ChVectord _toChronoCoords(ChVectord urdfCoords);
     ChQuatd _toChronoOrientation(ChVectord urdfOrientation);

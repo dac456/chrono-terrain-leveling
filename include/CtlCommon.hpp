@@ -47,6 +47,7 @@ typedef ChMatrixNM<double, 4, 4> ChMat44d;
 typedef ChMatrixNM<float, 4 ,4> ChMat44f;
 
 //Forward declare
+class Assembly;
 class AssimpLoader;
 class StaticMesh;
 class StaticMeshFactory;
@@ -54,6 +55,7 @@ class TrackedVehicle;
 class TrackedVehicleFactory;
 class UrdfLoader;
 
+typedef std::shared_ptr<Assembly> AssemblyPtr;
 typedef std::shared_ptr<StaticMesh> StaticMeshPtr;
 typedef std::shared_ptr<TrackedVehicle> TrackedVehiclePtr;
 

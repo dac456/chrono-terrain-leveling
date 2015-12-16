@@ -142,6 +142,14 @@ Assembly::~Assembly(){
     _links.clear();
 }
 
+ChSystem* Assembly::getSystem(){
+    return _system;
+}
+
+std::vector<ChBodyPtr> Assembly::getBodies(){
+    return _bodies;
+}
+
 ChVectord Assembly::_toChronoCoords(ChVectord urdfCoords){
     return ChVectord(urdfCoords.x, urdfCoords.z, urdfCoords.y);
 }

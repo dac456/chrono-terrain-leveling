@@ -11,9 +11,9 @@ private:
 public:
     TrackedVehicleFactory(ChSystem* system);
     ~TrackedVehicleFactory();
-    
-    TrackedVehiclePtr createTrackedVehicle(std::string name, std::string bodyFile, std::string wheelFile, double bodyMass);
-    
+
+    TrackedVehiclePtr createTrackedVehicle(std::string names);
+
 };
 
 #endif

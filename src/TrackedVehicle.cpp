@@ -1,84 +1,113 @@
 #include "TrackedVehicle.hpp"
 #include "AssimpLoader.hpp"
+#include "Assembly.hpp"
 
-TrackedVehicle::TrackedVehicle(std::string name, std::string bodyFile, std::string wheelFile, double mass)
+TrackedVehicle::TrackedVehicle(std::string name, std::string shoeFile, AssemblyPtr assembly)
     : _name(name),
-      _body(new ChBody(DEFAULT_BODY)),
-      _lfWheel(new ChBody(DEFAULT_BODY)),
-      _lbWheel(new ChBody(DEFAULT_BODY)),
-      _rfWheel(new ChBody(DEFAULT_BODY)),
-      _rbWheel(new ChBody(DEFAULT_BODY))
+      _assembly(assembly)
 {
-    AssimpLoader aiBody(GetChronoDataFile(bodyFile));
-    std::shared_ptr<geometry::ChTriangleMeshConnected> bodyMesh = aiBody.toChronoTriMesh();
-    ChVectord bodyDim = aiBody.getMeshDimensions();
-    ChVectord bodyCentre = aiBody.getMeshCentre();
+    ChBodyPtr blWheel, brWheel, flWheel, frWheel;
+    //blWheel = brWheel = flWheel = frWheel = nullptr;
 
-    AssimpLoader aiWheel(GetChronoDataFile(wheelFile));
-    std::shared_ptr<geometry::ChTriangleMeshConnected> wheelMesh = aiWheel.toChronoTriMesh();
-    ChVectord wheelDim = aiWheel.getMeshDimensions();
-    ChVectord wheelCentre = aiWheel.getMeshCentre();
+    std::vector<ChBodyPtr> bodies = _assembly->getBodies();
+    for(auto body : bodies){
+        if(std::string(body->GetName()).find("bl_Wheel") != std::string::npos){
+            blWheel = body;
+        }
+        if(std::string(body->GetName()).find("br_Wheel") != std::string::npos){
+            brWheel = body;
+        }
+        if(std::string(body->GetName()).find("fl_Wheel") != std::string::npos){
+            flWheel = body;
+        }
+        if(std::string(body->GetName()).find("fr_Wheel") != std::string::npos){
+            frWheel = body;
+        }
+    }
 
-    //Vehicle Body
-    _body->SetMass(mass);
-    _body->SetCollide(true);
-    _body->SetBodyFixed(false);
+    if(blWheel && brWheel && flWheel && frWheel){
+        std::cout << "Assembly has all wheels" << std::endl;
+        ChVectord blPos = blWheel->GetCoord().pos;
+        ChVectord brPos = brWheel->GetCoord().pos;
+        ChVectord flPos = flWheel->GetCoord().pos;
+        ChVectord frPos = frWheel->GetCoord().pos;
 
-    _body->GetCollisionModel()->ClearModel();
-    _body->GetCollisionModel()->AddBox(bodyDim.x/2.0, bodyDim.y/2.0, bodyDim.z/2.0, bodyCentre);
-    _body->GetCollisionModel()->BuildModel();
+        AssimpLoader aiShoe(GetChronoDataFile(shoeFile), ChVectord(1.8,1.8,1.6));
+        _shoeMesh = aiShoe.toChronoTriMesh();
+        ChVectord shoeDim = aiShoe.getMeshDimensions();
 
-    //Create Irrlicht asset for body
-    ChSharedPtr<ChTriangleMeshShape> bodyMeshAsset(new ChTriangleMeshShape);
-    bodyMeshAsset->SetMesh(*bodyMesh);
-    _body->AddAsset(bodyMeshAsset);
+        ChBodyPtr firstShoeBody(new ChBody(DEFAULT_BODY));
+        firstShoeBody->SetMass(5.0);
+        firstShoeBody->SetCollide(true);
+        firstShoeBody->SetBodyFixed(false);
 
+        //Create Irrlicht asset for shoe
+        ChSharedPtr<ChTriangleMeshShape> shoeMeshAsset(new ChTriangleMeshShape);
+        shoeMeshAsset->SetMesh(*_shoeMesh);
+        firstShoeBody->AddAsset(shoeMeshAsset);
 
+        ChFrameMoving<> shoeFrame(ChVectord(brPos.x, brPos.y + 0.58, brPos.z+0.03), Q_from_AngAxis(CH_C_PI, ChVectord(1,0,0)));
+        firstShoeBody->ConcatenatePreTransformation(shoeFrame);
 
-    //Left front wheel
-    _lfWheel->SetMass(10.0);
-    _lfWheel->SetCollide(true);
-    _lfWheel->SetBodyFixed(false);
+        firstShoeBody->GetCollisionModel()->ClearModel();
+        firstShoeBody->GetCollisionModel()->AddTriangleMesh(*(_shoeMesh.get()), false, false);
+        //firstShoeBody->GetCollisionModel()->AddBox(shoeDim.x/2.0, shoeDim.y/2.0, shoeDim.z/2.0, ChVectord(0,0,0));
 
-    _lfWheel->GetCollisionModel()->ClearModel();
-    _lfWheel->GetCollisionModel()->AddCylinder(wheelDim.x/2.0, wheelDim.z/2.0, wheelDim.y, wheelCentre);
-    _lfWheel->GetCollisionModel()->BuildModel();
+        firstShoeBody->GetCollisionModel()->SetFamily(4);
+        firstShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(4);
+        firstShoeBody->GetCollisionModel()->BuildModel();
 
-    //Create link
-    _lfWheelLink = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
-    _lfWheelLink->Initialize(_lfWheel, _body, ChCoordsys<>(ChVector<>(0.8, 0, 0.56), QUNIT));
+        _assembly->getSystem()->AddBody(firstShoeBody);
 
-    //Create Irrlicht asset for lfWheel
-    ChSharedPtr<ChTriangleMeshShape> lfWheelMeshAsset(new ChTriangleMeshShape);
-    lfWheelMeshAsset->SetMesh(*wheelMesh);
+        double shoeDist = fabs(frPos.x - brPos.x);
+        size_t numShoes = ceil(shoeDist / (shoeDim.x-0.1));
 
-    ChSharedPtr<ChAssetLevel> lfWheelAsset(new ChAssetLevel);
-    lfWheelAsset->GetFrame().SetRot(chrono::Q_from_AngAxis(CH_C_PI / 2, VECT_X));
-    lfWheelAsset->GetFrame().SetPos(ChVector<>(0.8, 0, 0.56));
-    lfWheelAsset->AddAsset(lfWheelMeshAsset);
-    _lfWheel->AddAsset(lfWheelAsset);
+        ChBodyPtr previousShoeBody = firstShoeBody;
+        for(size_t i=1; i<numShoes; i++){
+            previousShoeBody = _createShoe(i, previousShoeBody, shoeDim, brPos);
+        }
+        for(size_t i=numShoes; i<numShoes+5; i++){
+            double alpha = (CH_C_PI / ((double)(5 - 1.0))) * ((double)i);
 
+            double lx = brPos.x + (shoeDim.x-0.1) + 0.58 * sin(alpha);
+            double ly = brPos.y + 0.58 - 0.58 * cos(alpha);
+            //position.Set(lx, ly, brPos.z);
+            ChQuatd rotation = chrono::Q_from_AngAxis(alpha, ChVector<>(0, 0, 1));
+            previousShoeBody = _createShoe(i, previousShoeBody, shoeDim, brPos, rotation);
+        }
+    }
+}
 
-    //Right front wheel
-    _rfWheel->SetMass(10.0);
-    _rfWheel->SetCollide(true);
-    _rfWheel->SetBodyFixed(false);
+ChBodyPtr TrackedVehicle::_createShoe(size_t idx, ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord backWheelPos, ChQuatd shoeRotation){
+    ChBodyPtr nextShoeBody(new ChBody(DEFAULT_BODY));
+    nextShoeBody->SetMass(5.0);
+    nextShoeBody->SetCollide(true);
+    nextShoeBody->SetBodyFixed(false);
 
-    _rfWheel->GetCollisionModel()->ClearModel();
-    _rfWheel->GetCollisionModel()->AddCylinder(wheelDim.x/2.0, wheelDim.z/2.0, wheelDim.y);
-    _rfWheel->GetCollisionModel()->BuildModel();
+    //Create Irrlicht asset for shoe
+    ChSharedPtr<ChTriangleMeshShape> shoeAsset(new ChTriangleMeshShape);
+    shoeAsset->SetMesh(*_shoeMesh);
+    nextShoeBody->AddAsset(shoeAsset);
 
-    //Create link
-    _rfWheelLink = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
-    _rfWheelLink->Initialize(_rfWheel, _body, ChCoordsys<>(ChVector<>(-0.8, 0, 0.56), QUNIT));
+    ChFrameMoving<> baseFrame(ChVectord(backWheelPos.x + ((shoeDim.x-0.1)*idx), backWheelPos.y + 0.58, backWheelPos.z+0.03), Q_from_AngAxis(CH_C_PI, ChVectord(1,0,0)));
+    ChFrameMoving<> rotFrame(ChVectord(0,0,0), shoeRotation);
+    ChFrameMoving<> frame = rotFrame >> baseFrame;
+    nextShoeBody->ConcatenatePreTransformation(frame);
 
-    //Create Irrlicht asset for rfWheel
-    ChSharedPtr<ChTriangleMeshShape> rfWheelMeshAsset(new ChTriangleMeshShape);
-    rfWheelMeshAsset->SetMesh(*wheelMesh);
+    nextShoeBody->GetCollisionModel()->ClearModel();
+    nextShoeBody->GetCollisionModel()->AddTriangleMesh(*(_shoeMesh.get()), false, false);
+    //nextShoeBody->GetCollisionModel()->AddBox(shoeDim.x/2.0, shoeDim.y/2.0, shoeDim.z/2.0, ChVectord(0,0,0));
 
-    ChSharedPtr<ChAssetLevel> rfWheelAsset(new ChAssetLevel);
-    rfWheelAsset->GetFrame().SetRot(chrono::Q_from_AngAxis(CH_C_PI / 2, VECT_X));
-    rfWheelAsset->GetFrame().SetPos(ChVector<>(-0.8, 0, 0.56));
-    rfWheelAsset->AddAsset(rfWheelMeshAsset);
-    _rfWheel->AddAsset(rfWheelAsset);
+    nextShoeBody->GetCollisionModel()->SetFamily(4);
+    nextShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(4);
+    nextShoeBody->GetCollisionModel()->BuildModel();
+
+    _assembly->getSystem()->AddBody(nextShoeBody);
+
+    ChSharedPtr<ChLinkLockRevolute> shoeJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
+    shoeJoint->Initialize(previousShoeBody, nextShoeBody, frame.GetCoord());
+
+    _assembly->getSystem()->AddLink(shoeJoint);
+
+    return nextShoeBody;
 }

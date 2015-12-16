@@ -1,5 +1,5 @@
 #include "StaticMeshFactory.hpp"
-#include "TrackedVehicleFactory.hpp"
+#include "TrackedVehicle.hpp"
 #include "UrdfLoader.hpp" //tmp
 #include "Assembly.hpp" //tmp
 
@@ -69,11 +69,13 @@ int main(int argc, char* argv[])
     std::shared_ptr<StaticMeshFactory> smFact = std::make_shared<StaticMeshFactory>(static_cast<ChSystem*>(&system));
     smFact->createStaticMesh("test", "groundplane.obj", ChVector<double>(0,0,0), 50.0);
 
-    std::shared_ptr<TrackedVehicleFactory> tvFact = std::make_shared<TrackedVehicleFactory>(static_cast<ChSystem*>(&system));
+    //std::shared_ptr<TrackedVehicleFactory> tvFact = std::make_shared<TrackedVehicleFactory>(static_cast<ChSystem*>(&system));
     //tvFact->createTrackedVehicle("zumo", "tracktor.dae", "trackwheel.dae", 100.0);
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    Assembly testAsm(urdf, ChVectord(0,5,0), static_cast<ChSystem*>(&system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,1,0), static_cast<ChSystem*>(&system));
+
+    TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", testAsm);
 
     app.AssetBindAll();
     app.AssetUpdateAll();
