@@ -9,12 +9,13 @@ private:
     AssemblyPtr _assembly;
 
     std::shared_ptr<geometry::ChTriangleMeshConnected> _shoeMesh;
+    std::shared_ptr<geometry::ChTriangleMeshConnected> _collisionMesh;
 
 public:
-    TrackedVehicle(std::string name, std::string shoeFile, AssemblyPtr assembly);
+    TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly);
 
 private:
-    ChBodyPtr _createShoe(size_t idx, ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord backWheelPos, ChQuatd shoeRotation = QUNIT);
+    ChBodyPtr _createShoe(ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord shoePosition, ChQuatd shoeRotation = QUNIT, bool top = true);
 
     friend class TrackedVehicleFactory;
 };
