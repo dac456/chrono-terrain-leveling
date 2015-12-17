@@ -74,6 +74,14 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
                     body->GetCollisionModel()->AddCylinder(cylGeom->radius, cylGeom->radius, cylGeom->length, collision->origin.first);
                     //body->GetCollisionModel()->BuildModel();
                 }
+                else if(geom->type == "mesh"){
+                    UrdfMeshPtr meshGeom = std::static_pointer_cast<UrdfMesh>(geom);
+
+                    AssimpLoader ai(meshGeom->file, ChVectord(meshGeom->scale.x, meshGeom->scale.z, meshGeom->scale.y));
+                    std::shared_ptr<geometry::ChTriangleMeshConnected> chMesh = ai.toChronoTriMesh();
+
+                    body->GetCollisionModel()->AddTriangleMesh(*(chMesh.get()), false, false);
+                }
                 else{
                     std::cout << "Assembly: unknown geometry type (collision)" << std::endl;
                 }
@@ -110,7 +118,10 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
             ChFrameMoving<> childFrameAbs = childFrame >> parentFrame;
             _system->SearchBody(joint->child.c_str())->ConcatenatePreTransformation(childFrameAbs);
 
-            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), childFrameAbs.GetCoord());
+            ChFrameMoving<> jointFrame(_toChronoCoords(joint->origin.first), QUNIT);
+            ChFrameMoving<> jointFrameAbs = jointFrame >> parentFrame;
+
+            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), jointFrameAbs.GetCoord());
 
             _links.push_back(chJoint);
             _system->AddLink(chJoint);

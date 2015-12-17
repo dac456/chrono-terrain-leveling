@@ -16,6 +16,7 @@ StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> posi
     _body->SetPos(_position);
     _body->SetCollide(true);
     _body->SetBodyFixed(true);
+    _body->GetMaterialSurface()->SetFriction(1.0);
 
     //Build collision geometery
     AssimpLoader ai(GetChronoDataFile(_file));
