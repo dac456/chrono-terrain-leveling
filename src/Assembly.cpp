@@ -126,6 +126,28 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
             _links.push_back(chJoint);
             _system->AddLink(chJoint);
         }
+        else if(joint->type == "engine"){
+            ChSharedPtr<ChLinkEngine> chJoint = ChSharedPtr<ChLinkEngine>(new ChLinkEngine);
+
+            //Get parent body frame
+            ChFrameMoving<> parentFrame(_system->SearchBody(joint->parent.c_str())->GetCoord());
+
+            //Set frame of child relative to parent
+            ChFrameMoving<> childFrame(_toChronoCoords(joint->origin.first), _toChronoOrientation(joint->origin.second));
+            ChFrameMoving<> childFrameAbs = childFrame >> parentFrame;
+            _system->SearchBody(joint->child.c_str())->ConcatenatePreTransformation(childFrameAbs);
+
+            ChFrameMoving<> jointFrame(_toChronoCoords(joint->origin.first), QUNIT);
+            ChFrameMoving<> jointFrameAbs = jointFrame >> parentFrame;
+
+            chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), jointFrameAbs.GetCoord());
+            chJoint->Set_eng_mode(ChLinkEngine::ENG_MODE_SPEED);
+            if(ChSharedPtr<ChFunction_Const> fn = chJoint->Get_spe_funct().DynamicCastTo<ChFunction_Const>())
+                fn->Set_yconst(CH_C_PI);  // speed w=3.145 rad/sec
+
+            _links.push_back(chJoint);
+            _system->AddLink(chJoint);
+        }
         else if(joint->type == "fixed"){
             ChSharedPtr<ChLinkLockLock> chJoint = ChSharedPtr<ChLinkLockLock>(new ChLinkLockLock);
 

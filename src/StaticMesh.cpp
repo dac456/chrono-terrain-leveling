@@ -21,6 +21,7 @@ StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> posi
     //Build collision geometery
     AssimpLoader ai(GetChronoDataFile(_file));
     std::shared_ptr<geometry::ChTriangleMeshConnected> colMesh = ai.toChronoTriMesh();
+    ChVectord meshDim = ai.getMeshDimensions();
 
     for(auto& v : colMesh->m_vertices){
         v += _position;
@@ -28,7 +29,7 @@ StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> posi
 
     _body->GetCollisionModel()->ClearModel();
     //_body->GetCollisionModel()->AddTriangleMesh(*colMesh.get(), true, true);
-    _body->GetCollisionModel()->AddBox(20, 0.1, 20, _position);
+    _body->GetCollisionModel()->AddBox(meshDim.x/2.0, meshDim.y/2.0, meshDim.z/2.0, _position);
     _body->GetCollisionModel()->BuildModel();
 
     //Create Irrlicht asset

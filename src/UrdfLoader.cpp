@@ -123,6 +123,13 @@ void UrdfLoader::_loadJoint(rapidxml::xml_node<>* node){
                 URDFDEBUG("link referenced by joint not found");
             }
         }
+        if(streq(current->name(), "limit")){
+            if(joint->type == "revolute"){
+                if(atof(current->first_attribute("velocity")->value()) != 0.0){
+                    joint->type = "engine";
+                }
+            }
+        }
 
         current = current->next_sibling();
     }
