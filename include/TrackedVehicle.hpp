@@ -11,8 +11,10 @@ private:
     std::shared_ptr<geometry::ChTriangleMeshConnected> _shoeMesh;
     std::shared_ptr<geometry::ChTriangleMeshConnected> _collisionMesh;
 
+    double _wheelRadius;
+
 public:
-    TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly);
+    TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius);
 
 private:
     ChBodyPtr _createShoe(ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord shoePosition, ChQuatd shoeRotation = QUNIT);

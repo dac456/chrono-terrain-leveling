@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,2,0), static_cast<ChSystem*>(&system));
 
-    TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm);
+    TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
 
     app.AssetBindAll();
     app.AssetUpdateAll();
