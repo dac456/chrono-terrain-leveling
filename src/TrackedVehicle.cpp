@@ -119,9 +119,9 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             for(size_t i=0; i<numWrap-1; i++){
                 //double alpha = (CH_C_PI / ((double)(numWrap))) * ((double)i);
                 double da = CH_C_PI / double(numWrap);
-                alpha +=  da;
+                alpha += da;
 
-                lx = px - (shoeDim.x-0.1) + (_wheelRadius * sin(alpha));
+                lx = px + (_wheelRadius * sin(alpha));
                 ly = brPos.y + (_wheelRadius * cos(alpha));
                 //position.Set(lx, ly, brPos.z);
                 ChVectord position = ChVectord(lx, ly, pz);
@@ -130,7 +130,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             }
 
             ChSharedPtr<ChLinkLockRevolute> finalJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
-            finalJoint->Initialize(previousShoeBody, firstShoeBody, ChCoordsys<>(ChVectord(brPos.x-(shoeDim.x-0.1), brPos.y+_wheelRadius, pz), QUNIT));
+            finalJoint->Initialize(previousShoeBody, firstShoeBody, ChCoordsys<>(ChVectord(brPos.x, brPos.y+_wheelRadius, pz), QUNIT));
 
             _assembly->getSystem()->AddLink(finalJoint);
         }
