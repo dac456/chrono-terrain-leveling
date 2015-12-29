@@ -143,7 +143,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
             chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), jointFrameAbs.GetCoord());
             chJoint->Set_eng_mode(ChLinkEngine::ENG_MODE_SPEED);
             if(ChSharedPtr<ChFunction_Const> fn = chJoint->Get_spe_funct().DynamicCastTo<ChFunction_Const>())
-                fn->Set_yconst(CH_C_PI);  // speed w=3.145 rad/sec
+                fn->Set_yconst(CH_C_PI*2.0);  // speed w=3.145 rad/sec
 
             _links.push_back(chJoint);
             _system->AddLink(chJoint);

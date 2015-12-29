@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     //tvFact->createTrackedVehicle("zumo", "tracktor.dae", "trackwheel.dae", 100.0);
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,1.8,0), static_cast<ChSystem*>(&system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,2,0), static_cast<ChSystem*>(&system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm);
 
