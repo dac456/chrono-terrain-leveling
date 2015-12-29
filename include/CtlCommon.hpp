@@ -50,9 +50,7 @@ typedef ChMatrixNM<float, 4 ,4> ChMat44f;
 class Assembly;
 class AssimpLoader;
 class StaticMesh;
-class StaticMeshFactory;
 class TrackedVehicle;
-class TrackedVehicleFactory;
 class UrdfLoader;
 
 typedef std::shared_ptr<Assembly> AssemblyPtr;

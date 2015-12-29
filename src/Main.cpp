@@ -1,7 +1,7 @@
-#include "StaticMeshFactory.hpp"
-#include "TrackedVehicle.hpp"
 #include "UrdfLoader.hpp" //tmp
 #include "Assembly.hpp" //tmp
+#include "StaticMesh.hpp"
+#include "TrackedVehicle.hpp"
 
 double dt = 0.01; //Default timestep
 size_t numThreads = 8; //Default thread count
@@ -68,12 +68,13 @@ int main(int argc, char* argv[])
     app.SetTimestep(dt);
     app.SetTryRealtime(true);
 
-    //Initialize factories
-    std::shared_ptr<StaticMeshFactory> smFact = std::make_shared<StaticMeshFactory>(static_cast<ChSystem*>(&system));
-    smFact->createStaticMesh("test", "groundplane.obj", ChVector<double>(0,0,0), 50.0);
+    //Default material
+    ChMaterialPtr mat(new ChMaterialSurface);
+    //mat->SetYoungModulus(2e6);
+    mat->SetFriction(0.4);
+    mat->SetRestitution(0.4);
 
-    //std::shared_ptr<TrackedVehicleFactory> tvFact = std::make_shared<TrackedVehicleFactory>(static_cast<ChSystem*>(&system));
-    //tvFact->createTrackedVehicle("zumo", "tracktor.dae", "trackwheel.dae", 100.0);
+    StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,2,0), static_cast<ChSystem*>(&system));

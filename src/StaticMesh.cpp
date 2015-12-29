@@ -1,18 +1,17 @@
 #include "StaticMesh.hpp"
 #include "AssimpLoader.hpp"
 
-StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> position, double mass, ChMaterialPtr material)
-    : _name(name),
+StaticMesh::StaticMesh(ChSystem* system, std::string name, std::string file, ChVector<double> position, ChMaterialPtr material)
+    : _system(system),
+      _name(name),
       _file(file),
       _position(position),
-      _mass(mass),
       _material(material),
       _body(new ChBody(DEFAULT_BODY))
 
 {
     if(_material) _body->SetMaterialSurface(_material);
 
-    _body->SetMass(_mass);
     _body->SetPos(_position);
     _body->SetCollide(true);
     _body->SetBodyFixed(true);
@@ -36,6 +35,9 @@ StaticMesh::StaticMesh(std::string name, std::string file, ChVector<double> posi
     ChSharedPtr<ChTriangleMeshShape> meshAsset(new ChTriangleMeshShape);
     meshAsset->SetMesh(*colMesh);
     _body->AddAsset(meshAsset);
+
+    //Add body to system
+    _system->AddBody(_body);
 
 }
 
