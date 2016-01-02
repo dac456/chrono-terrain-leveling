@@ -1,7 +1,7 @@
 #include "ParticleSystem.hpp"
 
 ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double density, double particleSize){
-    for(size_t i=0; i<200; i++){
+    for(size_t i=0; i<4000; i++){
         ChBodyPtr body = ChBodyPtr(new ChBody(DEFAULT_BODY));
         body->SetCollide(true);
 
