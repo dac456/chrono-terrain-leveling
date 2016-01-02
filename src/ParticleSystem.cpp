@@ -1,11 +1,12 @@
 #include "ParticleSystem.hpp"
 
 ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double density, double particleSize){
-    for(size_t i=0; i<1; i++){
+    for(size_t i=0; i<200; i++){
         ChBodyPtr body = ChBodyPtr(new ChBody(DEFAULT_BODY));
         body->SetCollide(true);
 
-        ChFrameMoving<> bodyFrame(ChVectord(0,5,0), QUNIT);
+        ChVectord pos(-0.5 * dimensions.x + ChRandom() * dimensions.x, ChRandom() * dimensions.y, -0.5 * dimensions.z + ChRandom() * dimensions.z);
+        ChFrameMoving<> bodyFrame(pos, QUNIT);
         body->ConcatenatePreTransformation(bodyFrame);
 
         body->GetCollisionModel()->ClearModel();

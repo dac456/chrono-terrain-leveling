@@ -64,6 +64,9 @@ int main(int argc, char* argv[])
 
     system.SetIterLCPmaxItersSpeed(100);  // the higher, the easier to keep the constraints 'mounted'.
     system.SetLcpSolverType(ChSystem::LCP_ITERATIVE_SOR);
+    //system.SetIterLCPmaxItersSpeed(70);
+    //system.SetIterLCPmaxItersStab(15);
+    //system.SetParallelThreadNumber(numThreads);
 
     app.SetStepManage(true);
     app.SetTimestep(dt);
@@ -77,12 +80,13 @@ int main(int argc, char* argv[])
 
     StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
 
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(100,100,100), 0.5, 0.2);
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,2,0), static_cast<ChSystem*>(&system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,10,0), static_cast<ChSystem*>(&system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
+
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(10,10,10), 0.5, 0.2);
 
     app.AssetBindAll();
     app.AssetUpdateAll();
