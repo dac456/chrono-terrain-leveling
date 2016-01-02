@@ -2,6 +2,7 @@
 #include "Assembly.hpp" //tmp
 #include "StaticMesh.hpp"
 #include "TrackedVehicle.hpp"
+#include "ParticleSystem.hpp"
 
 double dt = 0.01; //Default timestep
 size_t numThreads = 8; //Default thread count
@@ -75,6 +76,8 @@ int main(int argc, char* argv[])
     mat->SetRestitution(0.4);
 
     StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
+
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(100,100,100), 0.5, 0.2);
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,2,0), static_cast<ChSystem*>(&system));
