@@ -15,6 +15,7 @@ namespace fs = boost::filesystem;
 #ifdef SIM_USE_CUDA
 #include <chrono_parallel/physics/ChSystemParallel.h>
 #endif
+#include <chrono/physics/ChParticlesClones.h>
 #include <chrono_irrlicht/ChIrrAppInterface.h>
 #include <chrono_irrlicht/ChIrrApp.h>
 
