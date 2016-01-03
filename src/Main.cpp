@@ -81,12 +81,12 @@ int main(int argc, char* argv[])
     StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
 
 
-    UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,15,0), static_cast<ChSystem*>(&system));
+    //UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
+    //AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,4,0), static_cast<ChSystem*>(&system));
 
-    TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
+    //TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
 
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(10,10,10), 0.5, 0.15);
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(20,2,20), 100.0, 0.15);
 
     app.AssetBindAll();
     app.AssetUpdateAll();

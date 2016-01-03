@@ -1,26 +1,43 @@
 #include "ParticleSystem.hpp"
+#include "Noise/PerlinNoise.h"
 
 ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double density, double particleSize){
-    for(size_t i=0; i<4000; i++){
-        ChBodyPtr body = ChBodyPtr(new ChBody(DEFAULT_BODY));
-        body->SetCollide(true);
+    PerlinNoise noiseFn;
 
-        ChVectord pos(-0.5 * dimensions.x + ChRandom() * dimensions.x, ChRandom() * dimensions.y, -0.5 * dimensions.z + ChRandom() * dimensions.z);
-        ChFrameMoving<> bodyFrame(pos, QUNIT);
-        body->ConcatenatePreTransformation(bodyFrame);
+    const double particleStep = particleSize*2.0;
+    for(double i=-dimensions.x*0.5; i<dimensions.x*0.5; i+=particleStep){
+        for(double j=-dimensions.x*0.5; j<dimensions.z*0.5; j+=particleStep){
+            double height = noiseFn.noise(i, j, 0) * dimensions.y;
 
-        body->GetCollisionModel()->ClearModel();
-        body->GetCollisionModel()->AddSphere(particleSize);
-        body->GetCollisionModel()->BuildModel();
+            for(double k=0.0; k<height; k+=particleStep){
+                ChBodyPtr body = ChBodyPtr(new ChBody(DEFAULT_BODY));
+                body->SetCollide(true);
 
-        ChSharedPtr<ChSphereShape> shape(new ChSphereShape);
-        shape->GetSphereGeometry().rad = particleSize;
-        shape->GetSphereGeometry().center = ChVectord(0,0,0);
+                //ChVectord pos(-0.5 * dimensions.x + ChRandom() * dimensions.x, ChRandom() * dimensions.y, -0.5 * dimensions.z + ChRandom() * dimensions.z);
+                ChVectord pos(i, k, j);
+                ChFrameMoving<> bodyFrame(pos, QUNIT);
+                body->ConcatenatePreTransformation(bodyFrame);
 
-        body->AddAsset(shape);
+                body->GetCollisionModel()->ClearModel();
+                body->GetCollisionModel()->AddSphere(particleSize);
+                body->GetCollisionModel()->BuildModel();
 
-        _particles.push_back(body);
-        system->AddBody(body);
+                double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * density;
+                double inertia = pow(particleSize, 2) * mass;
+                body->SetMass(mass);
+                body->SetInertiaXX(ChVectord(inertia,inertia,inertia));
+                body->GetMaterialSurface()->SetFriction(0.7);
+
+                ChSharedPtr<ChSphereShape> shape(new ChSphereShape);
+                shape->GetSphereGeometry().rad = particleSize;
+                shape->GetSphereGeometry().center = ChVectord(0,0,0);
+
+                body->AddAsset(shape);
+
+                _particles.push_back(body);
+                system->AddBody(body);
+            }
+        }
     }
 
 }
