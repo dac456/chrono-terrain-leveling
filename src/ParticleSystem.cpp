@@ -1,7 +1,7 @@
 #include "ParticleSystem.hpp"
 #include "Noise/PerlinNoise.h"
 
-ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double density, double particleSize){
+ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double particleDensity, double particleSize){
     ChSharedPtr<ChParticlesClones> chParticles(new ChParticlesClones);
     chParticles->SetCollide(true);
 
@@ -9,7 +9,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double de
     chParticles->GetCollisionModel()->AddSphere(particleSize);
     chParticles->GetCollisionModel()->BuildModel();
 
-    double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * density;
+    double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * particleDensity;
     double inertia = pow(particleSize, 2) * mass;
     chParticles->SetMass(mass);
     chParticles->SetInertiaXX(ChVectord(inertia,inertia,inertia));
