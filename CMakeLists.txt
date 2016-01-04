@@ -8,12 +8,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
 if(USE_CUDA)
     find_package(Chrono REQUIRED
-                 COMPONENTS Irrlicht Parallel
+                 COMPONENTS Irrlicht Parallel PostProcess
                  CONFIG)
     add_definitions( -DSIM_USE_CUDA )
 else(USE_CUDA)
     find_package(Chrono REQUIRED
-                 COMPONENTS Irrlicht
+                 COMPONENTS Irrlicht PostProcess
                  CONFIG)
 endif(USE_CUDA)
 
