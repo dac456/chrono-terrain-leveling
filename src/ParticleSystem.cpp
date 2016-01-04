@@ -13,7 +13,10 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double pa
     double inertia = pow(particleSize, 2) * mass;
     chParticles->SetMass(mass);
     chParticles->SetInertiaXX(ChVectord(inertia,inertia,inertia));
-    //chParticles->GetMaterialSurfaceBase().SetFriction(0.7);
+
+    ChMaterialPtr particleMat(new ChMaterialSurface);
+    particleMat->SetFriction(0.7);
+    chParticles->SetMaterialSurface(particleMat);
 
     ChSharedPtr<ChSphereShape> shape(new ChSphereShape);
     shape->GetSphereGeometry().rad = particleSize;
