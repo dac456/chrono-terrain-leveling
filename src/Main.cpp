@@ -11,8 +11,8 @@ using namespace postprocess;
 
 double dt = 0.01; //Default timestep
 size_t numThreads = 8; //Default thread count
-
 bool renderOffline = false;
+double timeout = 5.0;
 
 void readArgs(int argc, char* argv[]){
     int current = 1;
@@ -32,6 +32,12 @@ void readArgs(int argc, char* argv[]){
             }
             if(strcmp(argv[current], "--offline") == 0){
                 renderOffline = true;
+            }
+            if(strcmp(argv[current], "--timeout") == 0){
+                if(argv[current+1] != nullptr){
+                    timeout = atof(argv[current+1]);
+                    current++;
+                }
             }
 
             current++;
@@ -76,15 +82,15 @@ int main(int argc, char* argv[])
     mat->SetFriction(0.4);
     mat->SetRestitution(0.4);
 
-    StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
+    //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
 
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,3,0), static_cast<ChSystem*>(&system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(-10,4.5,0), static_cast<ChSystem*>(&system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
 
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(20,2,20), 100.0, 0.15);
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(30,4,30), 100.0, 0.15, true, true);
 
     if(renderOffline == false){
         irr::ChIrrApp app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
@@ -95,7 +101,7 @@ int main(int argc, char* argv[])
 
         //Convienience methods for scene setup
         app.AddTypicalLogo();
-        app.AddTypicalCamera(irr::core::vector3df(8,8,8));
+        app.AddTypicalCamera(irr::core::vector3df(14,8,14));
         app.AddTypicalSky();
         app.AddTypicalLights();
 
@@ -130,7 +136,7 @@ int main(int argc, char* argv[])
         app.SetPictureFilebase("anim/picture");
 
         app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
-        app.SetCamera(ChVectord(8,8,8), ChVectord(0,0,0), 50.0);
+        app.SetCamera(ChVectord(14,8,14), ChVectord(0,0,0), 50.0);
 
         // --Optional: add further POV commands, for example in this case:
         //     create an area light for soft shadows
@@ -149,7 +155,7 @@ int main(int argc, char* argv[])
 
         app.ExportScript();
 
-        while(1) {
+        while(system.GetChTime() < timeout){
             system.DoStepDynamics(dt);
 
             std::cout << "time= " << system.GetChTime() << std::endl;

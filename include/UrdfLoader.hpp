@@ -4,6 +4,7 @@
 #include "CtlCommon.hpp"
 
 #include "RapidXML/rapidxml.hpp"
+#include "RapidXML/rapidxml_utils.hpp"
 
 struct UrdfGeometry{
     std::string type;

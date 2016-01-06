@@ -35,12 +35,13 @@ std::vector<UrdfJointPtr> UrdfLoader::getJoints(){
 void UrdfLoader::_load(){
     std::stringstream buffer;
 
-    std::ifstream fin(_file, std::ios::in);
-    buffer << fin.rdbuf();
-    fin.close();
+    //std::ifstream fin(_file, std::ios::in);
+    //buffer << fin.rdbuf();
+    //fin.close();
+    rapidxml::file<> fin(_file.c_str());
 
     rapidxml::xml_document<> doc;
-    doc.parse<0>(const_cast<char*>(buffer.str().c_str()));
+    doc.parse<0>(fin.data());
 
     if(streq(doc.first_node()->name(), "robot")){
         _loadRobot(doc.first_node()->first_node());
