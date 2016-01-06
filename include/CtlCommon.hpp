@@ -23,6 +23,10 @@ namespace fs = boost::filesystem;
 #include <chrono/utils/ChUtilsCreators.h>
 #include <chrono/utils/ChUtilsInputOutput.h>
 
+#define CTL_MAJOR_VERSION 0
+#define CTL_MINOR_VERSION 1
+#define CTL_PATCH_VERSION 0
+
 #ifdef SIM_USE_CUDA
     #define DEFAULT_BODY new collision::ChCollisionModelParallel, ChMaterialSurfaceBase::DVI
 #else
