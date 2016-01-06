@@ -16,6 +16,7 @@ public:
 
     ChSystem* getSystem();
     std::vector<ChBodyPtr> getBodies();
+    std::vector<ChLinkPtr> getLinks();
 
 private:
     ChVectord _toChronoCoords(ChVectord urdfCoords);

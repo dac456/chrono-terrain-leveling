@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(-10,4.5,0), static_cast<ChSystem*>(&system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
+    dagu->setSpeeds(CH_C_PI, CH_C_PI);
 
     ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(30,4,30), 100.0, 0.15, true, true);
 

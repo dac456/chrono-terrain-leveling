@@ -109,6 +109,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
     for(auto joint : urdfLoader.getJoints()){
         if(joint->type == "revolute"){
             ChSharedPtr<ChLinkLockRevolute> chJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
+            chJoint->SetName(joint->name.c_str());
 
             //Get parent body frame
             ChFrameMoving<> parentFrame(_system->SearchBody(joint->parent.c_str())->GetCoord());
@@ -128,6 +129,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
         }
         else if(joint->type == "engine"){
             ChSharedPtr<ChLinkEngine> chJoint = ChSharedPtr<ChLinkEngine>(new ChLinkEngine);
+            chJoint->SetName(joint->name.c_str());
 
             //Get parent body frame
             ChFrameMoving<> parentFrame(_system->SearchBody(joint->parent.c_str())->GetCoord());
@@ -142,14 +144,13 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
 
             chJoint->Initialize(_system->SearchBody(joint->parent.c_str()), _system->SearchBody(joint->child.c_str()), jointFrameAbs.GetCoord());
             chJoint->Set_eng_mode(ChLinkEngine::ENG_MODE_SPEED);
-            if(ChSharedPtr<ChFunction_Const> fn = chJoint->Get_spe_funct().DynamicCastTo<ChFunction_Const>())
-                fn->Set_yconst(CH_C_PI*2.0);  // speed w=3.145 rad/sec
 
             _links.push_back(chJoint);
             _system->AddLink(chJoint);
         }
         else if(joint->type == "fixed"){
             ChSharedPtr<ChLinkLockLock> chJoint = ChSharedPtr<ChLinkLockLock>(new ChLinkLockLock);
+            chJoint->SetName(joint->name.c_str());
 
             //Get parent body frame
             ChFrameMoving<> parentFrame(_system->SearchBody(joint->parent.c_str())->GetCoord());
@@ -181,6 +182,10 @@ ChSystem* Assembly::getSystem(){
 
 std::vector<ChBodyPtr> Assembly::getBodies(){
     return _bodies;
+}
+
+std::vector<ChLinkPtr> Assembly::getLinks(){
+    return _links;
 }
 
 ChVectord Assembly::_toChronoCoords(ChVectord urdfCoords){

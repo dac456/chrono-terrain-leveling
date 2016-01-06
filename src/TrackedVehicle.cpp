@@ -137,6 +137,26 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
     }
 }
 
+void TrackedVehicle::setSpeeds(double left, double right){
+    std::vector<ChLinkPtr> links = _assembly->getLinks();
+    for(auto link : links){
+        if(std::string(link->GetName()).find("fl_Wheel") != std::string::npos){
+            if(ChSharedPtr<ChLinkEngine> chJoint = link.DynamicCastTo<ChLinkEngine>()){
+                if(ChSharedPtr<ChFunction_Const> fn = chJoint->Get_spe_funct().DynamicCastTo<ChFunction_Const>()){
+                    fn->Set_yconst(left);
+                }
+            }
+        }
+        if(std::string(link->GetName()).find("fr_Wheel") != std::string::npos){
+            if(ChSharedPtr<ChLinkEngine> chJoint = link.DynamicCastTo<ChLinkEngine>()){
+                if(ChSharedPtr<ChFunction_Const> fn = chJoint->Get_spe_funct().DynamicCastTo<ChFunction_Const>()){
+                    fn->Set_yconst(right);
+                }
+            }
+        }
+    }
+}
+
 ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord shoePosition, ChQuatd shoeRotation){
     ChBodyPtr nextShoeBody(new ChBody(DEFAULT_BODY));
     //nextShoeBody->SetMass(0.5);
