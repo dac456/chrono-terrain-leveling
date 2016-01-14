@@ -6,16 +6,30 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
+if(USE_IRRLICHT)
+    add_definitions( -DSIM_USE_IRRLICHT )
+    if(USE_CUDA)
+        find_package(Chrono REQUIRED
+                     COMPONENTS Irrlicht Parallel PostProcess
+                     CONFIG)
+        add_definitions( -DSIM_USE_CUDA )
+    else(USE_CUDA)
+        find_package(Chrono REQUIRED
+                     COMPONENTS Irrlicht PostProcess
+                     CONFIG)
+    endif(USE_CUDA)
+else(USE_IRRLICHT)
 if(USE_CUDA)
     find_package(Chrono REQUIRED
-                 COMPONENTS Irrlicht Parallel PostProcess
+                 COMPONENTS Parallel PostProcess
                  CONFIG)
     add_definitions( -DSIM_USE_CUDA )
 else(USE_CUDA)
     find_package(Chrono REQUIRED
-                 COMPONENTS Irrlicht PostProcess
+                 COMPONENTS PostProcess
                  CONFIG)
 endif(USE_CUDA)
+endif(USE_IRRLICHT)
 
 find_package(Assimp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem)

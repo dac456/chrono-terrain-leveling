@@ -9,15 +9,18 @@
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 
-#include <irrlicht.h>
-
 #include <chrono/physics/ChSystem.h>
 #ifdef SIM_USE_CUDA
 #include <chrono_parallel/physics/ChSystemParallel.h>
 #endif
 #include <chrono/physics/ChParticlesClones.h>
+
+#include <chrono/assets/ChAssetLevel.h>
+#ifdef SIM_USE_IRRLICHT
+#include <irrlicht.h>
 #include <chrono_irrlicht/ChIrrAppInterface.h>
 #include <chrono_irrlicht/ChIrrApp.h>
+#endif
 
 #include <chrono/ChConfig.h>
 #include <chrono/utils/ChUtilsCreators.h>

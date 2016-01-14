@@ -96,33 +96,37 @@ int main(int argc, char* argv[])
     ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), hm, 8.0, 100.0, 0.15, true, false);
 
     if(renderOffline == false){
-        irr::ChIrrApp app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
+        #ifdef SIM_USE_IRRLICHT
+            irr::ChIrrApp app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
 
-        app.SetStepManage(true);
-        app.SetTimestep(dt);
-        app.SetTryRealtime(true);
+            app.SetStepManage(true);
+            app.SetTimestep(dt);
+            app.SetTryRealtime(true);
 
-        //Convienience methods for scene setup
-        app.AddTypicalLogo();
-        app.AddTypicalCamera(irr::core::vector3df(14,8,14));
-        app.AddTypicalSky();
-        app.AddTypicalLights();
+            //Convienience methods for scene setup
+            app.AddTypicalLogo();
+            app.AddTypicalCamera(irr::core::vector3df(14,8,14));
+            app.AddTypicalSky();
+            app.AddTypicalLights();
 
-        app.AssetBindAll();
-        app.AssetUpdateAll();
+            app.AssetBindAll();
+            app.AssetUpdateAll();
 
-        while(app.GetDevice()->run()){
-            app.BeginScene();
-            app.DrawAll();
+            while(app.GetDevice()->run()){
+                app.BeginScene();
+                app.DrawAll();
 
-            irr::ChIrrTools::drawGrid(app.GetVideoDriver(), 2, 2, 30, 30,
-                                      ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
-                                      irr::video::SColor(255, 60, 60, 60), true);
+                irr::ChIrrTools::drawGrid(app.GetVideoDriver(), 2, 2, 30, 30,
+                                          ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
+                                          irr::video::SColor(255, 60, 60, 60), true);
 
-            app.DoStep();
+                app.DoStep();
 
-            app.EndScene();
-        }
+                app.EndScene();
+            }
+        #else//SIM_USE_CUDA
+            std::cout << "Not compiled for use with Irrlicht. Exiting..." << std::endl;
+        #endif //SIM_USE_CUDA
     }
     else{
         ChPovRay app = ChPovRay(&system);
