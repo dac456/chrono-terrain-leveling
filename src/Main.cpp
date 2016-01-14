@@ -3,6 +3,7 @@
 #include "StaticMesh.hpp"
 #include "TrackedVehicle.hpp"
 #include "ParticleSystem.hpp"
+#include "HeightMap.hpp"
 
 #include <chrono/core/ChFileutils.h>
 #include <chrono_postprocess/ChPovRay.h>
@@ -86,12 +87,13 @@ int main(int argc, char* argv[])
 
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(-10,4.5,0), static_cast<ChSystem*>(&system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,8.0,0), static_cast<ChSystem*>(&system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     dagu->setSpeeds(CH_C_PI, CH_C_PI);
 
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), ChVectord(30,4,30), 100.0, 0.15, true, true);
+    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("terrain2.png"));
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), hm, 8.0, 100.0, 0.15, true, false);
 
     if(renderOffline == false){
         irr::ChIrrApp app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
@@ -137,7 +139,7 @@ int main(int argc, char* argv[])
         app.SetPictureFilebase("anim/picture");
 
         app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
-        app.SetCamera(ChVectord(14,8,14), ChVectord(0,0,0), 50.0);
+        app.SetCamera(ChVectord(18,8,18), ChVectord(0,0,0), 50.0);
 
         // --Optional: add further POV commands, for example in this case:
         //     create an area light for soft shadows

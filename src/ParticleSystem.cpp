@@ -1,8 +1,10 @@
 #include "ParticleSystem.hpp"
+#include "HeightMap.hpp"
 #include "Noise/PerlinNoise.h"
 
-ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double particleDensity, double particleSize, bool container, bool visContainer){
-    //TODO: create separate entity for this? can still use common dimensions passed from main
+ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double maxHeight, double particleDensity, double particleSize, bool container, bool visContainer){
+    const double particleStep = particleSize*2.0;
+
     if(container){
         ChBodyPtr floor(new ChBody(DEFAULT_BODY));
         floor->SetCollide(true);
@@ -13,12 +15,12 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double pa
         floor->ConcatenatePreTransformation(floorFrame);
 
         floor->GetCollisionModel()->ClearModel();
-        floor->GetCollisionModel()->AddBox(dimensions.x/2.0, 0.1, dimensions.z/2.0);
+        floor->GetCollisionModel()->AddBox((heightMap->getWidth()*particleStep)/2.0, 0.1, (heightMap->getHeight()*particleStep)/2.0);
         floor->GetCollisionModel()->BuildModel();
 
         if(visContainer){
             ChSharedPtr<ChBoxShape> floorVis(new ChBoxShape);
-            floorVis->GetBoxGeometry().Size = ChVectord(dimensions.x/2.0, 0.1, dimensions.z/2.0);
+            floorVis->GetBoxGeometry().Size = ChVectord((heightMap->getWidth()*particleStep)/2.0, 0.1, (heightMap->getHeight()*particleStep)/2.0);
             floor->AddAsset(floorVis);
         }
 
@@ -29,16 +31,16 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double pa
         wall1->SetBodyFixed(true);
         wall1->GetMaterialSurface()->SetFriction(1.0);
 
-        ChFrameMoving<> wall1Frame(ChVectord(dimensions.x/2.0 + 0.05, dimensions.y/2.0, 0), QUNIT);
+        ChFrameMoving<> wall1Frame(ChVectord((heightMap->getWidth()*particleStep)/2.0 + 0.05, maxHeight/2.0, 0), QUNIT);
         wall1->ConcatenatePreTransformation(wall1Frame);
 
         wall1->GetCollisionModel()->ClearModel();
-        wall1->GetCollisionModel()->AddBox(0.1, dimensions.y/2.0 + 0.05, dimensions.z/2.0);
+        wall1->GetCollisionModel()->AddBox(0.1, maxHeight/2.0 + 0.05, (heightMap->getHeight()*particleStep)/2.0);
         wall1->GetCollisionModel()->BuildModel();
 
         if(visContainer){
             ChSharedPtr<ChBoxShape> wall1Vis(new ChBoxShape);
-            wall1Vis->GetBoxGeometry().Size = ChVectord(0.1, dimensions.y/2.0 + 0.05, dimensions.z/2.0);
+            wall1Vis->GetBoxGeometry().Size = ChVectord(0.1, maxHeight/2.0 + 0.05, (heightMap->getHeight()*particleStep)/2.0);
             wall1->AddAsset(wall1Vis);
         }
 
@@ -49,16 +51,16 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double pa
         wall2->SetBodyFixed(true);
         wall2->GetMaterialSurface()->SetFriction(1.0);
 
-        ChFrameMoving<> wall2Frame(ChVectord(-dimensions.x/2.0 - 0.05, dimensions.y/2.0, 0), QUNIT);
+        ChFrameMoving<> wall2Frame(ChVectord(-(heightMap->getWidth()*particleStep)/2.0 - 0.05, maxHeight/2.0, 0), QUNIT);
         wall2->ConcatenatePreTransformation(wall2Frame);
 
         wall2->GetCollisionModel()->ClearModel();
-        wall2->GetCollisionModel()->AddBox(0.1, dimensions.y/2.0 + 0.05, dimensions.z/2.0);
+        wall2->GetCollisionModel()->AddBox(0.1, maxHeight/2.0 + 0.05, (heightMap->getHeight()*particleStep)/2.0);
         wall2->GetCollisionModel()->BuildModel();
 
         if(visContainer){
             ChSharedPtr<ChBoxShape> wall2Vis(new ChBoxShape);
-            wall2Vis->GetBoxGeometry().Size = ChVectord(0.1, dimensions.y/2.0 + 0.05, dimensions.z/2.0);
+            wall2Vis->GetBoxGeometry().Size = ChVectord(0.1, maxHeight/2.0 + 0.05, (heightMap->getHeight()*particleStep)/2.0);
             wall2->AddAsset(wall2Vis);
         }
 
@@ -69,16 +71,16 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double pa
         wall3->SetBodyFixed(true);
         wall3->GetMaterialSurface()->SetFriction(1.0);
 
-        ChFrameMoving<> wall3Frame(ChVectord(0.0, dimensions.y/2.0, -dimensions.z/2.0 - 0.05), QUNIT);
+        ChFrameMoving<> wall3Frame(ChVectord(0.0, maxHeight/2.0, -(heightMap->getHeight()*particleStep)/2.0 - 0.05), QUNIT);
         wall3->ConcatenatePreTransformation(wall3Frame);
 
         wall3->GetCollisionModel()->ClearModel();
-        wall3->GetCollisionModel()->AddBox(dimensions.x/2.0, dimensions.y/2.0 + 0.05, 0.1);
+        wall3->GetCollisionModel()->AddBox((heightMap->getWidth()*particleStep)/2.0, maxHeight/2.0 + 0.05, 0.1);
         wall3->GetCollisionModel()->BuildModel();
 
         if(visContainer){
             ChSharedPtr<ChBoxShape> wall3Vis(new ChBoxShape);
-            wall3Vis->GetBoxGeometry().Size = ChVectord(dimensions.x/2.0, dimensions.y/2.0 + 0.05, 0.1);
+            wall3Vis->GetBoxGeometry().Size = ChVectord((heightMap->getWidth()*particleStep)/2.0, maxHeight/2.0 + 0.05, 0.1);
             wall3->AddAsset(wall3Vis);
         }
 
@@ -89,16 +91,16 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double pa
         wall4->SetBodyFixed(true);
         wall4->GetMaterialSurface()->SetFriction(1.0);
 
-        ChFrameMoving<> wall4Frame(ChVectord(0.0, dimensions.y/2.0, dimensions.z/2.0 - 0.05), QUNIT);
+        ChFrameMoving<> wall4Frame(ChVectord(0.0, maxHeight/2.0, (heightMap->getHeight()*particleStep)/2.0 - 0.05), QUNIT);
         wall4->ConcatenatePreTransformation(wall4Frame);
 
         wall4->GetCollisionModel()->ClearModel();
-        wall4->GetCollisionModel()->AddBox(dimensions.x/2.0, dimensions.y/2.0 + 0.05, 0.1);
+        wall4->GetCollisionModel()->AddBox((heightMap->getWidth()*particleStep)/2.0, maxHeight/2.0 + 0.05, 0.1);
         wall4->GetCollisionModel()->BuildModel();
 
         if(visContainer){
             ChSharedPtr<ChBoxShape> wall4Vis(new ChBoxShape);
-            wall4Vis->GetBoxGeometry().Size = ChVectord(dimensions.x/2.0, dimensions.y/2.0 + 0.05, 0.1);
+            wall4Vis->GetBoxGeometry().Size = ChVectord((heightMap->getWidth()*particleStep)/2.0, maxHeight/2.0 + 0.05, 0.1);
             wall4->AddAsset(wall4Vis);
         }
 
@@ -118,7 +120,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double pa
     chParticles->SetInertiaXX(ChVectord(inertia,inertia,inertia));
 
     ChMaterialPtr particleMat(new ChMaterialSurface);
-    particleMat->SetFriction(0.7);
+    particleMat->SetFriction(1.7);
     chParticles->SetMaterialSurface(particleMat);
 
     ChSharedPtr<ChSphereShape> shape(new ChSphereShape);
@@ -126,18 +128,13 @@ ParticleSystem::ParticleSystem(ChSystem* system, ChVectord dimensions, double pa
 
     chParticles->AddAsset(shape);
 
-    PerlinNoise noiseFn;
-
-    const double particleStep = particleSize*2.0;
-    for(double i=-dimensions.x*0.5; i<dimensions.x*0.5; i+=particleStep){
-        for(double j=-dimensions.x*0.5; j<dimensions.z*0.5; j+=particleStep){
-            double height = noiseFn.noise(i, j, 0) * dimensions.y;
-
+    for(int i=0; i<heightMap->getHeight(); i++){
+        for(int j=0; j<heightMap->getWidth(); j++){
+            double height = heightMap->getHeights()[j + (i*heightMap->getWidth())] * maxHeight;
             for(double k=0.0; k<height; k+=particleStep){
-                //ChVectord pos(-0.5 * dimensions.x + ChRandom() * dimensions.x, ChRandom() * dimensions.y, -0.5 * dimensions.z + ChRandom() * dimensions.z);
-                ChVectord pos(i, k, j);
+                //ChVectord pos(-0.5 * heightMap->getWidth() + ChRandom() * heightMap->getWidth(), ChRandom() * heightMap->getHeight(), -0.5 * maxHeight + ChRandom() * maxHeight);
+                ChVectord pos(j*particleStep - (heightMap->getWidth()*0.5*particleStep), k, i*particleStep - (heightMap->getHeight()*0.5*particleStep));
                 ChFrameMoving<> bodyFrame(pos, QUNIT);
-
                 chParticles->AddParticle(bodyFrame.GetCoord());
             }
         }
