@@ -9,32 +9,32 @@
 struct UrdfGeometry{
     std::string type;
 };
-typedef std::shared_ptr<UrdfGeometry> UrdfGeometryPtr;
+typedef SHPTR<UrdfGeometry> UrdfGeometryPtr;
 
 struct UrdfBox : public UrdfGeometry{
     UrdfBox() : UrdfGeometry() { type = "box"; }
     ChVectord dim;
 };
-typedef std::shared_ptr<UrdfBox> UrdfBoxPtr;
+typedef SHPTR<UrdfBox> UrdfBoxPtr;
 
 struct UrdfCylinder : public UrdfGeometry{
     UrdfCylinder() : UrdfGeometry() { type = "cylinder"; }
     double radius;
     double length;
 };
-typedef std::shared_ptr<UrdfCylinder> UrdfCylinderPtr;
+typedef SHPTR<UrdfCylinder> UrdfCylinderPtr;
 
 struct UrdfMesh : public UrdfGeometry{
     UrdfMesh() : UrdfGeometry() { type = "mesh"; }
     std::string file;
     ChVectord scale;
 };
-typedef std::shared_ptr<UrdfMesh> UrdfMeshPtr;
+typedef SHPTR<UrdfMesh> UrdfMeshPtr;
 
 struct UrdfMaterial{
     std::string name;
 };
-typedef std::shared_ptr<UrdfMaterial> UrdfMaterialPtr;
+typedef SHPTR<UrdfMaterial> UrdfMaterialPtr;
 
 struct UrdfInertial{
     std::pair<ChVectord,ChVectord> origin;
@@ -42,7 +42,7 @@ struct UrdfInertial{
     double mass;
     ChVectord inertiaXX;
 };
-typedef std::shared_ptr<UrdfInertial> UrdfInertialPtr;
+typedef SHPTR<UrdfInertial> UrdfInertialPtr;
 
 struct UrdfVisual{
     std::string name;
@@ -51,7 +51,7 @@ struct UrdfVisual{
     UrdfGeometryPtr geometry;
     UrdfMaterialPtr material;
 };
-typedef std::shared_ptr<UrdfVisual> UrdfVisualPtr;
+typedef SHPTR<UrdfVisual> UrdfVisualPtr;
 
 struct UrdfCollision{
     std::string name;
@@ -59,7 +59,7 @@ struct UrdfCollision{
 
     UrdfGeometryPtr geometry;
 };
-typedef std::shared_ptr<UrdfCollision> UrdfCollisionPtr;
+typedef SHPTR<UrdfCollision> UrdfCollisionPtr;
 
 struct UrdfLink{
     std::string name;
@@ -68,9 +68,9 @@ struct UrdfLink{
     std::vector<UrdfCollisionPtr> collisions;
     std::vector<UrdfInertialPtr> inertials;
 
-    std::vector<std::shared_ptr<UrdfLink>> links;
+    std::vector<SHPTR<UrdfLink>> links;
 };
-typedef std::shared_ptr<UrdfLink> UrdfLinkPtr;
+typedef SHPTR<UrdfLink> UrdfLinkPtr;
 
 struct UrdfJoint{
     std::string name;
@@ -81,7 +81,7 @@ struct UrdfJoint{
 
     std::string type;
 };
-typedef std::shared_ptr<UrdfJoint> UrdfJointPtr;
+typedef SHPTR<UrdfJoint> UrdfJointPtr;
 
 class UrdfLoader{
 private:

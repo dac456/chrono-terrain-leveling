@@ -24,7 +24,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
             if(visual->geometry->type != ""){
                 UrdfGeometryPtr geom = visual->geometry;
                 if(geom->type == "box"){
-                    UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
+                    UrdfBoxPtr boxGeom = PTRCAST<UrdfBox>(geom);
 
                     ChSharedPtr<ChBoxShape> box(new ChBoxShape);
                     box->GetBoxGeometry().Pos = visual->origin.first;
@@ -33,7 +33,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
                     body->AddAsset(box);
                 }
                 else if(geom->type == "cylinder"){
-                    UrdfCylinderPtr cylGeom = std::static_pointer_cast<UrdfCylinder>(geom);
+                    UrdfCylinderPtr cylGeom = PTRCAST<UrdfCylinder>(geom);
 
                     ChSharedPtr<ChCylinderShape> cyl(new ChCylinderShape);
                     cyl->GetCylinderGeometry().p1 = ChVectord(0, cylGeom->length/2.0, 0);
@@ -42,10 +42,10 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
                     body->AddAsset(cyl);
                 }
                 else if(geom->type == "mesh"){
-                    UrdfMeshPtr meshGeom = std::static_pointer_cast<UrdfMesh>(geom);
+                    UrdfMeshPtr meshGeom = PTRCAST<UrdfMesh>(geom);
 
                     AssimpLoader ai(meshGeom->file, ChVectord(meshGeom->scale.x, meshGeom->scale.z, meshGeom->scale.y));
-                    std::shared_ptr<geometry::ChTriangleMeshConnected> chMesh = ai.toChronoTriMesh();
+                    SHPTR<geometry::ChTriangleMeshConnected> chMesh = ai.toChronoTriMesh();
 
                     ChSharedPtr<ChTriangleMeshShape> mesh(new ChTriangleMeshShape);
                     mesh->SetMesh(*chMesh);
@@ -61,24 +61,24 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
             if(collision->geometry->type != ""){
                 UrdfGeometryPtr geom = collision->geometry;
                 if(geom->type == "box"){
-                    UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
+                    UrdfBoxPtr boxGeom = PTRCAST<UrdfBox>(geom);
 
                     //body->GetCollisionModel()->ClearModel();
                     body->GetCollisionModel()->AddBox(boxGeom->dim.x/2.0, boxGeom->dim.z/2.0, boxGeom->dim.y/2.0, collision->origin.first);
                     //body->GetCollisionModel()->BuildModel();
                 }
                 else if(geom->type == "cylinder"){
-                    UrdfCylinderPtr cylGeom = std::static_pointer_cast<UrdfCylinder>(geom);
+                    UrdfCylinderPtr cylGeom = PTRCAST<UrdfCylinder>(geom);
 
                     //body->GetCollisionModel()->ClearModel();
                     body->GetCollisionModel()->AddCylinder(cylGeom->radius, cylGeom->radius, cylGeom->length, collision->origin.first);
                     //body->GetCollisionModel()->BuildModel();
                 }
                 else if(geom->type == "mesh"){
-                    UrdfMeshPtr meshGeom = std::static_pointer_cast<UrdfMesh>(geom);
+                    UrdfMeshPtr meshGeom = PTRCAST<UrdfMesh>(geom);
 
                     AssimpLoader ai(meshGeom->file, ChVectord(meshGeom->scale.x, meshGeom->scale.z, meshGeom->scale.y));
-                    std::shared_ptr<geometry::ChTriangleMeshConnected> chMesh = ai.toChronoTriMesh();
+                    SHPTR<geometry::ChTriangleMeshConnected> chMesh = ai.toChronoTriMesh();
 
                     body->GetCollisionModel()->AddTriangleMesh(*(chMesh.get()), false, false);
                 }

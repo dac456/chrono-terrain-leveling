@@ -19,7 +19,7 @@ StaticMesh::StaticMesh(ChSystem* system, std::string name, std::string file, ChV
 
     //Build collision geometery
     AssimpLoader ai(GetChronoDataFile(_file));
-    std::shared_ptr<geometry::ChTriangleMeshConnected> colMesh = ai.toChronoTriMesh();
+    SHPTR<geometry::ChTriangleMeshConnected> colMesh = ai.toChronoTriMesh();
     ChVectord meshDim = ai.getMeshDimensions();
 
     for(auto& v : colMesh->m_vertices){

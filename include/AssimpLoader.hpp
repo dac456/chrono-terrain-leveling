@@ -24,7 +24,7 @@ public:
     ChVectord getMeshDimensions();
     ChVectord getMeshCentre();
 
-    std::shared_ptr<geometry::ChTriangleMeshConnected> toChronoTriMesh();
+    SHPTR<geometry::ChTriangleMeshConnected> toChronoTriMesh();
 
 };
 

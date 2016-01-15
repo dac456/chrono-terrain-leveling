@@ -55,7 +55,7 @@ void UrdfLoader::_loadRobot(rapidxml::xml_node<>* node){
 
     while(current){
         if(streq(current->name(), "link")){
-            UrdfLinkPtr link = std::make_shared<UrdfLink>();
+            UrdfLinkPtr link = MKSHR<UrdfLink>();
             link->name = current->first_attribute("name")->value();
 
             _loadLink(current, link);
@@ -77,7 +77,7 @@ void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link){
 
     while(current){
         if(streq(current->name(), "link")){
-            UrdfLinkPtr child = std::make_shared<UrdfLink>();
+            UrdfLinkPtr child = MKSHR<UrdfLink>();
             child->name = current->first_attribute("name")->value();
 
             _loadLink(current, child);
@@ -98,7 +98,7 @@ void UrdfLoader::_loadLink(rapidxml::xml_node<>* node, UrdfLinkPtr link){
 }
 
 void UrdfLoader::_loadJoint(rapidxml::xml_node<>* node){
-    UrdfJointPtr joint = std::make_shared<UrdfJoint>();
+    UrdfJointPtr joint = MKSHR<UrdfJoint>();
     joint->name = node->first_attribute("name")->value();
     joint->type = node->first_attribute("type")->value();
 
@@ -139,7 +139,7 @@ void UrdfLoader::_loadJoint(rapidxml::xml_node<>* node){
 }
 
 void UrdfLoader::_loadMaterial(rapidxml::xml_node<>* node){
-    UrdfMaterialPtr mat = std::make_shared<UrdfMaterial>();
+    UrdfMaterialPtr mat = MKSHR<UrdfMaterial>();
     //TODO
     URDFDEBUG("material");
     _materials.push_back(mat);
@@ -148,7 +148,7 @@ void UrdfLoader::_loadMaterial(rapidxml::xml_node<>* node){
 void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     rapidxml::xml_node<>* current = node;
 
-    UrdfVisualPtr visual = std::make_shared<UrdfVisual>();
+    UrdfVisualPtr visual = MKSHR<UrdfVisual>();
     if(current->first_attribute("name")){
         visual->name = current->first_attribute("name")->value();
     }
@@ -175,7 +175,7 @@ void UrdfLoader::_loadVisual(rapidxml::xml_node<>* node, UrdfLinkPtr link){
 void UrdfLoader::_loadCollision(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     rapidxml::xml_node<>* current = node;
 
-    UrdfCollisionPtr collision = std::make_shared<UrdfCollision>();
+    UrdfCollisionPtr collision = MKSHR<UrdfCollision>();
     if(current->first_attribute("name")){
         collision->name = current->first_attribute("name")->value();
     }
@@ -202,7 +202,7 @@ void UrdfLoader::_loadCollision(rapidxml::xml_node<>* node, UrdfLinkPtr link){
 void UrdfLoader::_loadInertial(rapidxml::xml_node<>* node, UrdfLinkPtr link){
     rapidxml::xml_node<>* current = node->first_node();
 
-    UrdfInertialPtr inertia = std::make_shared<UrdfInertial>();
+    UrdfInertialPtr inertia = MKSHR<UrdfInertial>();
 
     while(current){
         if(streq(current->name(), "origin")){
@@ -236,7 +236,7 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
     if(streq(geo->name(), "box")){
         std::vector<std::string> vec = _split(geo->first_attribute("size")->value(), ' ');
 
-        UrdfBoxPtr boxGeom = std::make_shared<UrdfBox>();
+        UrdfBoxPtr boxGeom = MKSHR<UrdfBox>();
         boxGeom->dim = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
 
         out = boxGeom;
@@ -245,7 +245,7 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
         double r = atof(geo->first_attribute("radius")->value());
         double l = atof(geo->first_attribute("length")->value());
 
-        UrdfCylinderPtr cylGeom = std::make_shared<UrdfCylinder>();
+        UrdfCylinderPtr cylGeom = MKSHR<UrdfCylinder>();
         cylGeom->radius = r;
         cylGeom->length = l;
 
@@ -255,7 +255,7 @@ UrdfGeometryPtr UrdfLoader::_loadGeometry(rapidxml::xml_node<>* node){
         std::string file = geo->first_attribute("filename")->value();
         std::vector<std::string> vec = _split(geo->first_attribute("scale")->value(), ' ');
 
-        UrdfMeshPtr meshGeom = std::make_shared<UrdfMesh>();
+        UrdfMeshPtr meshGeom = MKSHR<UrdfMesh>();
         meshGeom->file = GetChronoDataFile(std::string("urdf/") + file);
         meshGeom->scale = ChVectord(atof(vec[0].c_str()), atof(vec[1].c_str()), atof(vec[2].c_str()));
 

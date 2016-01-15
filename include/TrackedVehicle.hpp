@@ -8,8 +8,8 @@ private:
     std::string _name;
     AssemblyPtr _assembly;
 
-    std::shared_ptr<geometry::ChTriangleMeshConnected> _shoeMesh;
-    std::shared_ptr<geometry::ChTriangleMeshConnected> _collisionMesh;
+    SHPTR<geometry::ChTriangleMeshConnected> _shoeMesh;
+    SHPTR<geometry::ChTriangleMeshConnected> _collisionMesh;
 
     double _wheelRadius;
 
