@@ -63,21 +63,10 @@ class StaticMesh;
 class TrackedVehicle;
 class UrdfLoader;
 
-#ifdef USE_STD_SHARED_PTR
-    #define SHPTR std::shared_ptr
-    #define MKSHR std::make_shared
-    #define PTRCAST std::static_pointer_cast
-#else
-    #include <boost/make_shared.hpp>
-    #define SHPTR boost::shared_ptr
-    #define MKSHR boost::make_shared
-    #define PTRCAST boost::static_pointer_cast
-#endif
-
-typedef SHPTR<Assembly> AssemblyPtr;
-typedef SHPTR<HeightMap> HeightMapPtr;
-typedef SHPTR<ParticleSystem> ParticleSystemPtr;
-typedef SHPTR<StaticMesh> StaticMeshPtr;
-typedef SHPTR<TrackedVehicle> TrackedVehiclePtr;
+typedef std::shared_ptr<Assembly> AssemblyPtr;
+typedef std::shared_ptr<HeightMap> HeightMapPtr;
+typedef std::shared_ptr<ParticleSystem> ParticleSystemPtr;
+typedef std::shared_ptr<StaticMesh> StaticMeshPtr;
+typedef std::shared_ptr<TrackedVehicle> TrackedVehiclePtr;
 
 #endif

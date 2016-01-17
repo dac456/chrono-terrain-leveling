@@ -31,10 +31,6 @@ else(USE_CUDA)
 endif(USE_CUDA)
 endif(USE_IRRLICHT)
 
-if(USE_STD_SHARED_PTR)
-    add_definitions( -DUSE_STD_SHARED_PTR)
-endif(USE_STD_SHARED_PTR)
-
 find_package(Assimp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 

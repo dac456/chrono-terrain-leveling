@@ -85,8 +85,8 @@ ChVectord AssimpLoader::getMeshCentre(){
     return ChVectord((max.x+min.x)/2.0, (max.y+min.y)/2.0, (max.z+min.z)/2.0);
 }
 
-SHPTR<geometry::ChTriangleMeshConnected> AssimpLoader::toChronoTriMesh(){
-    SHPTR<geometry::ChTriangleMeshConnected> trimesh = MKSHR<geometry::ChTriangleMeshConnected>();
+std::shared_ptr<geometry::ChTriangleMeshConnected> AssimpLoader::toChronoTriMesh(){
+    std::shared_ptr<geometry::ChTriangleMeshConnected> trimesh = std::make_shared<geometry::ChTriangleMeshConnected>();
     trimesh->m_vertices = _vertices;
     trimesh->m_normals = _normals;
     trimesh->m_face_v_indices = _indices;

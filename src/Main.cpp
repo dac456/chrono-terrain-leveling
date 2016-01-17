@@ -83,17 +83,17 @@ int main(int argc, char* argv[])
     mat->SetFriction(0.4);
     mat->SetRestitution(0.4);
 
-    //StaticMeshPtr smGround = MKSHR<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
+    //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
 
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = MKSHR<Assembly>(urdf, ChVectord(0,8.0,0), static_cast<ChSystem*>(&system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,8.0,0), static_cast<ChSystem*>(&system));
 
-    TrackedVehiclePtr dagu = MKSHR<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
+    TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     dagu->setSpeeds(CH_C_PI, CH_C_PI);
 
-    HeightMapPtr hm = MKSHR<HeightMap>(GetChronoDataFile("terrain2.png"));
-    ParticleSystemPtr particles = MKSHR<ParticleSystem>(static_cast<ChSystem*>(&system), hm, 8.0, 100.0, 0.15, true, false);
+    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("terrain2.png"));
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), hm, 8.0, 100.0, 0.15, true, false);
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
