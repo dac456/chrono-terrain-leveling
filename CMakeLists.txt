@@ -31,19 +31,28 @@ else(USE_CUDA)
 endif(USE_CUDA)
 endif(USE_IRRLICHT)
 
-find_package(Assimp REQUIRED)
+add_definitions( -DASSIMP_BUILD_NO_C4D_IMPORTER )
+
+#find_package(Assimp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/RapidXML)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/stb)
 include_directories(${CHRONO_INCLUDE_DIRS})
-include_directories(${ASSIMP_INCLUDE_DIR})
+#include_directories(${ASSIMP_INCLUDE_DIR})
 include_directories(${BOOST_INCLUDE_DIR})
 
 file(GLOB_RECURSE HDR RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/*.h)
-file(GLOB_RECURSE SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
+file(GLOB_RECURSE SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS
+    src/*.cpp
+    src/assimp/*.cpp
+    src/openddlparser/*.cpp
+    src/assimp/contrib/*/*.cpp
+    src/assimp/contrib/*/*.c
+    src/assimp/contrib/poly2tri/poly2tri/*/*.cc
+)
 
 add_executable(ctl ${SRC} ${HDR})
 
-target_link_libraries(ctl ${Boost_LIBRARIES} ${CHRONO_LIBRARIES} ${ASSIMP_LIBRARY})
+target_link_libraries(ctl ${Boost_LIBRARIES} ${CHRONO_LIBRARIES})
