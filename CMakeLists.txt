@@ -32,7 +32,10 @@ endif(USE_CUDA)
 endif(USE_IRRLICHT)
 
 add_definitions( -DASSIMP_BUILD_NO_C4D_IMPORTER )
+add_definitions( -DASSIMP_BUILD_NO_EXPORT )
+add_definitions( -DASSIMP_BUILD_NO_OWN_ZLIB )
 
+find_package(ZLIB REQUIRED)
 #find_package(Assimp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 
@@ -41,6 +44,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/RapidXML)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/stb)
 include_directories(${CHRONO_INCLUDE_DIRS})
 #include_directories(${ASSIMP_INCLUDE_DIR})
+include_directories(${ZLIB_INCLUDE_DIR})
 include_directories(${BOOST_INCLUDE_DIR})
 
 file(GLOB_RECURSE HDR RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/*.h)
@@ -55,4 +59,4 @@ file(GLOB_RECURSE SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS
 
 add_executable(ctl ${SRC} ${HDR})
 
-target_link_libraries(ctl ${Boost_LIBRARIES} ${CHRONO_LIBRARIES})
+target_link_libraries(ctl ${Boost_LIBRARIES} ${CHRONO_LIBRARIES} -lz)
