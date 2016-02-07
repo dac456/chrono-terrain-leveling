@@ -1,7 +1,7 @@
-#include "HeightMap.hpp"
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
+
+#include "HeightMap.hpp"
 
 HeightMap::HeightMap(std::string filename)
     : _heights(nullptr),

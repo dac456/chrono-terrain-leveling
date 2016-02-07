@@ -10,7 +10,7 @@
 namespace fs = boost::filesystem;
 
 #include <chrono/physics/ChSystem.h>
-#ifdef SIM_USE_CUDA
+#ifdef SIM_USE_PARALLEL
 #include <chrono_parallel/physics/ChSystemParallel.h>
 #endif
 #include <chrono/physics/ChParticlesClones.h>
@@ -30,8 +30,8 @@ namespace fs = boost::filesystem;
 #define CTL_MINOR_VERSION 1
 #define CTL_PATCH_VERSION 0
 
-#ifdef SIM_USE_CUDA
-    #define DEFAULT_BODY new collision::ChCollisionModelParallel, ChMaterialSurfaceBase::DVI
+#ifdef SIM_USE_PARALLEL
+    #define DEFAULT_BODY new collision::ChCollisionModelParallel
 #else
     #define DEFAULT_BODY ChMaterialSurfaceBase::DVI
 #endif

@@ -15,6 +15,21 @@ size_t numThreads = 8; //Default thread count
 bool renderOffline = false;
 double timeout = 5.0;
 
+//temp//
+double tolerance = 0.1;
+
+int max_iteration_bilateral = 100;  // 1000;
+int max_iteration_normal = 0;
+int max_iteration_sliding = 200;  // 2000;
+int max_iteration_spinning = 0;
+
+float contact_recovery_speed = -1;
+
+// Periodically monitor maximum bilateral constraint violation
+bool monitor_bilaterals = true;
+int bilateral_frame_interval = 100;
+//temp//
+
 void readArgs(int argc, char* argv[]){
     int current = 1;
     if(argc > 1){
@@ -52,30 +67,47 @@ int main(int argc, char* argv[])
     std::cout << "dt: " << dt << std::endl;
     std::cout << "nt: " << numThreads << std::endl;
 
-    #ifdef SIM_USE_CUDA
-        ChSystemParallelDVI system;
-        system.SetParallelThreadNumber(numThreads);
+    size_t mt = CHOMPfunctions::GetNumProcs();
+    std::cout << "mt: " << mt << std::endl;
+
+    if(numThreads > mt) numThreads = mt;
+
+    #ifdef SIM_USE_PARALLEL
+        ChSystemParallelDVI* system = new ChSystemParallelDVI(256000);
+        system->SetParallelThreadNumber(numThreads);
         CHOMPfunctions::SetNumThreads(numThreads);
     #else
-        ChSystem system(16000, 20);
+        ChSystem* system = new ChSystem(16000, 20);
     #endif
 
-    system.Set_G_acc(ChVector<>(0, -9.81, 0));
+    system->Set_G_acc(ChVector<>(0, -9.81, 0));
 
     // Set solver parameters
-    #ifdef SIM_USE_CUDA
-        system.GetSettings()->solver.max_iteration_bilateral = 100;
-        system.GetSettings()->solver.tolerance = 1e-3;
+    #ifdef SIM_USE_PARALLEL
+        system->GetSettings()->perform_thread_tuning = false;
 
-        system.GetSettings()->collision.narrowphase_algorithm = NARROWPHASE_HYBRID_MPR;
-        system.GetSettings()->collision.bins_per_axis = I3(10, 10, 10);
+        system->GetSettings()->solver.use_full_inertia_tensor = false;
+
+        system->GetSettings()->solver.tolerance = tolerance;
+
+        system->GetSettings()->solver.solver_mode = SLIDING;
+        system->GetSettings()->solver.max_iteration_bilateral = max_iteration_bilateral;
+        system->GetSettings()->solver.max_iteration_normal = max_iteration_normal;
+        system->GetSettings()->solver.max_iteration_sliding = max_iteration_sliding;
+        system->GetSettings()->solver.max_iteration_spinning = max_iteration_spinning;
+        system->GetSettings()->solver.alpha = 0;
+        system->GetSettings()->solver.contact_recovery_speed = contact_recovery_speed;
+        system->ChangeSolverType(APGD);
+
+        system->GetSettings()->collision.narrowphase_algorithm = NARROWPHASE_HYBRID_MPR;
+        system->GetSettings()->collision.collision_envelope = 0.1 * 0.15;
+        system->GetSettings()->collision.bins_per_axis = I3(10, 10, 10);
+    #else
+        system->SetIterLCPmaxItersSpeed(100);  // the higher, the easier to keep the constraints 'mounted'.
+        system->SetLcpSolverType(ChSystem::LCP_ITERATIVE_SOR);
+        //system->SetIterLCPmaxItersSpeed(70);
+        //system->SetIterLCPmaxItersStab(15);
     #endif
-
-    system.SetIterLCPmaxItersSpeed(100);  // the higher, the easier to keep the constraints 'mounted'.
-    system.SetLcpSolverType(ChSystem::LCP_ITERATIVE_SOR);
-    //system.SetIterLCPmaxItersSpeed(70);
-    //system.SetIterLCPmaxItersStab(15);
-    system.SetParallelThreadNumber(numThreads);
 
     //Default material
     ChMaterialPtr mat(new ChMaterialSurface);
@@ -87,17 +119,17 @@ int main(int argc, char* argv[])
 
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(0,8.0,0), static_cast<ChSystem*>(&system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(2.0,8.0,0), static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     dagu->setSpeeds(CH_C_PI, CH_C_PI);
 
     HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("terrain2.png"));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(&system), hm, 8.0, 100.0, 0.15, true, false);
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 8.0, 100.0, 0.15, true, false);
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
-            irr::ChIrrApp app(&system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
+            irr::ChIrrApp app(system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
 
             app.SetStepManage(true);
             app.SetTimestep(dt);
@@ -124,12 +156,12 @@ int main(int argc, char* argv[])
 
                 app.EndScene();
             }
-        #else//SIM_USE_CUDA
+        #else//SIM_USE_PARALLEL
             std::cout << "Not compiled for use with Irrlicht. Exiting..." << std::endl;
-        #endif //SIM_USE_CUDA
+        #endif //SIM_USE_PARALLEL
     }
     else{
-        ChPovRay app = ChPovRay(&system);
+        ChPovRay app = ChPovRay(system);
 
         app.SetTemplateFile(GetChronoDataFile("_template_POV.pov"));
         app.SetOutputScriptFile("rendering_frames.pov");
@@ -162,14 +194,18 @@ int main(int argc, char* argv[])
 
         app.ExportScript();
 
-        while(system.GetChTime() < timeout){
-            system.DoStepDynamics(dt);
+        while(system->GetChTime() < timeout){
+            std::cout << "start step" << std::endl;
 
-            std::cout << "time= " << system.GetChTime() << std::endl;
+            system->DoStepDynamics(dt);
+
+            std::cout << "time= " << system->GetChTime() << std::endl;
 
             app.ExportData();
         }
     }
+
+    delete system;
 
     return 0;
 }

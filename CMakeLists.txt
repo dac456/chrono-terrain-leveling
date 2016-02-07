@@ -8,27 +8,27 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
 if(USE_IRRLICHT)
     add_definitions( -DSIM_USE_IRRLICHT )
-    if(USE_CUDA)
+    if(USE_PARALLEL)
         find_package(Chrono REQUIRED
                      COMPONENTS Irrlicht Parallel PostProcess
                      CONFIG)
-        add_definitions( -DSIM_USE_CUDA )
-    else(USE_CUDA)
+        add_definitions( -DSIM_USE_PARALLEL )
+    else(USE_PARALLEL)
         find_package(Chrono REQUIRED
                      COMPONENTS Irrlicht PostProcess
                      CONFIG)
-    endif(USE_CUDA)
+    endif(USE_PARALLEL)
 else(USE_IRRLICHT)
-if(USE_CUDA)
-    find_package(Chrono REQUIRED
-                 COMPONENTS Parallel PostProcess
-                 CONFIG)
-    add_definitions( -DSIM_USE_CUDA )
-else(USE_CUDA)
-    find_package(Chrono REQUIRED
-                 COMPONENTS PostProcess
-                 CONFIG)
-endif(USE_CUDA)
+    if(USE_PARALLEL)
+        find_package(Chrono REQUIRED
+                     COMPONENTS Parallel PostProcess
+                     CONFIG)
+        add_definitions( -DSIM_USE_PARALLEL )
+    else(USE_PARALLEL)
+        find_package(Chrono REQUIRED
+                     COMPONENTS PostProcess
+                     CONFIG)
+    endif(USE_PARALLEL)
 endif(USE_IRRLICHT)
 
 add_definitions( -DASSIMP_BUILD_NO_C4D_IMPORTER )
