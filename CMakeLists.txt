@@ -34,6 +34,8 @@ endif(USE_IRRLICHT)
 add_definitions( -DASSIMP_BUILD_NO_C4D_IMPORTER )
 add_definitions( -DASSIMP_BUILD_NO_EXPORT )
 add_definitions( -DASSIMP_BUILD_NO_OWN_ZLIB )
+add_definitions( -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP )
+
 
 find_package(ZLIB REQUIRED)
 #find_package(Assimp REQUIRED)
