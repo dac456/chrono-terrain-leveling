@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     size_t mt = CHOMPfunctions::GetNumProcs();
     std::cout << "mt: " << mt << std::endl;
 
-    if(numThreads > mt) numThreads = mt;
+    //if(numThreads > mt) numThreads = mt;
 
     #ifdef SIM_USE_PARALLEL
         ChSystemParallelDVI* system = new ChSystemParallelDVI(256000);
