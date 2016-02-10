@@ -73,10 +73,13 @@ int main(int argc, char* argv[])
     //if(numThreads > mt) numThreads = mt;
 
     #ifdef SIM_USE_PARALLEL
+        std::cout << "Using parallel Chrono system" << std::endl;
+
         ChSystemParallelDVI* system = new ChSystemParallelDVI(256000);
         system->SetParallelThreadNumber(numThreads);
-        CHOMPfunctions::SetNumThreads(numThreads);
+        //CHOMPfunctions::SetNumThreads(numThreads);
     #else
+        std::cout << "Using single-threaded Chrono system" << std::endl;
         ChSystem* system = new ChSystem(16000, 20);
     #endif
 
