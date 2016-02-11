@@ -77,10 +77,10 @@ int main(int argc, char* argv[])
 
         ChSystemParallelDVI* system = new ChSystemParallelDVI(256000);
         system->SetParallelThreadNumber(numThreads);
-        //CHOMPfunctions::SetNumThreads(numThreads);
+        CHOMPfunctions::SetNumThreads(numThreads);
     #else
         std::cout << "Using single-threaded Chrono system" << std::endl;
-        ChSystem* system = new ChSystem(16000, 20);
+        ChSystem* system = new ChSystem(256000, 20);
     #endif
 
     system->Set_G_acc(ChVector<>(0, -9.81, 0));
@@ -200,7 +200,12 @@ int main(int argc, char* argv[])
         while(system->GetChTime() < timeout){
             std::cout << "start step" << std::endl;
 
+            std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
             system->DoStepDynamics(dt);
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+            auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
+            std::cout << "Step took " << millis << "ms" << std::endl;
 
             std::cout << "time= " << system->GetChTime() << std::endl;
 
