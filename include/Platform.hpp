@@ -5,9 +5,10 @@
 
 class Platform{
 private:
+    ChBodyPtr _chassis;
 
 public:
-    Platform(float maxLinear = 10.0f, float maxAngular = 0.34f, int maxRpm = 320);
+    Platform(TrackedVehiclePtr vehicle, float maxLinear = 10.0f, float maxAngular = 0.34f, int maxRpm = 320);
     ~Platform();
 
     float getYaw();

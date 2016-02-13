@@ -163,13 +163,13 @@ static aiColor3D ReadColor(StreamReaderLE* stream)
 
 static void UnknownChunk(StreamReaderLE* stream, const SIBChunk& chunk)
 {
-    char temp[5] = { 
-        ( char ) ( chunk.Tag>>24 ) & 0xff, 
-        ( char ) ( chunk.Tag>>16 ) & 0xff, 
-        ( char ) ( chunk.Tag>>8 ) & 0xff, 
-        ( char ) chunk.Tag & 0xff, '\0'
+    char temp[5] = {
+        static_cast< char > (( chunk.Tag>>24 ) & 0xff),
+        static_cast< char > (( chunk.Tag>>16 ) & 0xff),
+        static_cast< char > (( chunk.Tag>>8 ) & 0xff),
+        static_cast< char > (chunk.Tag & 0xff), '\0'
     };
-    
+
     DefaultLogger::get()->warn((Formatter::format(), "SIB: Skipping unknown '",temp,"' chunk."));
 }
 
@@ -373,7 +373,7 @@ static void ConnectFaces(SIBMesh* mesh)
         uint32_t *idx = &mesh->idx[mesh->faceStart[faceIdx]];
         uint32_t numPoints = *idx++;
         uint32_t prev = idx[(numPoints-1)*N+POS];
-    
+
         for (uint32_t i=0;i<numPoints;i++,idx+=N)
         {
             uint32_t next = idx[POS];
@@ -398,7 +398,7 @@ static void ConnectFaces(SIBMesh* mesh)
 static aiVector3D CalculateVertexNormal(SIBMesh* mesh, uint32_t faceIdx, uint32_t pos,
                                         const std::vector<aiVector3D>& faceNormals)
 {
-    // Creased edges complicate this. We need to find the start/end range of the 
+    // Creased edges complicate this. We need to find the start/end range of the
     // ring of faces that touch this position.
     // We do this in two passes. The first pass is to find the end of the range,
     // the second is to work backwards to the start and calculate the final normal.
@@ -449,7 +449,7 @@ static aiVector3D CalculateVertexNormal(SIBMesh* mesh, uint32_t faceIdx, uint32_
 
             prevFaceIdx = faceIdx;
             faceIdx = nextFaceIdx;
-        }       
+        }
     }
 
     // Normalize it.
@@ -610,7 +610,7 @@ static void ReadShape(SIB* sib, StreamReaderLE* stream)
     obj.name = name;
     obj.axis = smesh.axis;
     obj.meshIdx = sib->meshes.size();
-    
+
     // Now that we know the size of everything,
     // we can build the final one-material-per-mesh data.
     for (size_t n=0;n<meshes.size();n++)

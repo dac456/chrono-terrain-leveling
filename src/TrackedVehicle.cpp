@@ -28,6 +28,15 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             frWheel = body;
             frWheel->GetMaterialSurface()->SetFriction(1.0);
         }
+        if(std::string(body->GetName()).find("Body") != std::string::npos){
+            _chassis = body;
+        }
+    }
+
+    //Check if the main chassis body was found
+    if(!_chassis){
+        std::cout << "Chassis not found!" << std::endl;
+        //TODO: abort gracefully as without a chassis Platform will not function correctly
     }
 
     //If all wheels are present, generate tracks
@@ -136,6 +145,10 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             _assembly->getSystem()->AddLink(finalJoint);
         }
     }
+}
+
+ChBodyPtr TrackedVehicle::getChassisBody(){
+    return _chassis;
 }
 
 void TrackedVehicle::setSpeeds(double left, double right){

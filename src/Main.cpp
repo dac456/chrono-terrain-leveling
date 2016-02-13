@@ -3,6 +3,7 @@
 #include "StaticMesh.hpp"
 #include "TrackedVehicle.hpp"
 #include "ParticleSystem.hpp"
+#include "Platform.hpp"
 #include "HeightMap.hpp"
 
 #include <chrono/core/ChFileutils.h>
@@ -125,7 +126,7 @@ int main(int argc, char* argv[])
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(2.0,8.0,0), static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
-    dagu->setSpeeds(CH_C_PI, CH_C_PI);
+    PlatformPtr daguAlg = std::make_shared<Platform>(dagu);
 
     HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("terrain2.png"));
     ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 8.0, 100.0, 0.15, true, false);
@@ -206,6 +207,8 @@ int main(int argc, char* argv[])
 
             auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
             std::cout << "Step took " << millis << "ms" << std::endl;
+
+            std::cout << "Yaw: " << daguAlg->getYaw() << std::endl;
 
             std::cout << "time= " << system->GetChTime() << std::endl;
 

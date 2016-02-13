@@ -7,6 +7,7 @@ class TrackedVehicle{
 private:
     std::string _name;
     AssemblyPtr _assembly;
+    ChBodyPtr _chassis;
 
     std::shared_ptr<geometry::ChTriangleMeshConnected> _shoeMesh;
     std::shared_ptr<geometry::ChTriangleMeshConnected> _collisionMesh;
@@ -15,13 +16,13 @@ private:
 
 public:
     TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius);
+    ChBodyPtr getChassisBody();
 
     void setSpeeds(double left, double right);
 
 private:
     ChBodyPtr _createShoe(ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord shoePosition, ChQuatd shoeRotation = QUNIT);
 
-    friend class TrackedVehicleFactory;
 };
 
 #endif
