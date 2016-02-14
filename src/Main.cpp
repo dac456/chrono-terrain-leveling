@@ -209,6 +209,10 @@ int main(int argc, char* argv[])
             std::cout << "Step took " << millis << "ms" << std::endl;
 
             std::cout << "Yaw: " << daguAlg->getYaw() << std::endl;
+            std::cout << "Yaw dt: " << daguAlg->getRotX() << std::endl;
+            
+            std::cout << "Pitch: " << daguAlg->getPitch() << std::endl;
+            std::cout << "Roll: " << daguAlg->getRoll() << std::endl;
 
             std::cout << "time= " << system->GetChTime() << std::endl;
 

@@ -14,6 +14,10 @@ public:
     float getYaw();
     float getPitch();
     float getRoll();
+
+    float getRotX();
+    float getRotY();
+    float getRotZ();
 };
 
 #endif
