@@ -2,7 +2,8 @@
 #include "TrackedVehicle.hpp"
 
 Platform::Platform(TrackedVehiclePtr vehicle, float maxLinear, float maxAngular, int maxRpm)
-    : _chassis(vehicle->getChassisBody())
+    : _chassis(vehicle->getChassisBody()),
+      _rotXFilter(0.98f)
 {
 
 }
@@ -51,4 +52,20 @@ float Platform::getRotZ(){
     ChQuatd rotationVelocity = chassisFrame.GetRot_dt();
 
     return rotationVelocity.Q_to_NasaAngles().x;
+}
+
+
+void Platform::step(uint16_t dt) {
+    sense(dt);
+    act(dt);
+}
+
+void Platform::sense(uint16_t dt) {
+    _rotX = _rotXFilter.getFilteredValue(getRotX());
+
+    senseImpl(dt);
+}
+
+void Platform::act(uint16_t dt) {
+    actImpl(dt);
 }

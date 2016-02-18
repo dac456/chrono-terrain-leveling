@@ -6,6 +6,29 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -openmp -march=native -O3 -std=c++11")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
+MACRO(SOURCE_GROUP_BY_FOLDER target)
+  SET(SOURCE_GROUP_DELIMITER "/")
+  SET(last_dir "")
+  SET(files "")
+  FOREACH(file ${${target}_SRC} ${${target}_HEADERS})
+    file(RELATIVE_PATH relative_file "${PROJECT_SOURCE_DIR}/${target}" ${file})
+    GET_FILENAME_COMPONENT(dir "${relative_file}" PATH)
+    IF (NOT "${dir}" STREQUAL "${last_dir}")
+      IF (files)
+        SOURCE_GROUP("${last_dir}" FILES ${files})
+      ENDIF (files)
+      SET(files "")
+    ENDIF (NOT "${dir}" STREQUAL "${last_dir}")
+    SET(files ${files} ${file})
+    SET(last_dir "${dir}")
+  ENDFOREACH(file)
+  IF (files)
+    SOURCE_GROUP("${last_dir}" FILES ${files})
+  ENDIF (files)
+ENDMACRO(SOURCE_GROUP_BY_FOLDER)
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 if(USE_IRRLICHT)
     add_definitions( -DSIM_USE_IRRLICHT )
     if(USE_PARALLEL)
@@ -35,11 +58,18 @@ add_definitions( -DASSIMP_BUILD_NO_C4D_IMPORTER )
 add_definitions( -DASSIMP_BUILD_NO_EXPORT )
 add_definitions( -DASSIMP_BUILD_NO_OWN_ZLIB )
 add_definitions( -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP )
+add_definitions( -DOPENDDLPARSER_BUILD )
+
+if(WIN32)
+    add_definitions( -D_CRT_SECURE_NO_WARNINGS )
+endif(WIN32)
 
 
 find_package(ZLIB REQUIRED)
 #find_package(Assimp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
+
+link_directories(${Boost_LIBRARY_DIRS})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/RapidXML)
@@ -48,10 +78,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/contrib)
 include_directories(${CHRONO_INCLUDE_DIRS})
 #include_directories(${ASSIMP_INCLUDE_DIR})
 include_directories(${ZLIB_INCLUDE_DIR})
-include_directories(${BOOST_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
 
-file(GLOB_RECURSE HDR RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/*.h)
-file(GLOB_RECURSE SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS
+file(GLOB_RECURSE ctl_HEADERS ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/*.hpp include/*.h)
+file(GLOB_RECURSE ctl_SRC ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS
     src/*.cpp
     src/assimp/*.cpp
     src/openddlparser/*.cpp
@@ -60,6 +90,8 @@ file(GLOB_RECURSE SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS
     src/assimp/contrib/poly2tri/poly2tri/*/*.cc
 )
 
-add_executable(ctl ${SRC} ${HDR})
+SOURCE_GROUP_BY_FOLDER(ctl)
 
-target_link_libraries(ctl ${Boost_LIBRARIES} ${CHRONO_LIBRARIES} -lz)
+add_executable(ctl ${ctl_SRC} ${ctl_HEADERS})
+
+target_link_libraries(ctl ${Boost_LIBRARIES} ${CHRONO_LIBRARIES} ${ZLIB_LIBRARIES})

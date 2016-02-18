@@ -5,6 +5,8 @@
 #include <sstream>
 #include <memory>
 #include <string>
+#include <chrono>
+#include <numeric>
 
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
@@ -55,6 +57,7 @@ typedef ChMatrixNM<double, 4, 4> ChMat44d;
 typedef ChMatrixNM<float, 4 ,4> ChMat44f;
 
 //Forward declare
+class AlgorithmBasic;
 class Assembly;
 class AssimpLoader;
 class HeightMap;
@@ -64,6 +67,7 @@ class StaticMesh;
 class TrackedVehicle;
 class UrdfLoader;
 
+typedef std::shared_ptr<AlgorithmBasic> AlgorithmBasicPtr;
 typedef std::shared_ptr<Assembly> AssemblyPtr;
 typedef std::shared_ptr<HeightMap> HeightMapPtr;
 typedef std::shared_ptr<ParticleSystem> ParticleSystemPtr;
