@@ -11,10 +11,10 @@ AlgorithmBasic::~AlgorithmBasic() {
 
 }
 
-void AlgorithmBasic::senseImpl(uint16_t dt) {
+void AlgorithmBasic::senseImpl(float dt) {
 
 }
 
-void AlgorithmBasic::actImpl(uint16_t dt) {
+void AlgorithmBasic::actImpl(float dt) {
 
 }

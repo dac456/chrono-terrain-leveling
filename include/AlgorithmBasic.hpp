@@ -10,8 +10,8 @@ public:
     AlgorithmBasic(TrackedVehiclePtr vehicle);
     virtual ~AlgorithmBasic();
 
-    void senseImpl(uint16_t dt);
-    void actImpl(uint16_t dt);
+    void senseImpl(float dt);
+    void actImpl(float dt);
 };
 
 #endif

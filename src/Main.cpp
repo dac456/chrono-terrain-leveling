@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(2.0,8.0,0), static_cast<ChSystem*>(system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(4.0,8.0,0), static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);
@@ -202,17 +202,12 @@ int main(int argc, char* argv[])
             std::cout << "start step" << std::endl;
 
             std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+            daguAlg->step(dt);
             system->DoStepDynamics(dt);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
             auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
             std::cout << "Step took " << millis << "ms" << std::endl;
-
-            std::cout << "Yaw: " << daguAlg->getYaw() << std::endl;
-            std::cout << "Yaw dt: " << daguAlg->getRotX() << std::endl;
-            
-            std::cout << "Pitch: " << daguAlg->getPitch() << std::endl;
-            std::cout << "Roll: " << daguAlg->getRoll() << std::endl;
 
             std::cout << "time= " << system->GetChTime() << std::endl;
 

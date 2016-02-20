@@ -6,30 +6,42 @@
 
 class Platform{
 private:
+    TrackedVehiclePtr _vehicle;
     ChBodyPtr _chassis;
+
+    float _desiredLinearVelocity;
+    float _desiredAngularVelocity;
 
     float _rotX;
     LowpassFilter<float> _rotXFilter;
+
+    float _rotZ;
+    LowpassFilter<float> _rotZFilter;
 
 public:
     Platform(TrackedVehiclePtr vehicle, float maxLinear = 10.0f, float maxAngular = 0.34f, int maxRpm = 320);
     ~Platform();
 
-    float getYaw();
-    float getPitch();
-    float getRoll();
+    float getAccelYaw();
+    float getAccelPitch();
+    float getAccelRoll();
 
-    float getRotX();
-    float getRotY();
-    float getRotZ();
+    float getGyroX();
+    float getGyroY();
+    float getGyroZ();
 
-	void step(uint16_t dt);
+    void move();
 
-    void sense(uint16_t dt);
-    void act(uint16_t dt);
+    void setDesiredLinearVelocity(float v);
+    void setDesiredAngularVelocity(float v);
 
-    virtual void senseImpl(uint16_t dt) = 0;
-    virtual void actImpl(uint16_t dt) = 0;
+	void step(float dt);
+
+    void sense(float dt);
+    void act(float dt);
+
+    virtual void senseImpl(float dt) = 0;
+    virtual void actImpl(float dt) = 0;
 };
 
 #endif

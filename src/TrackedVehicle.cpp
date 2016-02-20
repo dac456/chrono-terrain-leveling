@@ -151,6 +151,14 @@ ChBodyPtr TrackedVehicle::getChassisBody(){
     return _chassis;
 }
 
+float TrackedVehicle::getWheelRadius() {
+
+}
+
+float TrackedVehicle::getWheelBase() {
+
+}
+
 void TrackedVehicle::setSpeeds(double left, double right){
     std::vector<ChLinkPtr> links = _assembly->getLinks();
     for(auto link : links){

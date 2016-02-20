@@ -18,6 +18,9 @@ public:
     TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius);
     ChBodyPtr getChassisBody();
 
+    float getWheelRadius();
+    float getWheelBase();
+
     void setSpeeds(double left, double right);
 
 private:
