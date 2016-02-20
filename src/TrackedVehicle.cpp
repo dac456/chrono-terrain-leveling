@@ -47,7 +47,8 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
         ChVectord flPos = flWheel->GetCoord().pos;
         ChVectord frPos = frWheel->GetCoord().pos;
 
-        std::cout << GetChronoDataFile(shoeVisFile) << std::endl;
+        _wheelBase = fabs(brPos.z - blPos.z);
+
         AssimpLoader aiShoe(GetChronoDataFile(shoeVisFile), ChVectord(1.8,1.4,1.4));
         _shoeMesh = aiShoe.toChronoTriMesh();
         ChVectord shoeDim = aiShoe.getMeshDimensions();
@@ -152,11 +153,11 @@ ChBodyPtr TrackedVehicle::getChassisBody(){
 }
 
 float TrackedVehicle::getWheelRadius() {
-
+    return _wheelRadius;
 }
 
 float TrackedVehicle::getWheelBase() {
-
+    return _wheelBase;
 }
 
 void TrackedVehicle::setSpeeds(double left, double right){

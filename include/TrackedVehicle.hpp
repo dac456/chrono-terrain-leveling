@@ -13,6 +13,7 @@ private:
     std::shared_ptr<geometry::ChTriangleMeshConnected> _collisionMesh;
 
     double _wheelRadius;
+    double _wheelBase;
 
 public:
     TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius);
