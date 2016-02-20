@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(4.0,8.0,0), static_cast<ChSystem*>(system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(4.0,7.0,0), static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);

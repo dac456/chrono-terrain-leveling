@@ -84,7 +84,8 @@ void Platform::move() {
     float vLeft = (_desiredLinearVelocity - (L*_desiredAngularVelocity*0.5f)) / r;
     float vRight = (_desiredLinearVelocity + (L*_desiredAngularVelocity*0.5f)) / r;
 
-    //_vehicle->setSpeeds(rps, rps);
+    std::cout << "Move: " << vLeft << " " << vRight << std::endl;
+    _vehicle->setSpeeds(vLeft, vRight);
 }
 
 void Platform::setDesiredLinearVelocity(float v) {
