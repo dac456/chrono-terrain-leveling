@@ -30,6 +30,8 @@ public:
     float getGyroY();
     float getGyroZ();
 
+    bool isInclined();
+
     void move();
 
     void setDesiredLinearVelocity(float v);

@@ -118,6 +118,9 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
     std::cout << "ParticleSystem: Generating terrain..." << std::endl;
 
+    const int numDiv = 4;
+    std::vector<ChSharedPtr<ChParticlesClones>> particleSubSystem;
+
     #ifdef SIM_USE_PARALLEL
     size_t numParticles = 0;
     for(int i=0; i<heightMap->getHeight(); i++){
@@ -159,45 +162,71 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         }
     }
     #else
-    ChSharedPtr<ChParticlesClones> chParticles(new ChParticlesClones);
-    chParticles->SetCollide(true);
+    //ChSharedPtr<ChParticlesClones> chParticles(new ChParticlesClones);
+    //chParticles->SetCollide(true);
+    for(int i=0; i<numDiv; i++){
+        ChSharedPtr<ChParticlesClones> clone(new ChParticlesClones);
 
-    chParticles->GetCollisionModel()->ClearModel();
-    chParticles->GetCollisionModel()->AddSphere(particleSize);
-    chParticles->GetCollisionModel()->BuildModel();
+        clone->GetCollisionModel()->ClearModel();
+        clone->GetCollisionModel()->AddSphere(particleSize);
+        clone->GetCollisionModel()->BuildModel();
+
+        clone->SetMass(mass);
+        clone->SetInertiaXX(ChVectord(inertia,inertia,inertia));
+
+        clone->SetMaterialSurface(particleMat);
+
+        clone->AddAsset(shape);
+
+        particleSubSystem.push_back(clone);
+    }
+
+    //chParticles->GetCollisionModel()->ClearModel();
+    //chParticles->GetCollisionModel()->AddSphere(particleSize);
+    //chParticles->GetCollisionModel()->BuildModel();
 
     //double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * particleDensity;
     //double inertia = pow(particleSize, 2) * mass;
-    chParticles->SetMass(mass);
-    chParticles->SetInertiaXX(ChVectord(inertia,inertia,inertia));
+    //chParticles->SetMass(mass);
+    //chParticles->SetInertiaXX(ChVectord(inertia,inertia,inertia));
 
     //ChMaterialPtr particleMat(new ChMaterialSurface);
     //particleMat->SetFriction(1.7);
-    chParticles->SetMaterialSurface(particleMat);
+    //chParticles->SetMaterialSurface(particleMat);
 
     //ChSharedPtr<ChSphereShape> shape(new ChSphereShape);
     //shape->GetSphereGeometry().rad = particleSize;
 
-    chParticles->AddAsset(shape);
+    //chParticles->AddAsset(shape);
 
     size_t numParticles = 0;
-    for(int i=0; i<heightMap->getHeight(); i++){
-        for(int j=0; j<heightMap->getWidth(); j++){
-            double height = heightMap->getHeights()[j + (i*heightMap->getWidth())] * maxHeight;
-            for(double k=0.0; k<height; k+=particleStep){
-                //ChVectord pos(-0.5 * heightMap->getWidth() + ChRandom() * heightMap->getWidth(), ChRandom() * heightMap->getHeight(), -0.5 * maxHeight + ChRandom() * maxHeight);
-                ChVectord pos(j*particleStep - (heightMap->getWidth()*0.5*particleStep), k, i*particleStep - (heightMap->getHeight()*0.5*particleStep));
-                pos += ChVectord(ChRandom()*0.5, 0.0, ChRandom()*0.5);
 
-                ChFrameMoving<> bodyFrame(pos, QUNIT);
-                chParticles->AddParticle(bodyFrame.GetCoord());
-                numParticles++;
+    for(int n=0; n<numDiv; n++){
+        int iMin = (heightMap->getHeight()/numDiv)*n;
+        int iMax = (heightMap->getHeight()/numDiv)*(n+1);
+
+        for(int i=iMin; i<iMax; i++){
+            for(int j=0; j<heightMap->getWidth(); j++){
+                double height = heightMap->getHeights()[j + (i*heightMap->getWidth())] * maxHeight;
+                for(double k=0.0; k<height; k+=particleStep){
+                    //ChVectord pos(-0.5 * heightMap->getWidth() + ChRandom() * heightMap->getWidth(), ChRandom() * heightMap->getHeight(), -0.5 * maxHeight + ChRandom() * maxHeight);
+                    ChVectord pos(j*particleStep - (heightMap->getWidth()*0.5*particleStep), k, i*particleStep - ((heightMap->getHeight())*0.5*particleStep));
+                    pos += ChVectord(ChRandom()*0.05, 0.15, ChRandom()*0.05);
+                    //pos += ChVectord(0.0, 0.15, 0.0);
+
+                    ChFrameMoving<> bodyFrame(pos, QUNIT);
+                    //chParticles->AddParticle(bodyFrame.GetCoord());
+                    particleSubSystem[n]->AddParticle(bodyFrame.GetCoord());
+                    numParticles++;
+                }
             }
         }
+        system->Add(particleSubSystem[n]);
     }
 
     std::cout << "ParticleSystem: " << numParticles << " particles" << std::endl;
-    system->Add(chParticles);
+    //system->Add(chParticles);
+    //system->Add(chParticles2);
     #endif //SIM_USE_PARALLEL
 
 }

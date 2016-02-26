@@ -75,6 +75,14 @@ float Platform::getGyroZ(){
 }
 
 /*
+Returns true if the pitch of the vehicle is above some threshold
+*/
+bool Platform::isInclined(){
+    if(fabs((this->getAccelPitch()*180.0) / CH_C_PI) > 20.0) return true;
+    else return false;
+}
+
+/*
 Set motor speeds based on currently set desired linear/angular velocities
 */
 void Platform::move() {
@@ -108,6 +116,8 @@ void Platform::sense(float dt) {
 
     _rotZ = _rotZFilter.getFilteredValue(this->getGyroZ());
     std::cout << _rotZ << std::endl;
+
+    std::cout << "Pitch: " << getAccelPitch() << "(" << (getAccelPitch()*180.0)/CH_C_PI << ")" << std::endl;
 
     senseImpl(dt);
 }

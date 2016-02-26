@@ -76,12 +76,12 @@ int main(int argc, char* argv[])
     #ifdef SIM_USE_PARALLEL
         std::cout << "Using parallel Chrono system" << std::endl;
 
-        ChSystemParallelDVI* system = new ChSystemParallelDVI(256000);
+        ChSystemParallelDVI* system = new ChSystemParallelDVI();
         system->SetParallelThreadNumber(numThreads);
         CHOMPfunctions::SetNumThreads(numThreads);
     #else
         std::cout << "Using single-threaded Chrono system" << std::endl;
-        ChSystem* system = new ChSystem(256000, 20);
+        ChSystem* system = new ChSystem();
     #endif
 
     system->Set_G_acc(ChVector<>(0, -9.81, 0));
@@ -119,21 +119,21 @@ int main(int argc, char* argv[])
     mat->SetFriction(0.4);
     mat->SetRestitution(0.4);
 
-    //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(&system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
+    //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
 
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(4.0,7.0,0), static_cast<ChSystem*>(system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(4.0,3.0,0), static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);
 
-    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("terrain2.png"));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 8.0, 100.0, 0.15, true, false);
+    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("terrain3.png"));
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 2.0, 100.0, 0.075, true, false);
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
-            irr::ChIrrApp app(system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
+            irrlicht::ChIrrApp app(system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
 
             app.SetStepManage(true);
             app.SetTimestep(dt);
@@ -152,10 +152,11 @@ int main(int argc, char* argv[])
                 app.BeginScene();
                 app.DrawAll();
 
-                irr::ChIrrTools::drawGrid(app.GetVideoDriver(), 2, 2, 30, 30,
+                irrlicht::ChIrrTools::drawGrid(app.GetVideoDriver(), 2, 2, 30, 30,
                                           ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
                                           irr::video::SColor(255, 60, 60, 60), true);
 
+                daguAlg->step(dt);
                 app.DoStep();
 
                 app.EndScene();
