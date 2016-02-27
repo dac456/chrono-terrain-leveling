@@ -129,7 +129,8 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
             for(double k=0.0; k<height; k+=particleStep){
                 //ChVectord pos(-0.5 * heightMap->getWidth() + ChRandom() * heightMap->getWidth(), ChRandom() * heightMap->getHeight(), -0.5 * maxHeight + ChRandom() * maxHeight);
                 ChVectord pos(j*particleStep - (heightMap->getWidth()*0.5*particleStep), k, i*particleStep - (heightMap->getHeight()*0.5*particleStep));
-                pos += ChVectord(ChRandom(), ChRandom(), ChRandom());
+                //pos += ChVectord(ChRandom(), ChRandom(), ChRandom());
+                pos += ChVectord(ChRandom()*0.05, 0.15, ChRandom()*0.05);
                 ChFrameMoving<> bodyFrame(pos, QUNIT);
 
                 ChBodyPtr particle(new ChBody(DEFAULT_BODY));
@@ -166,6 +167,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     //chParticles->SetCollide(true);
     for(int i=0; i<numDiv; i++){
         ChSharedPtr<ChParticlesClones> clone(new ChParticlesClones);
+        clone->SetCollide(true);
 
         clone->GetCollisionModel()->ClearModel();
         clone->GetCollisionModel()->AddSphere(particleSize);

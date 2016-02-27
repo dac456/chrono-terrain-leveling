@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);
 
     HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("terrain3.png"));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 2.0, 100.0, 0.075, true, false);
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 2.0, 100.0, 0.25, true, false);
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
 
         // --Optional: add further POV commands, for example in this case:
         //     create an area light for soft shadows
-        app.SetCustomPOVcommandsScript(
+        /*app.SetCustomPOVcommandsScript(
             " \
             light_source {   \
                 <2, 10, -3>  \
@@ -192,6 +192,12 @@ int main(int argc, char* argv[])
                 area_light <4, 0, 0>, <0, 0, 4>, 8, 8 \
                 adaptive 1 \
                 jitter\
+            } \
+        ");*/
+        app.SetCustomPOVcommandsScript(
+            " \
+            light_source { \
+                <1000,1000,-1000>, rgb <1,1,1> \
             } \
         ");
 
