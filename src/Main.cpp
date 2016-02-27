@@ -81,7 +81,9 @@ int main(int argc, char* argv[])
         CHOMPfunctions::SetNumThreads(numThreads);
     #else
         std::cout << "Using single-threaded Chrono system" << std::endl;
-        ChSystem* system = new ChSystem();
+        ChSystem* system = new ChSystem(1000000);
+        //system->ChangeCollisionSystem(new collision::ChCollisionSystemSpheres(1000000));
+        system->SetParallelThreadNumber(numThreads);
     #endif
 
     system->Set_G_acc(ChVector<>(0, -9.81, 0));

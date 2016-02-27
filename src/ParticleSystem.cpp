@@ -19,7 +19,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         floor->GetCollisionModel()->BuildModel();
 
         if(visContainer){
-            ChSharedPtr<ChBoxShape> floorVis(new ChBoxShape);
+            std::shared_ptr<ChBoxShape> floorVis(new ChBoxShape);
             floorVis->GetBoxGeometry().Size = ChVectord((heightMap->getWidth()*particleStep)/2.0, 0.1, (heightMap->getHeight()*particleStep)/2.0);
             floor->AddAsset(floorVis);
         }
@@ -39,7 +39,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         wall1->GetCollisionModel()->BuildModel();
 
         if(visContainer){
-            ChSharedPtr<ChBoxShape> wall1Vis(new ChBoxShape);
+            std::shared_ptr<ChBoxShape> wall1Vis(new ChBoxShape);
             wall1Vis->GetBoxGeometry().Size = ChVectord(0.1, maxHeight/2.0 + 0.05, (heightMap->getHeight()*particleStep)/2.0);
             wall1->AddAsset(wall1Vis);
         }
@@ -59,7 +59,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         wall2->GetCollisionModel()->BuildModel();
 
         if(visContainer){
-            ChSharedPtr<ChBoxShape> wall2Vis(new ChBoxShape);
+            std::shared_ptr<ChBoxShape> wall2Vis(new ChBoxShape);
             wall2Vis->GetBoxGeometry().Size = ChVectord(0.1, maxHeight/2.0 + 0.05, (heightMap->getHeight()*particleStep)/2.0);
             wall2->AddAsset(wall2Vis);
         }
@@ -79,7 +79,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         wall3->GetCollisionModel()->BuildModel();
 
         if(visContainer){
-            ChSharedPtr<ChBoxShape> wall3Vis(new ChBoxShape);
+            std::shared_ptr<ChBoxShape> wall3Vis(new ChBoxShape);
             wall3Vis->GetBoxGeometry().Size = ChVectord((heightMap->getWidth()*particleStep)/2.0, maxHeight/2.0 + 0.05, 0.1);
             wall3->AddAsset(wall3Vis);
         }
@@ -99,7 +99,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         wall4->GetCollisionModel()->BuildModel();
 
         if(visContainer){
-            ChSharedPtr<ChBoxShape> wall4Vis(new ChBoxShape);
+            std::shared_ptr<ChBoxShape> wall4Vis(new ChBoxShape);
             wall4Vis->GetBoxGeometry().Size = ChVectord((heightMap->getWidth()*particleStep)/2.0, maxHeight/2.0 + 0.05, 0.1);
             wall4->AddAsset(wall4Vis);
         }
@@ -113,13 +113,13 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     ChMaterialPtr particleMat(new ChMaterialSurface);
     particleMat->SetFriction(1.7);
 
-    ChSharedPtr<ChSphereShape> shape(new ChSphereShape);
+    std::shared_ptr<ChSphereShape> shape(new ChSphereShape);
     shape->GetSphereGeometry().rad = particleSize;
 
     std::cout << "ParticleSystem: Generating terrain..." << std::endl;
 
     const int numDiv = 4;
-    std::vector<ChSharedPtr<ChParticlesClones>> particleSubSystem;
+    std::vector<std::shared_ptr<ChParticlesClones>> particleSubSystem;
 
     #ifdef SIM_USE_PARALLEL
     size_t numParticles = 0;
@@ -151,7 +151,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
                 //particleMat->SetFriction(1.7);
                 particle->SetMaterialSurface(particleMat);
 
-                //ChSharedPtr<ChSphereShape> shape(new ChSphereShape);
+                //std::shared_ptr<ChSphereShape> shape(new ChSphereShape);
                 //shape->GetSphereGeometry().rad = particleSize;
 
                 particle->AddAsset(shape);
@@ -163,10 +163,10 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         }
     }
     #else
-    //ChSharedPtr<ChParticlesClones> chParticles(new ChParticlesClones);
+    //std::shared_ptr<ChParticlesClones> chParticles(new ChParticlesClones);
     //chParticles->SetCollide(true);
     for(int i=0; i<numDiv; i++){
-        ChSharedPtr<ChParticlesClones> clone(new ChParticlesClones);
+        std::shared_ptr<ChParticlesClones> clone(new ChParticlesClones);
         clone->SetCollide(true);
 
         clone->GetCollisionModel()->ClearModel();
@@ -196,7 +196,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     //particleMat->SetFriction(1.7);
     //chParticles->SetMaterialSurface(particleMat);
 
-    //ChSharedPtr<ChSphereShape> shape(new ChSphereShape);
+    //std::shared_ptr<ChSphereShape> shape(new ChSphereShape);
     //shape->GetSphereGeometry().rad = particleSize;
 
     //chParticles->AddAsset(shape);

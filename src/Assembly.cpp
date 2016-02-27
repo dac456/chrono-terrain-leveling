@@ -26,7 +26,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
                 if(geom->type == "box"){
                     UrdfBoxPtr boxGeom = std::static_pointer_cast<UrdfBox>(geom);
 
-                    ChSharedPtr<ChBoxShape> box(new ChBoxShape);
+                    std::shared_ptr<ChBoxShape> box(new ChBoxShape);
                     box->GetBoxGeometry().Pos = visual->origin.first;
                     box->GetBoxGeometry().Rot = _toChronoOrientation(visual->origin.second);
                     box->GetBoxGeometry().Size = ChVector<>(boxGeom->dim.x/2.0, boxGeom->dim.z/2.0, boxGeom->dim.y/2.0);
@@ -35,7 +35,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
                 else if(geom->type == "cylinder"){
                     UrdfCylinderPtr cylGeom = std::static_pointer_cast<UrdfCylinder>(geom);
 
-                    ChSharedPtr<ChCylinderShape> cyl(new ChCylinderShape);
+                    std::shared_ptr<ChCylinderShape> cyl(new ChCylinderShape);
                     cyl->GetCylinderGeometry().p1 = ChVectord(0, cylGeom->length/2.0, 0);
                     cyl->GetCylinderGeometry().p2 = ChVectord(0, -cylGeom->length/2.0, 0);
                     cyl->GetCylinderGeometry().rad = cylGeom->radius;
@@ -47,7 +47,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
                     AssimpLoader ai(meshGeom->file, ChVectord(meshGeom->scale.x, meshGeom->scale.z, meshGeom->scale.y));
                     std::shared_ptr<geometry::ChTriangleMeshConnected> chMesh = ai.toChronoTriMesh();
 
-                    ChSharedPtr<ChTriangleMeshShape> mesh(new ChTriangleMeshShape);
+                    std::shared_ptr<ChTriangleMeshShape> mesh(new ChTriangleMeshShape);
                     mesh->SetMesh(*chMesh);
                     body->AddAsset(mesh);
                 }
@@ -108,7 +108,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
 
     for(auto joint : urdfLoader.getJoints()){
         if(joint->type == "revolute"){
-            ChSharedPtr<ChLinkLockRevolute> chJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
+            std::shared_ptr<ChLinkLockRevolute> chJoint = std::shared_ptr<ChLinkLockRevolute>(new ChLinkLockRevolute);
             chJoint->SetName(joint->name.c_str());
 
             //Get parent body frame
@@ -128,7 +128,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
             _system->AddLink(chJoint);
         }
         else if(joint->type == "engine"){
-            ChSharedPtr<ChLinkEngine> chJoint = ChSharedPtr<ChLinkEngine>(new ChLinkEngine);
+            std::shared_ptr<ChLinkEngine> chJoint = std::shared_ptr<ChLinkEngine>(new ChLinkEngine);
             chJoint->SetName(joint->name.c_str());
 
             //Get parent body frame
@@ -149,7 +149,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
             _system->AddLink(chJoint);
         }
         else if(joint->type == "fixed"){
-            ChSharedPtr<ChLinkLockLock> chJoint = ChSharedPtr<ChLinkLockLock>(new ChLinkLockLock);
+            std::shared_ptr<ChLinkLockLock> chJoint = std::shared_ptr<ChLinkLockLock>(new ChLinkLockLock);
             chJoint->SetName(joint->name.c_str());
 
             //Get parent body frame

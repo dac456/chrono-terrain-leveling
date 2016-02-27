@@ -43,11 +43,11 @@ namespace fs = boost::filesystem;
 //Usually I'm against this, but Chrono classes are all prefixed with 'Ch' so name collision isn't likely
 using namespace chrono;
 
-typedef ChSharedPtr<ChMaterialSurface> ChMaterialPtr;
-typedef ChSharedPtr<ChMaterialSurfaceDEM> ChDEMMaterialPtr;
-typedef ChSharedPtr<ChBody> ChBodyPtr;
-typedef ChSharedPtr<ChAssetLevel> ChAssetLevelPtr;
-typedef ChSharedPtr<ChLink> ChLinkPtr;
+typedef std::shared_ptr<ChMaterialSurface> ChMaterialPtr;
+typedef std::shared_ptr<ChMaterialSurfaceDEM> ChDEMMaterialPtr;
+typedef std::shared_ptr<ChBody> ChBodyPtr;
+typedef std::shared_ptr<ChAssetLevel> ChAssetLevelPtr;
+typedef std::shared_ptr<ChLink> ChLinkPtr;
 
 typedef ChVector<double> ChVectord;
 typedef ChVector<float> ChVectorf;

@@ -69,7 +69,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             firstShoeBody->SetBodyFixed(false);
 
             //Create Irrlicht asset for shoe
-            ChSharedPtr<ChTriangleMeshShape> shoeMeshAsset(new ChTriangleMeshShape);
+            std::shared_ptr<ChTriangleMeshShape> shoeMeshAsset(new ChTriangleMeshShape);
             shoeMeshAsset->SetMesh(*_shoeMesh);
             firstShoeBody->AddAsset(shoeMeshAsset);
 
@@ -140,7 +140,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
                 previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, rotation);
             }
 
-            ChSharedPtr<ChLinkLockRevolute> finalJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
+            std::shared_ptr<ChLinkLockRevolute> finalJoint = std::shared_ptr<ChLinkLockRevolute>(new ChLinkLockRevolute);
             finalJoint->Initialize(previousShoeBody, firstShoeBody, ChCoordsys<>(ChVectord(brPos.x, brPos.y+_wheelRadius, pz), QUNIT));
 
             _assembly->getSystem()->AddLink(finalJoint);
@@ -164,15 +164,15 @@ void TrackedVehicle::setSpeeds(double left, double right){
     std::vector<ChLinkPtr> links = _assembly->getLinks();
     for(auto link : links){
         if(std::string(link->GetName()).find("fl_Wheel") != std::string::npos){
-            if(ChSharedPtr<ChLinkEngine> chJoint = link.DynamicCastTo<ChLinkEngine>()){
-                if(ChSharedPtr<ChFunction_Const> fn = chJoint->Get_spe_funct().DynamicCastTo<ChFunction_Const>()){
+            if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
+                if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
                     fn->Set_yconst(left);
                 }
             }
         }
         if(std::string(link->GetName()).find("fr_Wheel") != std::string::npos){
-            if(ChSharedPtr<ChLinkEngine> chJoint = link.DynamicCastTo<ChLinkEngine>()){
-                if(ChSharedPtr<ChFunction_Const> fn = chJoint->Get_spe_funct().DynamicCastTo<ChFunction_Const>()){
+            if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
+                if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
                     fn->Set_yconst(right);
                 }
             }
@@ -187,7 +187,7 @@ ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoe
     nextShoeBody->SetBodyFixed(false);
 
     //Create Irrlicht asset for shoe
-    ChSharedPtr<ChTriangleMeshShape> shoeAsset(new ChTriangleMeshShape);
+    std::shared_ptr<ChTriangleMeshShape> shoeAsset(new ChTriangleMeshShape);
     shoeAsset->SetMesh(*_shoeMesh);
     nextShoeBody->AddAsset(shoeAsset);
 
@@ -209,7 +209,7 @@ ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoe
 
     _assembly->getSystem()->AddBody(nextShoeBody);
 
-    ChSharedPtr<ChLinkLockRevolute> shoeJoint = ChSharedPtr<ChLinkLockRevolute>(new ChLinkLockRevolute);
+    std::shared_ptr<ChLinkLockRevolute> shoeJoint = std::shared_ptr<ChLinkLockRevolute>(new ChLinkLockRevolute);
     shoeJoint->Initialize(nextShoeBody, previousShoeBody, ChCoordsys<>(shoePosition, QUNIT));
 
     _assembly->getSystem()->AddLink(shoeJoint);

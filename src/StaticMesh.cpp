@@ -32,7 +32,7 @@ StaticMesh::StaticMesh(ChSystem* system, std::string name, std::string file, ChV
     _body->GetCollisionModel()->BuildModel();
 
     //Create Irrlicht asset
-    ChSharedPtr<ChTriangleMeshShape> meshAsset(new ChTriangleMeshShape);
+    std::shared_ptr<ChTriangleMeshShape> meshAsset(new ChTriangleMeshShape);
     meshAsset->SetMesh(*colMesh);
     _body->AddAsset(meshAsset);
 
