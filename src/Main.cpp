@@ -125,13 +125,13 @@ int main(int argc, char* argv[])
 
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(4.0,3.0,0), static_cast<ChSystem*>(system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(-22.0,2.0,0.0), static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);
 
-    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("terrain3.png"));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 2.0, 100.0, 0.25, true, false);
+    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("mound.png"));
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 4.0, 100.0, 0.1, true, true);
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 
             //Convienience methods for scene setup
             app.AddTypicalLogo();
-            app.AddTypicalCamera(irr::core::vector3df(14,8,14));
+            app.AddTypicalCamera(irr::core::vector3df(14,18,14));
             app.AddTypicalSky();
             app.AddTypicalLights();
 
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
         app.SetPictureFilebase("anim/picture");
 
         app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
-        app.SetCamera(ChVectord(18,8,18), ChVectord(0,0,0), 50.0);
+        app.SetCamera(ChVectord(14,18,14), ChVectord(0,0,0), 50.0);
 
         // --Optional: add further POV commands, for example in this case:
         //     create an area light for soft shadows
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
             std::cout << "start step" << std::endl;
 
             std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-            daguAlg->step(dt);
+            if(system->GetChTime() > 1.0) daguAlg->step(dt);
             system->DoStepDynamics(dt);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
 
             std::cout << "time= " << system->GetChTime() << std::endl;
 
-            app.ExportData();
+            if(system->GetChTime() > 1.0) app.ExportData();
         }
     }
 
