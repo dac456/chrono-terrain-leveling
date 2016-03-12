@@ -5,6 +5,7 @@
 #include "ParticleSystem.hpp"
 #include "AlgorithmBasic.hpp"
 #include "HeightMap.hpp"
+#include "RayGrid.hpp"
 
 #include <chrono/core/ChFileutils.h>
 #include <chrono_postprocess/ChPovRay.h>
@@ -124,14 +125,20 @@ int main(int argc, char* argv[])
     //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
 
 
+    const double particleSize = 0.15;
+
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(-22.0,2.0,0.0), static_cast<ChSystem*>(system));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(-30.0,2.0,0.0), static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);
 
     HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("mound.png"));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 4.0, 100.0, 0.1, true, true);
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 4.0, 100.0, particleSize, true, false);
+
+    //TODO: set ray grid from height map? One ray cell per pixel
+    ChFileutils::MakeDirectory("raygrid");
+    RayGridPtr rg = std::make_shared<RayGrid>(system, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight(), hm->getWidth());
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
@@ -158,7 +165,13 @@ int main(int argc, char* argv[])
                                           ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
                                           irr::video::SColor(255, 60, 60, 60), true);
 
+                rg->castRays();
                 daguAlg->step(dt);
+
+                //for(auto r : rg->getRayOrigins()){
+                //    irrlicht::ChIrrTools::drawSegment(app.GetVideoDriver(), r, ChVectord(r.x, -1.0, r.z));
+                //}
+
                 app.DoStep();
 
                 app.EndScene();
@@ -211,7 +224,8 @@ int main(int argc, char* argv[])
             std::cout << "start step" << std::endl;
 
             std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-            if(system->GetChTime() > 1.0) daguAlg->step(dt);
+            if(system->GetChTime() > 0.2) daguAlg->step(dt);
+            if(system->GetChTime() > 0.2) rg->castRays();
             system->DoStepDynamics(dt);
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 

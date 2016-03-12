@@ -63,6 +63,7 @@ class AssimpLoader;
 class HeightMap;
 class ParticleSystem;
 class Platform;
+class RayGrid;
 class StaticMesh;
 class TrackedVehicle;
 class UrdfLoader;
@@ -72,6 +73,7 @@ typedef std::shared_ptr<Assembly> AssemblyPtr;
 typedef std::shared_ptr<HeightMap> HeightMapPtr;
 typedef std::shared_ptr<ParticleSystem> ParticleSystemPtr;
 typedef std::shared_ptr<Platform> PlatformPtr;
+typedef std::shared_ptr<RayGrid> RayGridPtr;
 typedef std::shared_ptr<StaticMesh> StaticMeshPtr;
 typedef std::shared_ptr<TrackedVehicle> TrackedVehiclePtr;
 
