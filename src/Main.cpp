@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
     AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);
 
     HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("mound.png"));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 4.0, 100.0, particleSize, true, false);
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 1.0, 100.0, particleSize, true, false);
 
     //TODO: set ray grid from height map? One ray cell per pixel
     ChFileutils::MakeDirectory("raygrid");
