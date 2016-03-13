@@ -18,6 +18,7 @@ namespace po = boost::program_options;
 double dt = 0.01; //Default timestep
 size_t numThreads = 8; //Default thread count
 bool renderOffline = false;
+bool rayGridOnly = false;
 double timeout = 5.0;
 
 //temp//
@@ -43,7 +44,8 @@ int main(int argc, char* argv[])
         ("dt", po::value<double>(), "Timestep size in seconds (default 1e-2)")
         ("nt", po::value<int>(), "Number of threads to use where parallel is available (default 8)")
         ("timeout", po::value<double>(), "Timestep to halt simulation in seconds (default 5.0)")
-        ("offline", "Render offline to povray")
+        ("offline", "Render offline")
+        ("raygrid", "Output from raygrid only with --offline")
     ;
 
     po::variables_map vm;
@@ -69,6 +71,10 @@ int main(int argc, char* argv[])
 
     if(vm.count("offline")){
         renderOffline = true;
+    }
+
+    if(vm.count("raygrid")){
+        rayGridOnly = true;
     }
 
     std::cout << "dt: " << dt << std::endl;
@@ -143,7 +149,7 @@ int main(int argc, char* argv[])
 
     //TODO: set ray grid from height map? One ray cell per pixel
     ChFileutils::MakeDirectory("raygrid");
-    RayGridPtr rg = std::make_shared<RayGrid>(system, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight(), hm->getWidth());
+    RayGridPtr rg = std::make_shared<RayGrid>(system, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight()*2, hm->getWidth()*2);
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
@@ -186,60 +192,78 @@ int main(int argc, char* argv[])
         #endif //SIM_USE_PARALLEL
     }
     else{
-        ChPovRay app = ChPovRay(system);
+        if(!rayGridOnly){
+            ChPovRay app = ChPovRay(system);
 
-        app.SetTemplateFile(GetChronoDataFile("_template_POV.pov"));
-        app.SetOutputScriptFile("rendering_frames.pov");
-        app.SetOutputDataFilebase("my_state");
-        app.SetPictureFilebase("picture");
+            app.SetTemplateFile(GetChronoDataFile("_template_POV.pov"));
+            app.SetOutputScriptFile("rendering_frames.pov");
+            app.SetOutputDataFilebase("my_state");
+            app.SetPictureFilebase("picture");
 
-        ChFileutils::MakeDirectory("output");
-        ChFileutils::MakeDirectory("anim");
+            ChFileutils::MakeDirectory("output");
+            ChFileutils::MakeDirectory("anim");
 
-        app.SetOutputDataFilebase("output/my_state");
-        app.SetPictureFilebase("anim/picture");
+            app.SetOutputDataFilebase("output/my_state");
+            app.SetPictureFilebase("anim/picture");
 
-        app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
-        app.SetCamera(ChVectord(14,18,14), ChVectord(0,0,0), 50.0);
+            app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
+            app.SetCamera(ChVectord(14,18,14), ChVectord(0,0,0), 50.0);
 
-        // --Optional: add further POV commands, for example in this case:
-        //     create an area light for soft shadows
-        /*app.SetCustomPOVcommandsScript(
-            " \
-            light_source {   \
-                <2, 10, -3>  \
-                color rgb<1.2,1.2,1.2> \
-                area_light <4, 0, 0>, <0, 0, 4>, 8, 8 \
-                adaptive 1 \
-                jitter\
-            } \
-        ");*/
-        app.SetCustomPOVcommandsScript(
-            " \
-            light_source { \
-                <1000,1000,-1000>, rgb <1,1,1> \
-            } \
-        ");
+            // --Optional: add further POV commands, for example in this case:
+            //     create an area light for soft shadows
+            /*app.SetCustomPOVcommandsScript(
+                " \
+                light_source {   \
+                    <2, 10, -3>  \
+                    color rgb<1.2,1.2,1.2> \
+                    area_light <4, 0, 0>, <0, 0, 4>, 8, 8 \
+                    adaptive 1 \
+                    jitter\
+                } \
+            ");*/
+            app.SetCustomPOVcommandsScript(
+                " \
+                light_source { \
+                    <1000,1000,-1000>, rgb <1,1,1> \
+                } \
+            ");
 
-        app.AddAll();
+            app.AddAll();
 
-        app.ExportScript();
+            app.ExportScript();
 
-        while(system->GetChTime() < timeout){
-            std::cout << "start step" << std::endl;
+            while(system->GetChTime() < timeout){
+                std::cout << "start step" << std::endl;
 
-            std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-            if(system->GetChTime() > 0.2) daguAlg->step(dt);
-            if(system->GetChTime() > 0.2) rg->castRays();
-            system->DoStepDynamics(dt);
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+                std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+                if(system->GetChTime() > 0.2) daguAlg->step(dt);
+                if(system->GetChTime() > 0.2) rg->castRays();
+                system->DoStepDynamics(dt);
+                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-            auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
-            std::cout << "Step took " << millis << "ms" << std::endl;
+                auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
+                std::cout << "Step took " << millis << "ms" << std::endl;
 
-            std::cout << "time= " << system->GetChTime() << std::endl;
+                std::cout << "time= " << system->GetChTime() << std::endl;
 
-            if(system->GetChTime() > 1.0) app.ExportData();
+                if(system->GetChTime() > 1.0) app.ExportData();
+            }
+        }
+        else{
+            while(system->GetChTime() < timeout){
+                std::cout << "start step" << std::endl;
+
+                std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+                if(system->GetChTime() > 0.2) daguAlg->step(dt);
+                if(system->GetChTime() > 0.2) rg->castRays();
+                system->DoStepDynamics(dt);
+                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+                auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
+                std::cout << "Step took " << millis << "ms" << std::endl;
+
+                std::cout << "time= " << system->GetChTime() << std::endl;
+            }
         }
     }
 
