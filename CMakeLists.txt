@@ -66,7 +66,7 @@ endif(WIN32)
 
 find_package(ZLIB REQUIRED)
 #find_package(Assimp REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system filesystem)
+find_package(Boost REQUIRED COMPONENTS system filesystem program_options)
 
 link_directories(${Boost_LIBRARY_DIRS})
 if(USE_PARALLEL)

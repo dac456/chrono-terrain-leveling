@@ -12,6 +12,9 @@
 #include <chrono_postprocess/ChPovRayAssetCustom.h>
 using namespace postprocess;
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 double dt = 0.01; //Default timestep
 size_t numThreads = 8; //Default thread count
 bool renderOffline = false;
@@ -32,40 +35,42 @@ bool monitor_bilaterals = true;
 int bilateral_frame_interval = 100;
 //temp//
 
-void readArgs(int argc, char* argv[]){
-    int current = 1;
-    if(argc > 1){
-        while(current < argc && argv[current] != nullptr){
-            if(strcmp(argv[current],"--dt") == 0){
-                if(argv[current+1] != nullptr){
-                    dt = atof(argv[current+1]);
-                    current++;
-                }
-            }
-            if(strcmp(argv[current],"--nt") == 0){
-                if(argv[current+1] != nullptr){
-                    numThreads = atoi(argv[current+1]);
-                    current++;
-                }
-            }
-            if(strcmp(argv[current], "--offline") == 0){
-                renderOffline = true;
-            }
-            if(strcmp(argv[current], "--timeout") == 0){
-                if(argv[current+1] != nullptr){
-                    timeout = atof(argv[current+1]);
-                    current++;
-                }
-            }
-
-            current++;
-        }
-    }
-}
-
 int main(int argc, char* argv[])
 {
-    readArgs(argc, argv);
+    po::options_description desc("supported options");
+    desc.add_options()
+        ("help", "Display program options.")
+        ("dt", po::value<double>(), "Timestep size in seconds (default 1e-2)")
+        ("nt", po::value<int>(), "Number of threads to use where parallel is available (default 8)")
+        ("timeout", po::value<double>(), "Timestep to halt simulation in seconds (default 5.0)")
+        ("offline", "Render offline to povray")
+    ;
+
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
+
+    if(vm.count("help")){
+        std::cout << desc << std::endl;
+        return 1;
+    }
+
+    if(vm.count("dt")){
+        dt = vm["dt"].as<double>();
+    }
+
+    if(vm.count("nt")){
+        numThreads = vm["nt"].as<int>();
+    }
+
+    if(vm.count("timeout")){
+        timeout = vm["tiemout"].as<double>();
+    }
+
+    if(vm.count("offline")){
+        renderOffline = true;
+    }
+
     std::cout << "dt: " << dt << std::endl;
     std::cout << "nt: " << numThreads << std::endl;
 
