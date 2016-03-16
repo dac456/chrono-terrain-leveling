@@ -24,7 +24,9 @@ public:
     ~RayGrid();
 
     void castRays();
+    std::pair<int, int> transformRealPositionToGrid(ChVectord p);
 
+    std::pair<double,double> getDistancePerPixel();
     std::vector<ChVectord> getRayOrigins();
 };
 

@@ -11,7 +11,7 @@ private:
 
 public:
     Assembly(ChSystem* system);
-    Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system);
+    Assembly(UrdfLoader urdfLoader, ChVectord position, ChQuatd orientation, ChSystem* system);
     ~Assembly();
 
     ChSystem* getSystem();

@@ -41,6 +41,23 @@ RayGrid::~RayGrid(){
     delete[] _grid;
 }
 
+std::pair<int,int> RayGrid::transformRealPositionToGrid(ChVectord p){
+    std::pair<double,double> dpp = getDistancePerPixel();
+
+    //TODO: reverse x and z?
+    int px = (p.x*dpp.first)*_numDivWidth;
+    int py = (p.z*dpp.second)*_numDivLength;
+
+    return std::make_pair(px, py);
+}
+
+std::pair<double,double> RayGrid::getDistancePerPixel(){
+    double dx = _width / _numDivWidth;
+    double dy = _length / _numDivLength;
+
+    return std::make_pair(dx, dy);
+}
+
 void RayGrid::castRays(){
     for(size_t i=0; i<_numDivLength; i++){
         for(size_t j=0; j<_numDivWidth; j++){

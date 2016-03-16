@@ -8,10 +8,10 @@ Assembly::Assembly(ChSystem* system)
 
 }
 
-Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
+Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position,ChQuatd orientation, ChSystem* system)
     : _system(system)
 {
-    ChFrameMoving<> initFrame(position, QUNIT);
+    ChFrameMoving<> initFrame(position, orientation);
 
     for(auto link : urdfLoader.getLinks()){
         ChBodyPtr body = ChBodyPtr(new ChBody(DEFAULT_BODY));
@@ -95,6 +95,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position, ChSystem* system)
         }
 
         //TODO: generate unique ID
+        body->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0); // prevent assemblys from showing up in ray cast
         body->GetCollisionModel()->SetFamily(3);
         body->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(3);
 

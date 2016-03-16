@@ -2,6 +2,10 @@
 #include "AssimpLoader.hpp"
 #include "Assembly.hpp"
 
+/**
+TODO: TrackedVehicle does not handle the orientation of the Assembly
+    Assumes r=p=y = 0.0
+*/
 TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius)
     : _name(name),
       _assembly(assembly),
@@ -85,6 +89,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             firstShoeBody->GetCollisionModel()->AddTriangleMesh(*(_collisionMesh.get()), false, false);
             //firstShoeBody->GetCollisionModel()->AddBox(shoeDim.x/2.0, shoeDim.y/2.0, shoeDim.z/2.0, ChVectord(0,0,0));
 
+            firstShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0);
             firstShoeBody->GetCollisionModel()->SetFamily(4);
             firstShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(4);
             firstShoeBody->GetCollisionModel()->BuildModel();
@@ -203,6 +208,7 @@ ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoe
     nextShoeBody->GetCollisionModel()->AddTriangleMesh(*(_collisionMesh.get()), false, false);
     //nextShoeBody->GetCollisionModel()->AddBox(shoeDim.x/2.0, shoeDim.y/2.0, shoeDim.z/2.0, ChVectord(0,0,0));
 
+    nextShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0);
     nextShoeBody->GetCollisionModel()->SetFamily(4);
     nextShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(4);
     nextShoeBody->GetCollisionModel()->BuildModel();

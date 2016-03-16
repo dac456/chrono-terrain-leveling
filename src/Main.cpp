@@ -6,19 +6,18 @@
 #include "AlgorithmBasic.hpp"
 #include "HeightMap.hpp"
 #include "RayGrid.hpp"
+#include "Config.hpp"
 
 #include <chrono/core/ChFileutils.h>
 #include <chrono_postprocess/ChPovRay.h>
 #include <chrono_postprocess/ChPovRayAssetCustom.h>
 using namespace postprocess;
 
-#include <boost/program_options.hpp>
-namespace po = boost::program_options;
-
 double dt = 0.01; //Default timestep
 size_t numThreads = 8; //Default thread count
 bool renderOffline = false;
 bool rayGridOnly = false;
+double startTime = 0.0;
 double timeout = 5.0;
 
 //temp//
@@ -43,10 +42,13 @@ int main(int argc, char* argv[])
         ("help", "Display program options.")
         ("dt", po::value<double>(), "Timestep size in seconds (default 1e-2)")
         ("nt", po::value<int>(), "Number of threads to use where parallel is available (default 8)")
+        ("start", po::value<double>(), "Timestep to start capturing frame data (default 0.0)")
         ("timeout", po::value<double>(), "Timestep to halt simulation in seconds (default 5.0)")
         ("offline", "Render offline")
         ("raygrid", "Output from raygrid only with --offline")
     ;
+
+    Config cfg("config.ini");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -65,8 +67,12 @@ int main(int argc, char* argv[])
         numThreads = vm["nt"].as<int>();
     }
 
+    if(vm.count("start")){
+        startTime = vm["start"].as<double>();
+    }
+
     if(vm.count("timeout")){
-        timeout = vm["tiemout"].as<double>();
+        timeout = vm["timeout"].as<double>();
     }
 
     if(vm.count("offline")){
@@ -139,17 +145,28 @@ int main(int argc, char* argv[])
     const double particleSize = 0.15;
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, ChVectord(-30.0,2.0,0.0), static_cast<ChSystem*>(system));
+    ChVectord startPos = ChVectord(
+        cfg.getVariables()["vehicle_start.x"].as<double>(),
+        cfg.getVariables()["vehicle_start.y"].as<double>(),
+        cfg.getVariables()["vehicle_start.z"].as<double>()
+    );
+    ChQuatd startOrient;
+    startOrient.Q_from_NasaAngles(ChVectord(
+        cfg.getVariables()["vehicle_start.h"].as<double>(),
+        cfg.getVariables()["vehicle_start.r"].as<double>(),
+        cfg.getVariables()["vehicle_start.p"].as<double>()
+    ));
+    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
     AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);
 
-    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile("mound.png"));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, 1.0, 100.0, particleSize, true, false);
+    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile(cfg.getVariables()["map.filename"].as<std::string>()));
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, cfg.getVariables()["map.scale"].as<double>(), 50.0, particleSize, true, false);
 
-    //TODO: set ray grid from height map? One ray cell per pixel
     ChFileutils::MakeDirectory("raygrid");
-    RayGridPtr rg = std::make_shared<RayGrid>(system, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight()*2, hm->getWidth()*2);
+    double rgRes = cfg.getVariables()["raygrid.resolution"].as<double>();
+    RayGridPtr rg = std::make_shared<RayGrid>(system, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight()*rgRes, hm->getWidth()*rgRes);
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
@@ -176,8 +193,8 @@ int main(int argc, char* argv[])
                                           ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
                                           irr::video::SColor(255, 60, 60, 60), true);
 
-                rg->castRays();
-                daguAlg->step(dt);
+                if(system->GetChTime() > startTime)rg->castRays();
+                if(system->GetChTime() > startTime)daguAlg->step(dt);
 
                 //for(auto r : rg->getRayOrigins()){
                 //    irrlicht::ChIrrTools::drawSegment(app.GetVideoDriver(), r, ChVectord(r.x, -1.0, r.z));
@@ -236,8 +253,8 @@ int main(int argc, char* argv[])
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(system->GetChTime() > 0.2) daguAlg->step(dt);
-                if(system->GetChTime() > 0.2) rg->castRays();
+                if(system->GetChTime() > startTime) daguAlg->step(dt);
+                if(system->GetChTime() > startTime) rg->castRays();
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
@@ -254,8 +271,8 @@ int main(int argc, char* argv[])
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(system->GetChTime() > 0.2) daguAlg->step(dt);
-                if(system->GetChTime() > 0.2) rg->castRays();
+                if(system->GetChTime() > startTime) daguAlg->step(dt);
+                if(system->GetChTime() > startTime) rg->castRays();
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
