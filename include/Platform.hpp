@@ -22,6 +22,8 @@ public:
     Platform(TrackedVehiclePtr vehicle, float maxLinear = 10.0f, float maxAngular = 0.34f, int maxRpm = 320);
     ~Platform();
 
+    ChBodyPtr getChassisBody();
+
     float getAccelYaw();
     float getAccelPitch();
     float getAccelRoll();
@@ -42,8 +44,8 @@ public:
     void sense(float dt);
     void act(float dt);
 
-    virtual void senseImpl(float dt) = 0;
-    virtual void actImpl(float dt) = 0;
+    virtual void senseImpl(float dt){};
+    virtual void actImpl(float dt){};
 };
 
 #endif

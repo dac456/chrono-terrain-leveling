@@ -60,6 +60,7 @@ typedef ChMatrixNM<float, 4 ,4> ChMat44f;
 class AlgorithmBasic;
 class Assembly;
 class AssimpLoader;
+class Experiment;
 class HeightMap;
 class ParticleSystem;
 class Platform;
@@ -70,6 +71,7 @@ class UrdfLoader;
 
 typedef std::shared_ptr<AlgorithmBasic> AlgorithmBasicPtr;
 typedef std::shared_ptr<Assembly> AssemblyPtr;
+typedef std::shared_ptr<Experiment> ExperimentPtr;
 typedef std::shared_ptr<HeightMap> HeightMapPtr;
 typedef std::shared_ptr<ParticleSystem> ParticleSystemPtr;
 typedef std::shared_ptr<Platform> PlatformPtr;

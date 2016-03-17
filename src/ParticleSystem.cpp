@@ -16,6 +16,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
         floor->GetCollisionModel()->ClearModel();
         floor->GetCollisionModel()->AddBox((heightMap->getWidth()*particleStep)/2.0, 0.1, (heightMap->getHeight()*particleStep)/2.0);
+        floor->GetCollisionModel()->SetFamily(2);
         floor->GetCollisionModel()->BuildModel();
 
         if(visContainer){
@@ -36,6 +37,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
         wall1->GetCollisionModel()->ClearModel();
         wall1->GetCollisionModel()->AddBox(0.1, maxHeight/2.0 + 0.05, (heightMap->getHeight()*particleStep)/2.0);
+        wall1->GetCollisionModel()->SetFamily(2);
         wall1->GetCollisionModel()->BuildModel();
 
         if(visContainer){
@@ -56,6 +58,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
         wall2->GetCollisionModel()->ClearModel();
         wall2->GetCollisionModel()->AddBox(0.1, maxHeight/2.0 + 0.05, (heightMap->getHeight()*particleStep)/2.0);
+        wall2->GetCollisionModel()->SetFamily(2);
         wall2->GetCollisionModel()->BuildModel();
 
         if(visContainer){
@@ -76,6 +79,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
         wall3->GetCollisionModel()->ClearModel();
         wall3->GetCollisionModel()->AddBox((heightMap->getWidth()*particleStep)/2.0, maxHeight/2.0 + 0.05, 0.1);
+        wall3->GetCollisionModel()->SetFamily(2);
         wall3->GetCollisionModel()->BuildModel();
 
         if(visContainer){
@@ -96,6 +100,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
         wall4->GetCollisionModel()->ClearModel();
         wall4->GetCollisionModel()->AddBox((heightMap->getWidth()*particleStep)/2.0, maxHeight/2.0 + 0.05, 0.1);
+        wall4->GetCollisionModel()->SetFamily(2);
         wall4->GetCollisionModel()->BuildModel();
 
         if(visContainer){

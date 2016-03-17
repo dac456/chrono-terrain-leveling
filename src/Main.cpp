@@ -1,11 +1,4 @@
-#include "UrdfLoader.hpp" //tmp
-#include "Assembly.hpp" //tmp
-#include "StaticMesh.hpp"
-#include "TrackedVehicle.hpp"
-#include "ParticleSystem.hpp"
-#include "AlgorithmBasic.hpp"
-#include "HeightMap.hpp"
-#include "RayGrid.hpp"
+#include "Experiment.hpp"
 #include "Config.hpp"
 
 #include <chrono/core/ChFileutils.h>
@@ -47,8 +40,6 @@ int main(int argc, char* argv[])
         ("offline", "Render offline")
         ("raygrid", "Output from raygrid only with --offline")
     ;
-
-    Config cfg("config.ini");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -140,33 +131,7 @@ int main(int argc, char* argv[])
     mat->SetRestitution(0.4);
 
     //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
-
-
-    const double particleSize = 0.15;
-
-    UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    ChVectord startPos = ChVectord(
-        cfg.getVariables()["vehicle_start.x"].as<double>(),
-        cfg.getVariables()["vehicle_start.y"].as<double>(),
-        cfg.getVariables()["vehicle_start.z"].as<double>()
-    );
-    ChQuatd startOrient;
-    startOrient.Q_from_NasaAngles(ChVectord(
-        cfg.getVariables()["vehicle_start.h"].as<double>(),
-        cfg.getVariables()["vehicle_start.r"].as<double>(),
-        cfg.getVariables()["vehicle_start.p"].as<double>()
-    ));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(system));
-
-    TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
-    AlgorithmBasicPtr daguAlg = std::make_shared<AlgorithmBasic>(dagu);
-
-    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile(cfg.getVariables()["map.filename"].as<std::string>()));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, cfg.getVariables()["map.scale"].as<double>(), 50.0, particleSize, true, false);
-
-    ChFileutils::MakeDirectory("raygrid");
-    double rgRes = cfg.getVariables()["raygrid.resolution"].as<double>();
-    RayGridPtr rg = std::make_shared<RayGrid>(system, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight()*rgRes, hm->getWidth()*rgRes);
+    ExperimentPtr exp = std::make_shared<Experiment>(system, "config.ini");
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
@@ -193,8 +158,7 @@ int main(int argc, char* argv[])
                                           ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
                                           irr::video::SColor(255, 60, 60, 60), true);
 
-                if(system->GetChTime() > startTime)rg->castRays();
-                if(system->GetChTime() > startTime)daguAlg->step(dt);
+                if(system->GetChTime() > startTime) exp->step(dt);
 
                 //for(auto r : rg->getRayOrigins()){
                 //    irrlicht::ChIrrTools::drawSegment(app.GetVideoDriver(), r, ChVectord(r.x, -1.0, r.z));
@@ -253,8 +217,7 @@ int main(int argc, char* argv[])
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(system->GetChTime() > startTime) daguAlg->step(dt);
-                if(system->GetChTime() > startTime) rg->castRays();
+                if(system->GetChTime() > startTime) exp->step(dt);
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
@@ -271,8 +234,7 @@ int main(int argc, char* argv[])
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(system->GetChTime() > startTime) daguAlg->step(dt);
-                if(system->GetChTime() > startTime) rg->castRays();
+                if(system->GetChTime() > startTime) exp->step(dt);
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 

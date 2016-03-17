@@ -14,18 +14,20 @@ public:
     Config(std::string configFile){
         po::options_description desc("Configuration Options");
         desc.add_options()
-            ("vehicle_start.x", po::value<double>())
-            ("vehicle_start.y", po::value<double>())
-            ("vehicle_start.z", po::value<double>())
-            ("vehicle_start.r", po::value<double>())
-            ("vehicle_start.p", po::value<double>())
-            ("vehicle_start.h", po::value<double>())
+            ("vehicle.x", po::value<double>())
+            ("vehicle.y", po::value<double>())
+            ("vehicle.z", po::value<double>())
+            ("vehicle.r", po::value<double>())
+            ("vehicle.p", po::value<double>())
+            ("vehicle.h", po::value<double>())
 
             ("map.filename", po::value<std::string>())
             ("map.scale", po::value<double>())
+            ("map.particle_radius", po::value<double>()->default_value(0.15))
 
             ("raygrid.resolution", po::value<double>())
 
+            ("experiment.name", po::value<std::string>())
             ("experiment.linear", po::value<double>())
             ("experiment.angular", po::value<double>())
         ;

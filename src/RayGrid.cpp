@@ -15,9 +15,11 @@ RayGrid::RayGrid(ChSystem* system, ChVectord centre, double width, double length
     , _numDivLength(numDivLength)
 {
     _grid = new double[numDivLength*numDivWidth];
+    _lastGrid = new double[numDivLength*numDivWidth];
     _gridOut = new unsigned char[numDivLength*numDivWidth];
     for(size_t i=0; i<(numDivLength*numDivWidth); i++){
         _grid[i] = 0.0;
+        _lastGrid[i] = 0.0;
         _gridOut[i] = 0;
     }
 
@@ -38,15 +40,34 @@ RayGrid::RayGrid(ChSystem* system, ChVectord centre, double width, double length
 
 RayGrid::~RayGrid(){
     delete[] _gridOut;
+    delete[] _lastGrid;
     delete[] _grid;
+}
+
+double RayGrid::getWidth(){
+    return _width;
+}
+
+double RayGrid::getLength(){
+    return _length;
+}
+
+size_t RayGrid::getNumDivWidth(){
+    return _numDivWidth;
+}
+
+size_t RayGrid::getNumDivLength(){
+    return _numDivLength;
 }
 
 std::pair<int,int> RayGrid::transformRealPositionToGrid(ChVectord p){
     std::pair<double,double> dpp = getDistancePerPixel();
 
-    //TODO: reverse x and z?
-    int px = (p.x*dpp.first)*_numDivWidth;
-    int py = (p.z*dpp.second)*_numDivLength;
+    double halfWidth = _width * 0.5;
+    double halfLength = _length * 0.5;
+
+    int px = ((p.z+halfWidth)/_width)*_numDivWidth;
+    int py = ((p.x+halfLength)/_length)*_numDivLength;
 
     return std::make_pair(px, py);
 }
@@ -62,6 +83,7 @@ void RayGrid::castRays(){
     for(size_t i=0; i<_numDivLength; i++){
         for(size_t j=0; j<_numDivWidth; j++){
             size_t idx = j + (i*_numDivWidth);
+            _lastGrid[idx] = _grid[idx];
 
             collision::ChCollisionSystem::ChRayhitResult result;
             _system->GetCollisionSystem()->RayHit(_origins[idx], ChVectord(_origins[idx].x, 0.0, _origins[idx].z), result);
@@ -86,4 +108,12 @@ void RayGrid::castRays(){
 
 std::vector<ChVectord> RayGrid::getRayOrigins(){
     return _origins;
+}
+
+double* RayGrid::getRayResults(){
+    return _grid;
+}
+
+double* RayGrid::getLastRayResults(){
+    return _lastGrid;
 }

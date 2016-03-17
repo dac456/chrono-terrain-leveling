@@ -14,6 +14,10 @@ Platform::~Platform(){
 
 }
 
+ChBodyPtr Platform::getChassisBody(){
+    return _chassis;
+}
+
 /*
  Get vehicle yaw angle as would be reported by the accelerometer
 */
