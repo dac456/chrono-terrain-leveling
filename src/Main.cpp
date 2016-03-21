@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 
                 std::cout << "time= " << system->GetChTime() << std::endl;
 
-                if(system->GetChTime() > 1.0) app.ExportData();
+                if(system->GetChTime() > startTime) app.ExportData();
             }
         }
         else{

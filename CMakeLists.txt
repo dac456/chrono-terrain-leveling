@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(chrono-terrain-leveling)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -openmp -march=native -O3 -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -O3 -std=c++11")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
@@ -67,6 +67,7 @@ endif(WIN32)
 find_package(ZLIB REQUIRED)
 #find_package(Assimp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem program_options)
+message("Using Boost libraries: ${Boost_LIBRARIES}")
 
 link_directories(${Boost_LIBRARY_DIRS})
 if(USE_PARALLEL)

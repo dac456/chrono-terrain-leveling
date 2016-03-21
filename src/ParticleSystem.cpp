@@ -126,7 +126,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     const int numDiv = 4;
     std::vector<std::shared_ptr<ChParticlesClones>> particleSubSystem;
 
-    #ifdef SIM_USE_PARALLEL
+    #if 1//SIM_USE_PARALLEL
     size_t numParticles = 0;
     for(int i=0; i<heightMap->getHeight(); i++){
         for(int j=0; j<heightMap->getWidth(); j++){
@@ -145,6 +145,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
                 particle->GetCollisionModel()->ClearModel();
                 particle->GetCollisionModel()->AddSphere(particleSize);
+                particle->GetCollisionModel()->SetFamily(2);
                 particle->GetCollisionModel()->BuildModel();
 
                 //double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * particleDensity;
@@ -176,6 +177,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
         clone->GetCollisionModel()->ClearModel();
         clone->GetCollisionModel()->AddSphere(particleSize);
+        clone->GetCollisionModel()->SetFamily(2);
         clone->GetCollisionModel()->BuildModel();
 
         clone->SetMass(mass);
