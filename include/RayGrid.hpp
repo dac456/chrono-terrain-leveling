@@ -6,6 +6,7 @@
 class RayGrid{
 private:
     ChSystem* _system;
+    po::variables_map _vm;
     size_t _frameCount;
 
     ChVectord _centre;
@@ -21,7 +22,7 @@ private:
     std::vector<ChVectord> _origins;
 
 public:
-    RayGrid(ChSystem* system, ChVectord centre, double width, double length, size_t numDivWidth, size_t numDivLength);
+    RayGrid(ChSystem* system, po::variables_map vm, ChVectord centre, double width, double length, size_t numDivWidth, size_t numDivLength);
     ~RayGrid();
 
     double getWidth();

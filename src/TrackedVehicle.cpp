@@ -124,15 +124,17 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
                 ly = brPos.y + (_wheelRadius * cos(alpha));
                 //position.Set(lx, ly, brPos.z);
                 ChVectord position = ChVectord(lx, ly, pz);
-                rotation = chrono::Q_from_AngAxis(alpha, ChVector<>(0, 0, 1));
+                if(i < numWrap-1) rotation = chrono::Q_from_AngAxis(alpha+0.4, ChVector<>(0, 0, 1));
+                else rotation = chrono::Q_from_AngAxis(alpha, ChVector<>(0, 0, 1));
                 previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, rotation);
             }
+            rotation = chrono::Q_from_AngAxis(CH_C_PI, ChVector<>(0, 0, 1));
             for(size_t i=1; i<=numShoes; i++){
                 px = lx - ((shoeDim.x-0.1)*i);
                 ChVectord position = ChVectord(px, ly, pz);
                 previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, rotation);
             }
-            for(size_t i=0; i<numWrap-1; i++){
+            for(size_t i=0; i<numWrap; i++){
                 //double alpha = (CH_C_PI / ((double)(numWrap))) * ((double)i);
                 double da = CH_C_PI / double(numWrap);
                 alpha += da;
@@ -141,12 +143,13 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
                 ly = brPos.y + (_wheelRadius * cos(alpha));
                 //position.Set(lx, ly, brPos.z);
                 ChVectord position = ChVectord(lx, ly, pz);
-                rotation = chrono::Q_from_AngAxis(alpha, ChVector<>(0, 0, 1));
+                if(i < numWrap-1) rotation = chrono::Q_from_AngAxis(alpha+0.4, ChVector<>(0, 0, 1));
+                else rotation = chrono::Q_from_AngAxis(alpha, ChVector<>(0, 0, 1));
                 previousShoeBody = _createShoe(previousShoeBody, shoeDim, position, rotation);
             }
 
             std::shared_ptr<ChLinkLockRevolute> finalJoint = std::shared_ptr<ChLinkLockRevolute>(new ChLinkLockRevolute);
-            finalJoint->Initialize(previousShoeBody, firstShoeBody, ChCoordsys<>(ChVectord(brPos.x, brPos.y+_wheelRadius, pz), QUNIT));
+            finalJoint->Initialize(previousShoeBody, firstShoeBody, ChCoordsys<>(ChVectord(brPos.x+(shoeDim.x-0.1), brPos.y+_wheelRadius, pz), QUNIT));
 
             _assembly->getSystem()->AddLink(finalJoint);
         }

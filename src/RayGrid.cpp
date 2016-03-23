@@ -5,8 +5,9 @@
 
 #include <chrono/collision/ChCCollisionSystem.h>
 
-RayGrid::RayGrid(ChSystem* system, ChVectord centre, double width, double length, size_t numDivWidth, size_t numDivLength)
+RayGrid::RayGrid(ChSystem* system, po::variables_map vm, ChVectord centre, double width, double length, size_t numDivWidth, size_t numDivLength)
     : _system(system)
+    , _vm(vm)
     , _frameCount(0)
     , _centre(centre)
     , _width(width)
@@ -14,6 +15,8 @@ RayGrid::RayGrid(ChSystem* system, ChVectord centre, double width, double length
     , _numDivWidth(numDivWidth)
     , _numDivLength(numDivLength)
 {
+    fs::create_directories(_vm["output_directory_prefix"].as<std::string>() + "raygrid/");
+
     _grid = new double[numDivLength*numDivWidth];
     _lastGrid = new double[numDivLength*numDivWidth];
     _gridOut = new unsigned char[numDivLength*numDivWidth];
@@ -99,7 +102,7 @@ void RayGrid::castRays(){
     }
 
     std::stringstream ssf;
-    ssf << "./raygrid/frame" << _frameCount << ".tga";
+    ssf << _vm["output_directory_prefix"].as<std::string>() << "raygrid/frame" << _frameCount << ".tga";
     stbi_write_tga(ssf.str().c_str(), _numDivWidth, _numDivLength, 1, &_gridOut[0]);
 
     _frameCount++;

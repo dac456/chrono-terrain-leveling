@@ -1,4 +1,5 @@
 #include "Experiment.hpp"
+#include "Platform.hpp"
 #include "Config.hpp"
 
 #include <chrono/core/ChFileutils.h>
@@ -133,6 +134,10 @@ int main(int argc, char* argv[])
     //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
     ExperimentPtr exp = std::make_shared<Experiment>(system, "config.ini");
 
+    std::string prefix = exp->getVariables()["output_directory_prefix"].as<std::string>();
+    fs::create_directories(prefix + "povray");
+    fs::create_directories(prefix + "anim");
+
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
             irrlicht::ChIrrApp app(system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
@@ -151,6 +156,8 @@ int main(int argc, char* argv[])
             app.AssetUpdateAll();
 
             while(app.GetDevice()->run()){
+                app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(exp->getPlatform()->getChassisBody()->GetPos()));
+
                 app.BeginScene();
                 app.DrawAll();
 
@@ -178,17 +185,10 @@ int main(int argc, char* argv[])
 
             app.SetTemplateFile(GetChronoDataFile("_template_POV.pov"));
             app.SetOutputScriptFile("rendering_frames.pov");
-            app.SetOutputDataFilebase("my_state");
-            app.SetPictureFilebase("picture");
-
-            ChFileutils::MakeDirectory("output");
-            ChFileutils::MakeDirectory("anim");
-
-            app.SetOutputDataFilebase("output/my_state");
+            app.SetOutputDataFilebase("povray/my_state");
             app.SetPictureFilebase("anim/picture");
-
+            app.SetCamera(ChVectord(18,18,18), ChVectord(0.0, 0.0, 0.0), 50.0);
             app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
-            app.SetCamera(ChVectord(14,18,14), ChVectord(0,0,0), 50.0);
 
             // --Optional: add further POV commands, for example in this case:
             //     create an area light for soft shadows
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
 
             app.AddAll();
 
-            app.ExportScript();
+            app.ExportScript(prefix, "rendering_frames.pov");
 
             while(system->GetChTime() < timeout){
                 std::cout << "start step" << std::endl;
@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 
                 std::cout << "time= " << system->GetChTime() << std::endl;
 
-                if(system->GetChTime() > startTime) app.ExportData();
+                if(system->GetChTime() > startTime) app.ExportData(prefix, "povray/my_state");
             }
         }
         else{

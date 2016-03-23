@@ -11,6 +11,9 @@
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 #include <chrono/physics/ChSystem.h>
 #ifdef SIM_USE_PARALLEL
     #include <chrono_parallel/physics/ChSystemParallel.h>

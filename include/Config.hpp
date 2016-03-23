@@ -3,9 +3,6 @@
 
 #include "CtlCommon.hpp"
 
-#include <boost/program_options.hpp>
-namespace po = boost::program_options;
-
 class Config{
 private:
     po::variables_map _vm;
@@ -14,6 +11,9 @@ public:
     Config(std::string configFile){
         po::options_description desc("Configuration Options");
         desc.add_options()
+            ("output_directory_prefix", po::value<std::string>()->required(), "Directory prefix for various simulation output")
+            ("chrono_data_path", po::value<std::string>()->default_value("../data"), "Path for chrono data files")
+
             ("vehicle.x", po::value<double>())
             ("vehicle.y", po::value<double>())
             ("vehicle.z", po::value<double>())

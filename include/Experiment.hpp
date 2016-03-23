@@ -6,6 +6,7 @@
 class Experiment{
 private:
     std::string _name;
+    po::variables_map _vm;
 
     PlatformPtr _platform;
     RayGridPtr _rayGrid;
@@ -20,6 +21,9 @@ public:
 
     void step(double dt);
     void writeFrame();
+
+    PlatformPtr getPlatform();
+    po::variables_map getVariables();
 
 };
 

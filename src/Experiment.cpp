@@ -18,25 +18,27 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     , _angularVel(0.0)
 {
     Config cfg(expConfigFile);
-    po::variables_map vm = cfg.getVariables();
+    _vm = cfg.getVariables();
 
-    _name = vm["experiment.name"].as<std::string>();
+    fs::create_directories(_vm["output_directory_prefix"].as<std::string>() + "framedata/");
+
+    _name = _vm["experiment.name"].as<std::string>();
 
     ChFileutils::MakeDirectory("raygrid");
     ChFileutils::MakeDirectory("framedata");
 
-    double particleSize = vm["map.particle_radius"].as<double>();
+    double particleSize = _vm["map.particle_radius"].as<double>();
 
     ChVectord startPos = ChVectord(
-        vm["vehicle.x"].as<double>(),
-        vm["vehicle.y"].as<double>(),
-        vm["vehicle.z"].as<double>()
+        _vm["vehicle.x"].as<double>(),
+        _vm["vehicle.y"].as<double>(),
+        _vm["vehicle.z"].as<double>()
     );
     ChQuatd startOrient;
     startOrient.Q_from_NasaAngles(ChVectord(
-        vm["vehicle.h"].as<double>(),
-        vm["vehicle.r"].as<double>(),
-        vm["vehicle.p"].as<double>()
+        _vm["vehicle.h"].as<double>(),
+        _vm["vehicle.r"].as<double>(),
+        _vm["vehicle.p"].as<double>()
     ));
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
@@ -46,16 +48,16 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     _platform = std::make_shared<Platform>(dagu);
 
     //TODO: eventually want to load simple algorithms, such as driving forward and backward repeatedly
-    _linearVel = vm["experiment.linear"].as<double>();
-    _angularVel = vm["experiment.angular"].as<double>();
+    _linearVel = _vm["experiment.linear"].as<double>();
+    _angularVel = _vm["experiment.angular"].as<double>();
     _platform->setDesiredLinearVelocity(_linearVel);
     _platform->setDesiredAngularVelocity(_angularVel);
 
-    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile(vm["map.filename"].as<std::string>()));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, vm["map.scale"].as<double>(), 50.0, particleSize, true, false);
+    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile(_vm["map.filename"].as<std::string>()));
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, _vm["map.scale"].as<double>(), 50.0, particleSize, true, false);
 
-    double rgRes = vm["raygrid.resolution"].as<double>();
-    _rayGrid = std::make_shared<RayGrid>(system, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight()*rgRes, hm->getWidth()*rgRes);
+    double rgRes = _vm["raygrid.resolution"].as<double>();
+    _rayGrid = std::make_shared<RayGrid>(system, _vm, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight()*rgRes, hm->getWidth()*rgRes);
 }
 
 Experiment::~Experiment(){}
@@ -69,7 +71,7 @@ void Experiment::step(double dt){
 
 void Experiment::writeFrame(){
     std::stringstream ssf;
-    ssf << "./framedata/frame" << _frameCount << ".dat";
+    ssf << _vm["output_directory_prefix"].as<std::string>() << "framedata/frame" << _frameCount << ".dat";
 
     std::ofstream fout(ssf.str());
 
@@ -128,4 +130,12 @@ void Experiment::writeFrame(){
 
     fout.close();
     _frameCount++;
+}
+
+PlatformPtr Experiment::getPlatform(){
+    return _platform;
+}
+
+po::variables_map Experiment::getVariables(){
+    return _vm;
 }
