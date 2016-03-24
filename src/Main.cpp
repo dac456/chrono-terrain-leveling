@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
     po::options_description desc("supported options");
     desc.add_options()
         ("help", "Display program options.")
+        ("config", po::value<std::string>()->required(), "Experiment configuration file")
         ("dt", po::value<double>(), "Timestep size in seconds (default 1e-2)")
         ("nt", po::value<int>(), "Number of threads to use where parallel is available (default 8)")
         ("start", po::value<double>(), "Timestep to start capturing frame data (default 0.0)")
@@ -49,6 +50,11 @@ int main(int argc, char* argv[])
     if(vm.count("help")){
         std::cout << desc << std::endl;
         return 1;
+    }
+
+    std::string configFile;
+    if(vm.count("config")){
+        configFile = vm["config"].as<std::string>();
     }
 
     if(vm.count("dt")){
@@ -132,7 +138,7 @@ int main(int argc, char* argv[])
     mat->SetRestitution(0.4);
 
     //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
-    ExperimentPtr exp = std::make_shared<Experiment>(system, "config.ini");
+    ExperimentPtr exp = std::make_shared<Experiment>(system, configFile);
 
     std::string prefix = exp->getVariables()["output_directory_prefix"].as<std::string>();
     fs::create_directories(prefix + "povray");
