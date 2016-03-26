@@ -21,8 +21,8 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     _vm = cfg.getVariables();
 
     fs::create_directories(_vm["output_directory_prefix"].as<std::string>() + "framedata/");
-    std::cout << fs::canonical(_vm["chrono_data_path"].as<std::string>()).string() << std::endl;
-    SetChronoDataPath(fs::canonical(_vm["chrono_data_path"].as<std::string>() + '/').string() + '/');
+    std::cout << "Chrono data path: " << fs::canonical(_vm["chrono_data_path"].as<std::string>()).string() << std::endl;
+    SetChronoDataPath(fs::canonical(_vm["chrono_data_path"].as<std::string>()).string() + '/');
 
     _name = _vm["experiment.name"].as<std::string>();
 
