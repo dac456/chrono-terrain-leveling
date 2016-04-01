@@ -16,6 +16,7 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     : _frameCount(0)
     , _linearVel(0.0)
     , _angularVel(0.0)
+    , _warped(false)
     , _enteringX(false)
     , _enteringZ(false)
 {
@@ -77,6 +78,7 @@ void Experiment::step(double dt){
     _rayGrid->castRays();
 
     writeFrame();
+    if(_warped) _warped = false;
 
     ChVectord aabbMin, aabbMax;
     _platform->getChassisBody()->GetTotalAABB(aabbMin, aabbMax);
@@ -90,10 +92,12 @@ void Experiment::step(double dt){
     if(pos.x > (mapLength-vehicleLength) && pos.x < mapLength && !_enteringX){
         _platform->getVehicle()->warpToRelativePosition(ChVectord(-pos.x*2.0, 0, 0));
         _enteringX = true;
+        _warped = true;
     }
     else if(pos.x < (vehicleLength-mapLength) && pos.x > -mapLength && !_enteringX){
         _platform->getVehicle()->warpToRelativePosition(ChVectord(-pos.x*2.0, 0, 0));
         _enteringX = true;
+        _warped = true;
     }
 
     if(_enteringX && !(pos.x > (mapLength-vehicleLength) && pos.x < mapLength) && !(pos.x < (vehicleLength-mapLength) && pos.x > -mapLength)){
@@ -104,11 +108,13 @@ void Experiment::step(double dt){
         _platform->getVehicle()->warpToRelativePosition(ChVectord(0, 0, -pos.z*2.0));
         _platform->setDesiredAngularVelocity(-_platform->getDesiredAngularVelocity());
         _enteringZ = true;
+        _warped = true;
     }
     else if(pos.z < ((vehicleLength)-mapWidth) && pos.z > -mapWidth && !_enteringZ){
         _platform->getVehicle()->warpToRelativePosition(ChVectord(0, 0, -pos.z*2.0));
         _platform->setDesiredAngularVelocity(-_platform->getDesiredAngularVelocity());
         _enteringZ = true;
+        _warped = true;
     }
 
     if(_enteringZ && !(pos.z > (mapWidth-vehicleLength) && pos.z < mapWidth) && !(pos.z < (vehicleLength-mapWidth) && pos.z > -mapWidth)){
@@ -128,6 +134,7 @@ void Experiment::writeFrame(){
     fout << "rw = " << _rayGrid->getWidth() << std::endl;
     fout << "rl = " << _rayGrid->getLength() << std::endl;
 
+    (_warped == true) ? fout << "warped = true" << std::endl : fout << "warped = false" << std::endl;
     std::pair<int,int> transformedPos = _rayGrid->transformRealPositionToGrid(_platform->getChassisBody()->GetPos());
     fout << "vx = " << transformedPos.first << std::endl;
     fout << "vy = " << transformedPos.second << std::endl;
