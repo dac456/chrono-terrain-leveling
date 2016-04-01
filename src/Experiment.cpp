@@ -16,6 +16,8 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     : _frameCount(0)
     , _linearVel(0.0)
     , _angularVel(0.0)
+    , _enteringX(false)
+    , _enteringZ(false)
 {
     Config cfg(expConfigFile);
     _vm = cfg.getVariables();
@@ -52,11 +54,11 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     _platform->setDesiredLinearVelocity(_linearVel);
     _platform->setDesiredAngularVelocity(_angularVel);
 
-    HeightMapPtr hm = std::make_shared<HeightMap>(GetChronoDataFile(_vm["map.filename"].as<std::string>()));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), hm, _vm["map.scale"].as<double>(), 50.0, particleSize, true, false);
+    _hm = std::make_shared<HeightMap>(GetChronoDataFile(_vm["map.filename"].as<std::string>()));
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), _hm, _vm["map.scale"].as<double>(), 50.0, particleSize, true, true);
 
     double rgRes = _vm["raygrid.resolution"].as<double>();
-    _rayGrid = std::make_shared<RayGrid>(system, _vm, ChVectord(0.0, 4.0, 0.0), hm->getHeight()*particleSize*2.0, hm->getWidth()*particleSize*2.0, hm->getHeight()*rgRes, hm->getWidth()*rgRes);
+    _rayGrid = std::make_shared<RayGrid>(system, _vm, ChVectord(0.0, _vm["map.scale"].as<double>(), 0.0), _hm->getHeight()*particleSize*2.0, _hm->getWidth()*particleSize*2.0, _hm->getHeight()*rgRes, _hm->getWidth()*rgRes);
 }
 
 Experiment::~Experiment(){}
@@ -66,6 +68,43 @@ void Experiment::step(double dt){
     _rayGrid->castRays();
 
     writeFrame();
+
+    ChVectord aabbMin, aabbMax;
+    _platform->getChassisBody()->GetTotalAABB(aabbMin, aabbMax);
+
+    double vehicleLength = aabbMax.x - aabbMin.x;
+    double vehicleWidth = aabbMax.z = aabbMin.z;
+    double mapLength = _rayGrid->getLength() * 0.5;
+    double mapWidth = _rayGrid->getWidth() * 0.5;
+
+    ChVectord pos = _platform->getChassisBody()->GetPos();
+    if(pos.x > (mapLength-vehicleLength) && pos.x < mapLength && !_enteringX){
+        _platform->getVehicle()->warpToRelativePosition(ChVectord(-pos.x*2.0, 0, 0));
+        _enteringX = true;
+    }
+    else if(pos.x < (vehicleLength-mapLength) && pos.x > -mapLength && !_enteringX){
+        _platform->getVehicle()->warpToRelativePosition(ChVectord(-pos.x*2.0, 0, 0));
+        _enteringX = true;
+    }
+
+    if(_enteringX && !(pos.x > (mapLength-vehicleLength) && pos.x < mapLength) && !(pos.x < (vehicleLength-mapLength) && pos.x > -mapLength)){
+        _enteringX = false;
+    }
+
+    if(pos.z > (mapWidth-(vehicleLength)) && pos.z < mapWidth && !_enteringZ){
+        _platform->getVehicle()->warpToRelativePosition(ChVectord(0, 0, -pos.z*2.0));
+        _platform->setDesiredAngularVelocity(-_platform->getDesiredAngularVelocity());
+        _enteringZ = true;
+    }
+    else if(pos.z < ((vehicleLength)-mapWidth) && pos.z > -mapWidth && !_enteringZ){
+        _platform->getVehicle()->warpToRelativePosition(ChVectord(0, 0, -pos.z*2.0));
+        _platform->setDesiredAngularVelocity(-_platform->getDesiredAngularVelocity());
+        _enteringZ = true;
+    }
+
+    if(_enteringZ && !(pos.z > (mapWidth-vehicleLength) && pos.z < mapWidth) && !(pos.z < (vehicleLength-mapWidth) && pos.z > -mapWidth)){
+        _enteringZ = false;
+    }
 }
 
 void Experiment::writeFrame(){

@@ -1,5 +1,6 @@
 #include "Experiment.hpp"
 #include "Platform.hpp"
+#include "TrackedVehicle.hpp"
 #include "Config.hpp"
 
 #include <chrono/core/ChFileutils.h>

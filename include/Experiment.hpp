@@ -9,11 +9,15 @@ private:
     po::variables_map _vm;
 
     PlatformPtr _platform;
+    HeightMapPtr _hm;
     RayGridPtr _rayGrid;
     size_t _frameCount;
 
     double _linearVel;
     double _angularVel;
+
+    bool _enteringX;
+    bool _enteringZ;
 
 public:
     Experiment(ChSystem* system, std::string expConfigFile);

@@ -14,6 +14,10 @@ Platform::~Platform(){
 
 }
 
+TrackedVehiclePtr Platform::getVehicle(){
+    return _vehicle;
+}
+
 ChBodyPtr Platform::getChassisBody(){
     return _chassis;
 }
@@ -108,6 +112,9 @@ void Platform::setDesiredAngularVelocity(float v) {
     _desiredAngularVelocity = v;
 }
 
+float Platform::getDesiredAngularVelocity(){
+    return _desiredAngularVelocity;
+}
 
 void Platform::step(float dt) {
     sense(dt);

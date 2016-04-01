@@ -22,6 +22,7 @@ public:
     Platform(TrackedVehiclePtr vehicle, float maxLinear = 10.0f, float maxAngular = 0.34f, int maxRpm = 320);
     ~Platform();
 
+    TrackedVehiclePtr getVehicle();
     ChBodyPtr getChassisBody();
 
     float getAccelYaw();
@@ -38,6 +39,7 @@ public:
 
     void setDesiredLinearVelocity(float v);
     void setDesiredAngularVelocity(float v);
+    float getDesiredAngularVelocity();
 
 	void step(float dt);
 
