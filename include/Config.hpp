@@ -28,6 +28,7 @@ public:
             ("raygrid.resolution", po::value<double>())
 
             ("experiment.name", po::value<std::string>())
+            ("experiment.algorithm", po::value<std::string>())
             ("experiment.linear", po::value<double>())
             ("experiment.angular", po::value<double>())
         ;

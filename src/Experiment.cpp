@@ -46,13 +46,22 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(system));
 
     TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
-    _platform = std::make_shared<Platform>(dagu);
 
-    //TODO: eventually want to load simple algorithms, such as driving forward and backward repeatedly
-    _linearVel = _vm["experiment.linear"].as<double>();
-    _angularVel = _vm["experiment.angular"].as<double>();
-    _platform->setDesiredLinearVelocity(_linearVel);
-    _platform->setDesiredAngularVelocity(_angularVel);
+    if(!_vm.count("experiment.algorithm")){
+        _platform = std::make_shared<Platform>(dagu);
+        _linearVel = _vm["experiment.linear"].as<double>();
+        _angularVel = _vm["experiment.angular"].as<double>();
+        _platform->setDesiredLinearVelocity(_linearVel);
+        _platform->setDesiredAngularVelocity(_angularVel);
+    }
+    else{
+        if(_vm["experiment.algorithm"].as<std::string>() == "basic"){
+            _platform = std::make_shared<AlgorithmBasic>(dagu);
+        }
+        else{
+            std::cout << "Error: Unknown algorithm selected." << std::endl;
+        }
+    }
 
     _hm = std::make_shared<HeightMap>(GetChronoDataFile(_vm["map.filename"].as<std::string>()));
     ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), _hm, _vm["map.scale"].as<double>(), 50.0, particleSize, true, true);
@@ -64,7 +73,7 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
 Experiment::~Experiment(){}
 
 void Experiment::step(double dt){
-    _platform->move();
+    (_vm.count("experiment.algorithm") > 0) ? _platform->step(dt) : _platform->move();
     _rayGrid->castRays();
 
     writeFrame();

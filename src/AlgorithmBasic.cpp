@@ -22,11 +22,11 @@ void AlgorithmBasic::actImpl(float dt) {
     }
     else{
         setDesiredLinearVelocity(2.0f);
-        
+
         double r = ChRandom();
         if(r < 0.25) setDesiredAngularVelocity(1.57);
         else if(r >= 0.25 && r < 0.5) setDesiredAngularVelocity(-1.57);
-        else setDesiredAngularVelocity(0.0f);
+        else if(r > 0.75) setDesiredAngularVelocity(0.0f);
     }
 
     move();
