@@ -39,6 +39,7 @@ public:
 
     void setDesiredLinearVelocity(float v);
     void setDesiredAngularVelocity(float v);
+    float getDesiredLinearVelocity();
     float getDesiredAngularVelocity();
 
 	void step(float dt);

@@ -84,7 +84,7 @@ void Experiment::step(double dt){
     _platform->getChassisBody()->GetTotalAABB(aabbMin, aabbMax);
 
     double vehicleLength = aabbMax.x - aabbMin.x;
-    double vehicleWidth = aabbMax.z = aabbMin.z;
+    double vehicleWidth = aabbMax.z - aabbMin.z;
     double mapLength = _rayGrid->getLength() * 0.5;
     double mapWidth = _rayGrid->getWidth() * 0.5;
 
@@ -140,8 +140,8 @@ void Experiment::writeFrame(){
     fout << "vy = " << transformedPos.second << std::endl;
     fout << "vtheta = " << _platform->getAccelYaw() << std::endl;
 
-    fout << "vdl = " << _linearVel << std::endl;
-    fout << "vda = " << _angularVel << std::endl;
+    fout << "vdl = " << _platform->getDesiredLinearVelocity() << std::endl;
+    fout << "vda = " << _platform->getDesiredAngularVelocity() << std::endl;
 
     ChVectord aabbMin, aabbMax;
     _platform->getChassisBody()->GetTotalAABB(aabbMin, aabbMax);

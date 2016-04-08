@@ -112,6 +112,10 @@ void Platform::setDesiredAngularVelocity(float v) {
     _desiredAngularVelocity = v;
 }
 
+float Platform::getDesiredLinearVelocity(){
+    return _desiredLinearVelocity;
+}
+
 float Platform::getDesiredAngularVelocity(){
     return _desiredAngularVelocity;
 }
