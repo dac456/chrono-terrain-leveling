@@ -29,7 +29,7 @@ float Platform::getAccelYaw(){
     ChFrameMoving<> chassisFrame = _chassis->GetFrame_COG_to_abs();
     ChQuatd orientation = chassisFrame.GetRot();
 
-    return orientation.Q_to_NasaAngles().x;
+    return orientation.Q_to_NasaAngles().z; //heading
 }
 
 /*
@@ -39,7 +39,7 @@ float Platform::getAccelPitch(){
     ChFrameMoving<> chassisFrame = _chassis->GetFrame_COG_to_abs();
     ChQuatd orientation = chassisFrame.GetRot();
 
-    return orientation.Q_to_NasaAngles().z;
+    return orientation.Q_to_NasaAngles().x; //attitude
 }
 
 /*
@@ -49,7 +49,7 @@ float Platform::getAccelRoll(){
     ChFrameMoving<> chassisFrame = _chassis->GetFrame_COG_to_abs();
     ChQuatd orientation = chassisFrame.GetRot();
 
-    return orientation.Q_to_NasaAngles().y;
+    return orientation.Q_to_NasaAngles().y; //bank
 }
 
 /*

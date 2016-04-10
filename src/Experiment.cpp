@@ -136,9 +136,12 @@ void Experiment::writeFrame(){
 
     (_warped == true) ? fout << "warped = true" << std::endl : fout << "warped = false" << std::endl;
     std::pair<int,int> transformedPos = _rayGrid->transformRealPositionToGrid(_platform->getChassisBody()->GetPos());
+    fout << "vxr = " << _platform->getChassisBody()->GetPos().x << std::endl;
+    fout << "vyr = " << _platform->getChassisBody()->GetPos().z << std::endl;
     fout << "vx = " << transformedPos.first << std::endl;
     fout << "vy = " << transformedPos.second << std::endl;
     fout << "vtheta = " << _platform->getAccelYaw() << std::endl;
+    fout << "vpitch = " << _platform->getAccelPitch() << std::endl;
 
     fout << "vdl = " << _platform->getDesiredLinearVelocity() << std::endl;
     fout << "vda = " << _platform->getDesiredAngularVelocity() << std::endl;
