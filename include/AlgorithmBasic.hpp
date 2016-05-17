@@ -10,8 +10,8 @@ public:
     AlgorithmBasic(TrackedVehiclePtr vehicle);
     virtual ~AlgorithmBasic();
 
-    void senseImpl(float dt) override;
-    void actImpl(float dt) override;
+    void senseImpl(float dt) final;
+    void actImpl(float dt) final;
 };
 
 #endif

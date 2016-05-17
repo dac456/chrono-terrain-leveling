@@ -16,6 +16,11 @@ private:
     double _linearVel;
     double _angularVel;
 
+    double _lastX;
+    double _lastY;
+    double _lastLeftSpeed;
+    double _lastRightSpeed;
+
     bool _warped;
     bool _enteringX;
     bool _enteringZ;

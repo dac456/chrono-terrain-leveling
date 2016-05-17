@@ -7,9 +7,12 @@ TODO: TrackedVehicle does not handle the orientation of the Assembly
     Assumes r=p=y = 0.0
 */
 TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius)
-    : _name(name),
-      _assembly(assembly),
-      _wheelRadius(wheelRadius)
+    : _name(name)
+    , _assembly(assembly)
+    , _wheelRadius(wheelRadius)
+    , _leftMotor(0.0)
+    , _rightMotor(0.0)
+
 {
     ChBodyPtr blWheel, brWheel, flWheel, frWheel;
 
@@ -180,6 +183,7 @@ void TrackedVehicle::setSpeeds(double left, double right){
             if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
                 if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
                     fn->Set_yconst(left);
+                    _leftMotor = left;
                 }
             }
         }
@@ -187,10 +191,16 @@ void TrackedVehicle::setSpeeds(double left, double right){
             if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
                 if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
                     fn->Set_yconst(right);
+                    _rightMotor = right;
                 }
             }
         }
     }
+}
+
+void TrackedVehicle::getSpeeds(double& left, double& right){
+    left = _leftMotor;
+    right = _rightMotor;
 }
 
 void TrackedVehicle::warpToRelativePosition(ChVectord p){

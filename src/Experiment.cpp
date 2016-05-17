@@ -16,6 +16,8 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     : _frameCount(0)
     , _linearVel(0.0)
     , _angularVel(0.0)
+    , _lastLeftSpeed(0.0)
+    , _lastRightSpeed(0.0)
     , _warped(false)
     , _enteringX(false)
     , _enteringZ(false)
@@ -42,6 +44,9 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
         _vm["vehicle.r"].as<double>(),
         _vm["vehicle.p"].as<double>()
     ));
+
+    _lastX = startPos.x;
+    _lastY = startPos.z;
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(system));
@@ -138,13 +143,26 @@ void Experiment::writeFrame(){
     std::pair<int,int> transformedPos = _rayGrid->transformRealPositionToGrid(_platform->getChassisBody()->GetPos());
     fout << "vxr = " << _platform->getChassisBody()->GetPos().x << std::endl;
     fout << "vyr = " << _platform->getChassisBody()->GetPos().z << std::endl;
+    fout << "vdxr = " << _platform->getChassisBody()->GetPos().x - _lastX << std::endl;
+    fout << "vdyr = " << _platform->getChassisBody()->GetPos().z - _lastY << std::endl;
     fout << "vx = " << transformedPos.first << std::endl;
     fout << "vy = " << transformedPos.second << std::endl;
     fout << "vtheta = " << _platform->getAccelYaw() << std::endl;
     fout << "vpitch = " << _platform->getAccelPitch() << std::endl;
+    _lastX = _platform->getChassisBody()->GetPos().x;
+    _lastY = _platform->getChassisBody()->GetPos().z;
 
     fout << "vdl = " << _platform->getDesiredLinearVelocity() << std::endl;
     fout << "vda = " << _platform->getDesiredAngularVelocity() << std::endl;
+
+    double leftSpeed, rightSpeed;
+    _platform->getVehicle()->getSpeeds(leftSpeed, rightSpeed);
+    fout << "vleft = " << leftSpeed << std::endl;
+    fout << "vright = " << rightSpeed << std::endl;
+    fout << "vleftlast = " << _lastLeftSpeed << std::endl;
+    fout << "vrightlast = " << _lastRightSpeed << std::endl;
+    _lastLeftSpeed = leftSpeed;
+    _lastRightSpeed = rightSpeed;
 
     ChVectord aabbMin, aabbMax;
     _platform->getChassisBody()->GetTotalAABB(aabbMin, aabbMax);
