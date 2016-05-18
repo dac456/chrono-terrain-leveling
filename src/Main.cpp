@@ -180,6 +180,7 @@ int main(int argc, char* argv[])
                 //}
 
                 app.DoStep();
+                std::cout << "time= " << system->GetChTime() << std::endl;
 
                 app.EndScene();
             }

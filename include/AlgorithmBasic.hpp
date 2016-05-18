@@ -5,6 +5,11 @@
 
 class AlgorithmBasic : public Platform {
 private:
+    bool _turning;
+    bool _waiting;
+    int _turnDirection;
+    size_t _turnTicks;
+    size_t _waitTicks;
 
 public:
     AlgorithmBasic(TrackedVehiclePtr vehicle);
