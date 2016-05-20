@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 
             //Convienience methods for scene setup
             app.AddTypicalLogo();
-            app.AddTypicalCamera(irr::core::vector3df(14,18,14));
+            app.AddTypicalCamera(irr::core::vector3df(4,8,4));
             app.AddTypicalSky();
             app.AddTypicalLights();
 
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
             app.AssetUpdateAll();
 
             while(app.GetDevice()->run()){
-                app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(exp->getPlatform()->getChassisBody()->GetPos()));
+                //app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(exp->getPlatform()->getChassisBody()->GetPos()));
 
                 app.BeginScene();
                 app.DrawAll();

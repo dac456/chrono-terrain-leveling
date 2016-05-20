@@ -42,7 +42,7 @@ void AlgorithmBasic::actImpl(float dt) {
                 _turning = true;
             }
 
-            if(_turnTicks < 60){
+            if(_turnTicks < 120){
                 setDesiredAngularVelocity(1.57 * _turnDirection);
 
                 _turnTicks++;

@@ -32,7 +32,7 @@ public:
     void warpToRelativePosition(ChVectord p);
 
 private:
-    ChBodyPtr _createShoe(ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord shoePosition, ChQuatd shoeRotation = QUNIT);
+    ChBodyPtr _createShoe(ChBodyPtr previousShoeBody, ChBodyPtr templateShoe, ChVectord shoePosition, ChQuatd shoeRotation, ChVectord shoeJointDisplacement);
 
 };
 
