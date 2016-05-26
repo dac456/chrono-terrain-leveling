@@ -18,6 +18,7 @@ private:
 
     double _lastX;
     double _lastY;
+    double _lastTheta;
     double _lastLeftSpeed;
     double _lastRightSpeed;
 

@@ -156,9 +156,10 @@ int main(int argc, char* argv[])
 
             //Convienience methods for scene setup
             app.AddTypicalLogo();
-            app.AddTypicalCamera(irr::core::vector3df(4,8,4));
+            app.AddTypicalCamera(irr::core::vector3df(0,35,0));
             app.AddTypicalSky();
             app.AddTypicalLights();
+            app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(ChVectord(0,0,0)));
 
             app.AssetBindAll();
             app.AssetUpdateAll();
@@ -196,7 +197,7 @@ int main(int argc, char* argv[])
             app.SetOutputScriptFile("rendering_frames.pov");
             app.SetOutputDataFilebase("povray/my_state");
             app.SetPictureFilebase("anim/picture");
-            app.SetCamera(ChVectord(18,18,18), ChVectord(0.0, 0.0, 0.0), 50.0);
+            app.SetCamera(ChVectord(0,35,0), ChVectord(0.0, 0.0, 0.0), 50.0);
             app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
 
             // --Optional: add further POV commands, for example in this case:
@@ -222,11 +223,12 @@ int main(int argc, char* argv[])
 
             app.ExportScript(prefix, "rendering_frames.pov");
 
+            size_t f = 0;
             while(system->GetChTime() < timeout){
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(system->GetChTime() > startTime) exp->step(dt);
+                if(system->GetChTime() > startTime) /*if(f % 4 == 0)*/ exp->step(dt);
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
@@ -236,6 +238,7 @@ int main(int argc, char* argv[])
                 std::cout << "time= " << system->GetChTime() << std::endl;
 
                 if(system->GetChTime() > startTime) app.ExportData(prefix, "povray/my_state");
+                f++;
             }
         }
         else{

@@ -55,6 +55,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
         ChVectord frPos = frWheel->GetCoord().pos;
 
         _wheelBase = fabs(brPos.z - blPos.z);
+        std::cout << "Wheel base: " << _wheelBase << std::endl;
 
         AssimpLoader aiShoe(GetChronoDataFile(shoeVisFile), ChVectord(1.0,1.4,1.4));
         _shoeMesh = aiShoe.toChronoTriMesh();

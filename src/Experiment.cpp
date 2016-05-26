@@ -9,6 +9,7 @@
 #include "TrackedVehicle.hpp"
 #include "ParticleSystem.hpp"
 #include "AlgorithmBasic.hpp"
+#include "AlgorithmRandom.hpp"
 #include "HeightMap.hpp"
 #include "RayGrid.hpp"
 
@@ -47,6 +48,7 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
 
     _lastX = startPos.x;
     _lastY = startPos.z;
+    _lastTheta = 0.0;
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(system));
@@ -63,6 +65,9 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     else{
         if(_vm["experiment.algorithm"].as<std::string>() == "basic"){
             _platform = std::make_shared<AlgorithmBasic>(dagu);
+        }
+        else if(_vm["experiment.algorithm"].as<std::string>() == "random"){
+            _platform = std::make_shared<AlgorithmRandom>(dagu);
         }
         else{
             std::cout << "Error: Unknown algorithm selected." << std::endl;
@@ -139,7 +144,7 @@ void Experiment::writeFrame(){
     fout << "rw = " << _rayGrid->getWidth() << std::endl;
     fout << "rl = " << _rayGrid->getLength() << std::endl;
 
-    (_warped == true) ? fout << "warped = true" << std::endl : fout << "warped = false" << std::endl;
+    (_warped == true) ? fout << "warped = Yes" << std::endl : fout << "warped = No" << std::endl;
     std::pair<int,int> transformedPos = _rayGrid->transformRealPositionToGrid(_platform->getChassisBody()->GetPos());
     fout << "vxr = " << _platform->getChassisBody()->GetPos().x << std::endl;
     fout << "vyr = " << _platform->getChassisBody()->GetPos().z << std::endl;
@@ -148,9 +153,11 @@ void Experiment::writeFrame(){
     fout << "vx = " << transformedPos.first << std::endl;
     fout << "vy = " << transformedPos.second << std::endl;
     fout << "vtheta = " << _platform->getAccelYaw() << std::endl;
+    fout << "vdtheta = " << _platform->getAccelYaw() - _lastTheta << std::endl;
     fout << "vpitch = " << _platform->getAccelPitch() << std::endl;
     _lastX = _platform->getChassisBody()->GetPos().x;
     _lastY = _platform->getChassisBody()->GetPos().z;
+    _lastTheta = _platform->getAccelYaw();
 
     fout << "vdl = " << _platform->getDesiredLinearVelocity() << std::endl;
     fout << "vda = " << _platform->getDesiredAngularVelocity() << std::endl;
