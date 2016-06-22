@@ -22,6 +22,24 @@
       </collision>
     </link>
 
+    <link name="link_Cube">
+      <collision name="Cube">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="5.026439 0.104412 0.760734"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_Cube.001">
+      <collision name="Cube.001">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="5.026439 0.104412 0.760734"/>
+        </geometry>
+      </collision>
+    </link>
+
     <link name="link_bl_Leg">
       <inertial>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -35,9 +53,9 @@
         </geometry>
       </visual>
       <collision name="bl_Leg">
-        <origin xyz="0.518794 0.013661 -0.004787" rpy="0 0 0"/>
+        <origin xyz="0.518794 0.013662 -0.004787" rpy="0 0 0"/>
         <geometry>
-          <box size="1.837331 0.298121 0.712926"/>
+          <box size="1.837332 0.298121 0.712926"/>
         </geometry>
       </collision>
     </link>
@@ -83,7 +101,7 @@
       <collision name="br_Leg">
         <origin xyz="0.511115 0.014924 -0.004787" rpy="0 0 0"/>
         <geometry>
-          <box size="1.837331 0.297859 0.712926"/>
+          <box size="1.837332 0.297859 0.712926"/>
         </geometry>
       </collision>
     </link>
@@ -175,7 +193,7 @@
       <collision name="fr_Leg.001">
         <origin xyz="0.523355 0.017102 -0.004787" rpy="0 0 0"/>
         <geometry>
-          <box size="1.837832 0.297859 0.712926"/>
+          <box size="1.837831 0.297859 0.712926"/>
         </geometry>
       </collision>
     </link>
@@ -205,6 +223,18 @@
         </geometry>
       </collision>
     </link>
+
+    <joint name="link_Cube" type="fixed">
+      <origin xyz="0.015789 1.920648 -0.852022" rpy="-3.141593 0 0"/>
+      <parent link="link_Body"/>
+      <child link="link_Cube"/>
+    </joint>
+
+    <joint name="link_Cube.001" type="fixed">
+      <origin xyz="0.015789 -2.0 -0.852022" rpy="-3.141593 0 0"/>
+      <parent link="link_Body"/>
+      <child link="link_Cube.001"/>
+    </joint>
 
     <joint name="link_bl_Leg" type="fixed">
       <origin xyz="-1.2458 1.218903 -0.142793" rpy="0 2.268928 0"/>

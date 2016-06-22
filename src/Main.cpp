@@ -12,8 +12,8 @@ double dt = 0.01; //Default timestep
 size_t numThreads = 8; //Default thread count
 bool renderOffline = false;
 bool rayGridOnly = false;
-double startTime = 0.0;
-double timeout = 5.0;
+size_t startTime = 0;
+size_t timeout = 500;
 
 //temp//
 double tolerance = 0.1;
@@ -38,8 +38,8 @@ int main(int argc, char* argv[])
         ("config", po::value<std::string>()->required(), "Experiment configuration file")
         ("dt", po::value<double>(), "Timestep size in seconds (default 1e-2)")
         ("nt", po::value<int>(), "Number of threads to use where parallel is available (default 8)")
-        ("start", po::value<double>(), "Timestep to start capturing frame data (default 0.0)")
-        ("timeout", po::value<double>(), "Timestep to halt simulation in seconds (default 5.0)")
+        ("start", po::value<unsigned int>()->default_value(0), "Frame to start capturing frame data (default 0.0)")
+        ("timeout", po::value<unsigned int>()->default_value(500), "Frame to halt simulation in seconds (default 5.0)")
         ("offline", "Render offline")
         ("raygrid", "Output from raygrid only with --offline")
     ;
@@ -68,11 +68,11 @@ int main(int argc, char* argv[])
     }
 
     if(vm.count("start")){
-        startTime = vm["start"].as<double>();
+        startTime = vm["start"].as<unsigned int>();
     }
 
     if(vm.count("timeout")){
-        timeout = vm["timeout"].as<double>();
+        timeout = vm["timeout"].as<unsigned int>();
     }
 
     if(vm.count("offline")){
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
             app.SetOutputScriptFile("rendering_frames.pov");
             app.SetOutputDataFilebase("povray/my_state");
             app.SetPictureFilebase("anim/picture");
-            app.SetCamera(ChVectord(0,35,0), ChVectord(0.0, 0.0, 0.0), 50.0);
+            app.SetCamera(ChVectord(0,45,0), ChVectord(0.0, 0.0, 0.0), 50.0);
             app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
 
             // --Optional: add further POV commands, for example in this case:
@@ -224,36 +224,38 @@ int main(int argc, char* argv[])
             app.ExportScript(prefix, "rendering_frames.pov");
 
             size_t f = 0;
-            while(system->GetChTime() < timeout){
+            while(f < timeout){
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(system->GetChTime() > startTime) /*if(f % 4 == 0)*/ exp->step(dt);
+                if(f > startTime) exp->step(dt);
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
                 auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
                 std::cout << "Step took " << millis << "ms" << std::endl;
 
-                std::cout << "time= " << system->GetChTime() << std::endl;
+                std::cout << "time= " << system->GetChTime() << " frame=" << f << std::endl;
 
-                if(system->GetChTime() > startTime) app.ExportData(prefix, "povray/my_state");
+                if(f > startTime) if(f % 100 == 0) app.ExportData(prefix, "povray/my_state");
                 f++;
             }
         }
         else{
-            while(system->GetChTime() < timeout){
+            size_t f = 0;
+            while(f < timeout){
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(system->GetChTime() > startTime) exp->step(dt);
+                if(f > startTime) exp->step(dt);
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
                 auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
                 std::cout << "Step took " << millis << "ms" << std::endl;
 
-                std::cout << "time= " << system->GetChTime() << std::endl;
+                std::cout << "time= " << system->GetChTime() << " frame=" << f << std::endl;
+                f++;
             }
         }
     }

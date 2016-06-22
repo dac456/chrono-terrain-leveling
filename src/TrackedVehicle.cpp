@@ -57,11 +57,11 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
         _wheelBase = fabs(brPos.z - blPos.z);
         std::cout << "Wheel base: " << _wheelBase << std::endl;
 
-        AssimpLoader aiShoe(GetChronoDataFile(shoeVisFile), ChVectord(1.0,1.4,1.4));
+        AssimpLoader aiShoe(GetChronoDataFile(shoeVisFile), ChVectord(1.0,1.8,1.4));
         _shoeMesh = aiShoe.toChronoTriMesh();
         ChVectord shoeDim = aiShoe.getMeshDimensions();
 
-        AssimpLoader aiCollision(GetChronoDataFile(shoeColFile), ChVectord(1.0,1.4,1.4));
+        AssimpLoader aiCollision(GetChronoDataFile(shoeColFile), ChVectord(1.0,1.8,1.4));
         _collisionMesh = aiCollision.toChronoTriMesh();
 
         //Back wheels are origin of track on each side

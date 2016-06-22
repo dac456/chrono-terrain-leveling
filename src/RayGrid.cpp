@@ -16,6 +16,7 @@ RayGrid::RayGrid(ChSystem* system, po::variables_map vm, ChVectord centre, doubl
     , _numDivLength(numDivLength)
 {
     fs::create_directories(_vm["output_directory_prefix"].as<std::string>() + "raygrid/");
+    fs::create_directories(_vm["output_directory_prefix"].as<std::string>() + "diff/");
 
     _grid = new double[numDivLength*numDivWidth];
     _lastGrid = new double[numDivLength*numDivWidth];
@@ -101,9 +102,21 @@ void RayGrid::castRays(){
         }
     }
 
-    std::stringstream ssf;
-    ssf << _vm["output_directory_prefix"].as<std::string>() << "raygrid/frame" << _frameCount << ".tga";
-    stbi_write_tga(ssf.str().c_str(), _numDivWidth, _numDivLength, 1, &_gridOut[0]);
+    std::stringstream ssFrame;
+    ssFrame << _vm["output_directory_prefix"].as<std::string>() << "raygrid/frame" << _frameCount << ".tga";
+    stbi_write_tga(ssFrame.str().c_str(), _numDivWidth, _numDivLength, 1, &_gridOut[0]);
+
+    std::stringstream ssGridDiff;
+    ssGridDiff << _vm["output_directory_prefix"].as<std::string>() << "diff/frame" << _frameCount << ".txt";
+    std::ofstream fout(ssGridDiff.str());
+    for(size_t i=0; i<_numDivLength; i++){
+        for(size_t j=0; j<_numDivWidth; j++){
+            size_t idx = j + (i*_numDivWidth);
+            double diff = _grid[idx] - _lastGrid[idx];
+            fout << diff << " ";
+        }
+    }
+    fout.close();
 
     _frameCount++;
 

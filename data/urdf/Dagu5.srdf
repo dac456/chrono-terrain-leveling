@@ -6,6 +6,14 @@
       <sphere center="0.0 0.0 0.0" radius="0"/>
     </link_sphere_approximation>
 
+    <link_sphere_approximation link="link_Cube">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_Cube.001">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
     <link_sphere_approximation link="link_bl_Leg">
       <sphere center="0.0 0.0 0.0" radius="0"/>
     </link_sphere_approximation>
@@ -38,41 +46,60 @@
       <sphere center="0.0 0.0 0.0" radius="0"/>
     </link_sphere_approximation>
 
-    <disable_collisions link1="link_fl_Wheel" link2="link_Body"/>
-    <disable_collisions link1="link_fl_Wheel" link2="link_fr_Leg"/>
-    <disable_collisions link1="link_fl_Wheel" link2="link_br_Leg"/>
-    <disable_collisions link1="link_fl_Wheel" link2="link_bl_Leg"/>
-    <disable_collisions link1="link_fl_Wheel" link2="link_fr_Wheel"/>
-    <disable_collisions link1="link_fl_Wheel" link2="link_bl_Wheel"/>
-    <disable_collisions link1="link_fl_Wheel" link2="link_fl_Leg"/>
-    <disable_collisions link1="link_fl_Wheel" link2="link_br_Wheel"/>
-    <disable_collisions link1="link_Body" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_fl_Wheel"/>
+    <disable_collisions link1="link_Body" link2="link_Cube"/>
     <disable_collisions link1="link_Body" link2="link_br_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_Cube.001"/>
     <disable_collisions link1="link_Body" link2="link_bl_Leg"/>
     <disable_collisions link1="link_Body" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_Body" link2="link_br_Wheel"/>
     <disable_collisions link1="link_Body" link2="link_bl_Wheel"/>
     <disable_collisions link1="link_Body" link2="link_fl_Leg"/>
-    <disable_collisions link1="link_Body" link2="link_br_Wheel"/>
-    <disable_collisions link1="link_fr_Leg" link2="link_br_Leg"/>
-    <disable_collisions link1="link_fr_Leg" link2="link_bl_Leg"/>
-    <disable_collisions link1="link_fr_Leg" link2="link_fr_Wheel"/>
-    <disable_collisions link1="link_fr_Leg" link2="link_bl_Wheel"/>
-    <disable_collisions link1="link_fr_Leg" link2="link_fl_Leg"/>
-    <disable_collisions link1="link_fr_Leg" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_Cube"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_br_Leg"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_Cube.001"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_bl_Leg"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_Cube" link2="link_br_Leg"/>
+    <disable_collisions link1="link_Cube" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_Cube" link2="link_Cube.001"/>
+    <disable_collisions link1="link_Cube" link2="link_bl_Leg"/>
+    <disable_collisions link1="link_Cube" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_Cube" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_Cube" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_Cube" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_br_Leg" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_br_Leg" link2="link_Cube.001"/>
     <disable_collisions link1="link_br_Leg" link2="link_bl_Leg"/>
     <disable_collisions link1="link_br_Leg" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_br_Leg" link2="link_br_Wheel"/>
     <disable_collisions link1="link_br_Leg" link2="link_bl_Wheel"/>
     <disable_collisions link1="link_br_Leg" link2="link_fl_Leg"/>
-    <disable_collisions link1="link_br_Leg" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_Cube.001"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_bl_Leg"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_Cube.001" link2="link_bl_Leg"/>
+    <disable_collisions link1="link_Cube.001" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_Cube.001" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_Cube.001" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_Cube.001" link2="link_fl_Leg"/>
     <disable_collisions link1="link_bl_Leg" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_br_Wheel"/>
     <disable_collisions link1="link_bl_Leg" link2="link_bl_Wheel"/>
     <disable_collisions link1="link_bl_Leg" link2="link_fl_Leg"/>
-    <disable_collisions link1="link_bl_Leg" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_fr_Wheel" link2="link_br_Wheel"/>
     <disable_collisions link1="link_fr_Wheel" link2="link_bl_Wheel"/>
     <disable_collisions link1="link_fr_Wheel" link2="link_fl_Leg"/>
-    <disable_collisions link1="link_fr_Wheel" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_fl_Leg"/>
     <disable_collisions link1="link_bl_Wheel" link2="link_fl_Leg"/>
-    <disable_collisions link1="link_bl_Wheel" link2="link_br_Wheel"/>
-    <disable_collisions link1="link_fl_Leg" link2="link_br_Wheel"/>
 
   </robot>
