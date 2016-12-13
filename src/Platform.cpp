@@ -29,17 +29,19 @@ float Platform::getAccelYaw(){
     ChFrameMoving<> chassisFrame = _chassis->GetFrame_COG_to_abs();
     ChQuatd orientation = chassisFrame.GetRot();
 
-    return orientation.Q_to_NasaAngles().z; //heading
+    return orientation.Q_to_NasaAngles().x; //heading
 }
 
 /*
  Get vehicle pitch angle as would be reported by the accelerometer
 */
 float Platform::getAccelPitch(){
-    ChFrameMoving<> chassisFrame = _chassis->GetFrame_COG_to_abs();
-    ChQuatd orientation = chassisFrame.GetRot();
+    //ChFrameMoving<> chassisFrame = _chassis->GetFrame_COG_to_abs();
+    //ChQuatd orientation = chassisFrame.GetRot();
+    //ChQuatd orientation = _chassis->GetRot();
+    ChQuatd orientation = _chassis->GetCoord().rot;
 
-    return orientation.Q_to_NasaAngles().x; //attitude
+    return orientation.Q_to_NasaAngles().z; //attitude
 }
 
 /*
@@ -133,6 +135,8 @@ void Platform::sense(float dt) {
     std::cout << _rotZ << std::endl;
 
     std::cout << "Pitch: " << getAccelPitch() << "(" << (getAccelPitch()*180.0)/CH_C_PI << ")" << std::endl;
+    std::cout << "Roll: " << getAccelRoll() << "(" << (getAccelRoll()*180.0)/CH_C_PI << ")" << std::endl;
+    std::cout << "Yaw: " << getAccelYaw() << "(" << (getAccelYaw()*180.0)/CH_C_PI << ")" << std::endl;
 
     senseImpl(dt);
 }

@@ -116,7 +116,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     double inertia = pow(particleSize, 2) * mass;
 
     ChMaterialPtr particleMat(new ChMaterialSurface);
-    particleMat->SetFriction(1.7);
+    //particleMat->SetFriction(1.7);
 
     std::shared_ptr<ChSphereShape> shape(new ChSphereShape);
     shape->GetSphereGeometry().rad = particleSize;
@@ -140,11 +140,13 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
                 ChBodyPtr particle(new ChBody(DEFAULT_BODY));
                 particle->SetCollide(true);
-                particle->SetBodyFixed(false);
+                particle->SetBodyFixed(true);
                 particle->ConcatenatePreTransformation(bodyFrame);
 
                 particle->GetCollisionModel()->ClearModel();
                 particle->GetCollisionModel()->AddSphere(particleSize);
+                particle->GetCollisionModel()->SetSafeMargin(0.004);
+                particle->GetCollisionModel()->SetEnvelope(0.010);
                 particle->GetCollisionModel()->SetFamily(2);
                 particle->GetCollisionModel()->BuildModel();
 

@@ -100,12 +100,12 @@ void Experiment::step(double dt){
 
     ChVectord pos = _platform->getChassisBody()->GetPos();
     if(pos.x > (mapLength-vehicleLength) && pos.x < mapLength && !_enteringX){
-        _platform->getVehicle()->warpToRelativePosition(ChVectord(-pos.x*2.0, 0, 0));
+        _platform->getVehicle()->warpToRelativePosition(ChVectord(-pos.x*2.0 + 0.5, 1.0, 0));
         _enteringX = true;
         _warped = true;
     }
     else if(pos.x < (vehicleLength-mapLength) && pos.x > -mapLength && !_enteringX){
-        _platform->getVehicle()->warpToRelativePosition(ChVectord(-pos.x*2.0, 0, 0));
+        _platform->getVehicle()->warpToRelativePosition(ChVectord(-pos.x*2.0 - 0.5, 1.0, 0));
         _enteringX = true;
         _warped = true;
     }
@@ -115,13 +115,13 @@ void Experiment::step(double dt){
     }
 
     if(pos.z > (mapWidth-(vehicleLength)) && pos.z < mapWidth && !_enteringZ){
-        _platform->getVehicle()->warpToRelativePosition(ChVectord(0, 0, -pos.z*2.0));
+        _platform->getVehicle()->warpToRelativePosition(ChVectord(0, 1.0, -pos.z*2.0 + 0.5));
         _platform->setDesiredAngularVelocity(-_platform->getDesiredAngularVelocity());
         _enteringZ = true;
         _warped = true;
     }
     else if(pos.z < ((vehicleLength)-mapWidth) && pos.z > -mapWidth && !_enteringZ){
-        _platform->getVehicle()->warpToRelativePosition(ChVectord(0, 0, -pos.z*2.0));
+        _platform->getVehicle()->warpToRelativePosition(ChVectord(0, 1.0, -pos.z*2.0 - 0.5));
         _platform->setDesiredAngularVelocity(-_platform->getDesiredAngularVelocity());
         _enteringZ = true;
         _warped = true;
@@ -155,6 +155,7 @@ void Experiment::writeFrame(){
     fout << "vtheta = " << _platform->getAccelYaw() << std::endl;
     fout << "vdtheta = " << _platform->getAccelYaw() - _lastTheta << std::endl;
     fout << "vpitch = " << _platform->getAccelPitch() << std::endl;
+    fout << "vroll = " << _platform->getAccelRoll() << std::endl;
     _lastX = _platform->getChassisBody()->GetPos().x;
     _lastY = _platform->getChassisBody()->GetPos().z;
     _lastTheta = _platform->getAccelYaw();

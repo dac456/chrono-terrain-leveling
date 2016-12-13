@@ -106,4 +106,8 @@ SOURCE_GROUP_BY_FOLDER(ctl)
 
 add_executable(ctl ${ctl_SRC} ${ctl_HEADERS})
 
+if(BUILD_FOR_DEPLOY)
+    set_property(TARGET ctl APPEND PROPERTY LINK_FLAGS "-Wl,--rpath='/home/danielcook456/lib' -Wl,--dynamic-linker='/home/danielcook456/lib/ld-linux-x86-64.so.2'")
+endif(BUILD_FOR_DEPLOY)
+
 target_link_libraries(ctl ${Boost_LIBRARIES} ${CHRONO_LIBRARIES} ${ZLIB_LIBRARIES} ${USE_TBB_LIBRARIES})

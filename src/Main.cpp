@@ -18,12 +18,12 @@ size_t timeout = 500;
 //temp//
 double tolerance = 0.1;
 
-int max_iteration_bilateral = 100;  // 1000;
-int max_iteration_normal = 0;
-int max_iteration_sliding = 200;  // 2000;
+int max_iteration_bilateral = 30;  // 1000;
+int max_iteration_normal = 30;
+int max_iteration_sliding = 30;  // 2000;
 int max_iteration_spinning = 0;
 
-float contact_recovery_speed = -1;
+float contact_recovery_speed = 10000;
 
 // Periodically monitor maximum bilateral constraint violation
 bool monitor_bilaterals = true;
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 
     if(renderOffline == false){
         #ifdef SIM_USE_IRRLICHT
-            irrlicht::ChIrrApp app(system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,600), false, true);
+            irrlicht::ChIrrApp app(system, L"Terrain Leveling", irr::core::dimension2d<irr::u32>(800,800), false, true);
 
             app.SetStepManage(true);
             app.SetTimestep(dt);
@@ -156,16 +156,16 @@ int main(int argc, char* argv[])
 
             //Convienience methods for scene setup
             app.AddTypicalLogo();
-            app.AddTypicalCamera(irr::core::vector3df(0,35,0));
+            app.AddTypicalCamera(irr::core::vector3df(0,6,-20));
             app.AddTypicalSky();
             app.AddTypicalLights();
-            app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(ChVectord(0,0,0)));
+            app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(ChVectord(-20,0,-10)));
 
             app.AssetBindAll();
             app.AssetUpdateAll();
 
             while(app.GetDevice()->run()){
-                //app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(exp->getPlatform()->getChassisBody()->GetPos()));
+                app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(exp->getPlatform()->getChassisBody()->GetPos()));
 
                 app.BeginScene();
                 app.DrawAll();
@@ -224,6 +224,7 @@ int main(int argc, char* argv[])
             app.ExportScript(prefix, "rendering_frames.pov");
 
             size_t f = 0;
+            std::ofstream fout("./runtime.csv");
             while(f < timeout){
                 std::cout << "start step" << std::endl;
 
@@ -232,14 +233,16 @@ int main(int argc, char* argv[])
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-                auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
-                std::cout << "Step took " << millis << "ms" << std::endl;
+                auto micros = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
+                std::cout << "Step took " << micros << "us" << std::endl;
+                fout << micros << std::endl;
 
                 std::cout << "time= " << system->GetChTime() << " frame=" << f << std::endl;
 
                 if(f > startTime) if(f % 100 == 0) app.ExportData(prefix, "povray/my_state");
                 f++;
             }
+            fout.close();
         }
         else{
             size_t f = 0;

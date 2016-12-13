@@ -26,7 +26,7 @@
       <collision name="Cube">
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <box size="5.026439 0.104412 0.760734"/>
+          <box size="5.526439 0.104412 1.760734"/>
         </geometry>
       </collision>
     </link>
@@ -35,10 +35,11 @@
       <collision name="Cube.001">
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <box size="5.026439 0.104412 0.760734"/>
+          <box size="5.526439 0.104412 1.760734"/>
         </geometry>
       </collision>
     </link>
+
 
     <link name="link_bl_Leg">
       <inertial>
@@ -99,9 +100,9 @@
         </geometry>
       </visual>
       <collision name="br_Leg">
-        <origin xyz="0.511115 0.014924 -0.004787" rpy="0 0 0"/>
+        <origin xyz="0.511115 -0.014852 -0.004787" rpy="0 0 0"/>
         <geometry>
-          <box size="1.837332 0.297859 0.712926"/>
+          <box size="1.837332 0.389566 0.712926"/>
         </geometry>
       </collision>
     </link>
@@ -165,7 +166,7 @@
         </geometry>
       </visual>
       <collision name="Cylinder">
-        <origin xyz="-0.004516 0.169534 0.010326" rpy="-1.570796 0 0"/>
+        <origin xyz="-0.004516 0.169535 0.010326" rpy="-1.570796 0 0"/>
         <geometry>
           <cylinder radius="0.52686" length="0.200036"/>
         </geometry>
@@ -191,9 +192,9 @@
         </geometry>
       </visual>
       <collision name="fr_Leg.001">
-        <origin xyz="0.523355 0.017102 -0.004787" rpy="0 0 0"/>
+        <origin xyz="0.523355 -0.016815 -0.004787" rpy="0 0 0"/>
         <geometry>
-          <box size="1.837831 0.297859 0.712926"/>
+          <box size="1.837831 0.379697 0.712926"/>
         </geometry>
       </collision>
     </link>
@@ -235,6 +236,8 @@
       <parent link="link_Body"/>
       <child link="link_Cube.001"/>
     </joint>
+
+
 
     <joint name="link_bl_Leg" type="fixed">
       <origin xyz="-1.2458 1.218903 -0.142793" rpy="0 2.268928 0"/>
