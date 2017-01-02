@@ -303,24 +303,34 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
 {
     ChBodyPtr blWheel, brWheel, flWheel, frWheel;
 
+    auto redColor = std::make_shared<ChColorAsset>();
+    redColor->SetColor(ChColor(1.0, 0.0, 0.0));
+
+    auto blueColor = std::make_shared<ChColorAsset>();
+    blueColor->SetColor(ChColor(0.0, 0.0, 1.0));
+
     //Check all bodies in assembly and extract the wheels
     std::vector<ChBodyPtr> bodies = _assembly->getBodies();
     for(auto body : bodies){
         if(std::string(body->GetName()).find("bl_Wheel") != std::string::npos){
             blWheel = body;
-            blWheel->GetMaterialSurface()->SetFriction(1.0);
+            blWheel->GetMaterialSurface()->SetFriction(4.0);
+            blWheel->AddAsset(redColor);
         }
         if(std::string(body->GetName()).find("br_Wheel") != std::string::npos){
             brWheel = body;
-            brWheel->GetMaterialSurface()->SetFriction(1.0);
+            brWheel->GetMaterialSurface()->SetFriction(4.0);
+            brWheel->AddAsset(redColor);
         }
         if(std::string(body->GetName()).find("fl_Wheel") != std::string::npos){
             flWheel = body;
-            flWheel->GetMaterialSurface()->SetFriction(1.0);
+            flWheel->GetMaterialSurface()->SetFriction(4.0);
+            flWheel->AddAsset(redColor);
         }
         if(std::string(body->GetName()).find("fr_Wheel") != std::string::npos){
             frWheel = body;
-            frWheel->GetMaterialSurface()->SetFriction(1.0);
+            frWheel->GetMaterialSurface()->SetFriction(4.0);
+            frWheel->AddAsset(redColor);
         }
         if(std::string(body->GetName()).find("Body") != std::string::npos){
             _chassis = body;
@@ -331,9 +341,12 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
     if(!_chassis){
         std::cout << "Chassis not found!" << std::endl;
         //TODO: abort gracefully as without a chassis Platform will not function correctly
+    } else {
+        _chassis->AddAsset(redColor);
     }
 
     //If all wheels are present, generate tracks
+#if 0
     if(blWheel && brWheel && flWheel && frWheel){
         std::cout << "Assembly has all wheels" << std::endl;
         ChVectord blPos = blWheel->GetCoord().pos;
@@ -361,19 +374,21 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             //firstShoeBody->SetMass(0.5);
             firstShoeBody->SetCollide(true);
             firstShoeBody->SetBodyFixed(false);
+            firstShoeBody->GetMaterialSurface()->SetFriction(4.0);
 
             //Create Irrlicht asset for shoe
             std::shared_ptr<ChTriangleMeshShape> shoeMeshAsset(new ChTriangleMeshShape);
             shoeMeshAsset->SetMesh(*_shoeMesh);
             firstShoeBody->AddAsset(shoeMeshAsset);
+            firstShoeBody->AddAsset(blueColor);
 
             double pz = brPos.z;
 
             ChFrameMoving<> shoeFrame(ChVectord(brPos.x, brPos.y + _wheelRadius, pz), Q_from_AngAxis(CH_C_PI, ChVectord(1,0,0)));
             firstShoeBody->ConcatenatePreTransformation(shoeFrame);
 
-            //firstShoeBody->GetCollisionModel()->SetSafeMargin(0.004);
-            //firstShoeBody->GetCollisionModel()->SetEnvelope(0.010);
+            firstShoeBody->GetCollisionModel()->SetSafeMargin(0.004);
+            firstShoeBody->GetCollisionModel()->SetEnvelope(0.010);
 
             firstShoeBody->GetCollisionModel()->ClearModel();
             firstShoeBody->GetCollisionModel()->AddTriangleMesh(*(_collisionMesh.get()), false, false);
@@ -449,6 +464,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             _assembly->getSystem()->AddLink(finalJoint);
         }
     }
+#endif
 }
 
 ChBodyPtr TrackedVehicle::getChassisBody(){
@@ -474,7 +490,23 @@ void TrackedVehicle::setSpeeds(double left, double right){
                 }
             }
         }
+        if(std::string(link->GetName()).find("bl_Wheel") != std::string::npos){
+            if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
+                if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
+                    fn->Set_yconst(left);
+                    _leftMotor = left;
+                }
+            }
+        }
         if(std::string(link->GetName()).find("fr_Wheel") != std::string::npos){
+            if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
+                if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
+                    fn->Set_yconst(right);
+                    _rightMotor = right;
+                }
+            }
+        }
+        if(std::string(link->GetName()).find("br_Wheel") != std::string::npos){
             if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
                 if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
                     fn->Set_yconst(right);
@@ -505,15 +537,20 @@ void TrackedVehicle::warpToRelativePosition(ChVectord p){
 }
 
 ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoeDim, ChVectord shoePosition, ChQuatd shoeRotation){
+    auto blueColor = std::make_shared<ChColorAsset>();
+    blueColor->SetColor(ChColor(0.0, 0.0, 1.0));
+
     ChBodyPtr nextShoeBody(new ChBody(DEFAULT_BODY));
     //nextShoeBody->SetMass(0.5);
     nextShoeBody->SetCollide(true);
     nextShoeBody->SetBodyFixed(false);
+    nextShoeBody->GetMaterialSurface()->SetFriction(4.0);
 
     //Create Irrlicht asset for shoe
     std::shared_ptr<ChTriangleMeshShape> shoeAsset(new ChTriangleMeshShape);
     shoeAsset->SetMesh(*_shoeMesh);
     nextShoeBody->AddAsset(shoeAsset);
+    nextShoeBody->AddAsset(blueColor);
 
     ChFrameMoving<> baseFrame(shoePosition, Q_from_AngAxis(CH_C_PI, ChVectord(1,0,0)));
     ChFrameMoving<> rotFrame(ChVectord(0,0,0), shoeRotation);

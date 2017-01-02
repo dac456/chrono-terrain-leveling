@@ -14,7 +14,8 @@
 #include "RayGrid.hpp"
 
 Experiment::Experiment(ChSystem* system, std::string expConfigFile)
-    : _frameCount(0)
+    : _system(system)
+    , _frameCount(0)
     , _linearVel(0.0)
     , _angularVel(0.0)
     , _lastLeftSpeed(0.0)
@@ -34,6 +35,7 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
 
     double particleSize = _vm["map.particle_radius"].as<double>();
 
+#if 0
     ChVectord startPos = ChVectord(
         _vm["vehicle.x"].as<double>(),
         _vm["vehicle.y"].as<double>(),
@@ -49,6 +51,7 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     _lastX = startPos.x;
     _lastY = startPos.z;
     _lastTheta = 0.0;
+
 
     UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
     AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(system));
@@ -73,9 +76,10 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
             std::cout << "Error: Unknown algorithm selected." << std::endl;
         }
     }
+#endif
 
-    _hm = std::make_shared<HeightMap>(GetChronoDataFile(_vm["map.filename"].as<std::string>()));
-    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), _hm, _vm["map.scale"].as<double>(), 50.0, particleSize, true, true);
+    _hm = std::make_shared<HeightMap>(GetChronoDataFile(_vm["map.filename"].as<std::string>()), _vm["map.xy_scale"].as<double>());
+    ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), _hm, _vm["map.scale"].as<double>(), 300.0/*1788.0*/, particleSize, true, true);
 
     double rgRes = _vm["raygrid.resolution"].as<double>();
     _rayGrid = std::make_shared<RayGrid>(system, _vm, ChVectord(0.0, _vm["map.scale"].as<double>(), 0.0), _hm->getHeight()*particleSize*2.0, _hm->getWidth()*particleSize*2.0, _hm->getHeight()*rgRes, _hm->getWidth()*rgRes);
@@ -83,7 +87,51 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
 
 Experiment::~Experiment(){}
 
-void Experiment::step(double dt){
+void Experiment::step(double dt, bool createPlatform){
+    if(createPlatform) {
+        ChVectord startPos = ChVectord(
+            _vm["vehicle.x"].as<double>(),
+            _vm["vehicle.y"].as<double>(),
+            _vm["vehicle.z"].as<double>()
+        );
+        ChQuatd startOrient;
+        startOrient.Q_from_NasaAngles(ChVectord(
+            _vm["vehicle.h"].as<double>(),
+            _vm["vehicle.r"].as<double>(),
+            _vm["vehicle.p"].as<double>()
+        ));
+
+        _lastX = startPos.x;
+        _lastY = startPos.z;
+        _lastTheta = 0.0;
+
+
+        UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5-Wheeled-Noplow.urdf"));
+        AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(_system));
+
+        TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
+
+        if(!_vm.count("experiment.algorithm")){
+            _platform = std::make_shared<Platform>(dagu);
+            _linearVel = _vm["experiment.linear"].as<double>();
+            _angularVel = _vm["experiment.angular"].as<double>();
+            _platform->setDesiredLinearVelocity(_linearVel);
+            _platform->setDesiredAngularVelocity(_angularVel);
+        }
+        else{
+            if(_vm["experiment.algorithm"].as<std::string>() == "basic"){
+                _platform = std::make_shared<AlgorithmBasic>(dagu);
+            }
+            else if(_vm["experiment.algorithm"].as<std::string>() == "random"){
+                _platform = std::make_shared<AlgorithmRandom>(dagu);
+            }
+            else{
+                std::cout << "Error: Unknown algorithm selected." << std::endl;
+            }
+        }
+    }
+
+
     (_vm.count("experiment.algorithm") > 0) ? _platform->step(dt) : _platform->move();
     _rayGrid->castRays();
 

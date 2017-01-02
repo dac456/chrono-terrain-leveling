@@ -21,6 +21,7 @@ namespace po = boost::program_options;
 #include <chrono/physics/ChParticlesClones.h>
 
 #include <chrono/assets/ChAssetLevel.h>
+#include <chrono/assets/ChColorAsset.h>
 #ifdef SIM_USE_IRRLICHT
     #include <irrlicht.h>
     #include <chrono_irrlicht/ChIrrAppInterface.h>

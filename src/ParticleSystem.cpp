@@ -140,7 +140,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
 
                 ChBodyPtr particle(new ChBody(DEFAULT_BODY));
                 particle->SetCollide(true);
-                particle->SetBodyFixed(true);
+                particle->SetBodyFixed(false);
                 particle->ConcatenatePreTransformation(bodyFrame);
 
                 particle->GetCollisionModel()->ClearModel();

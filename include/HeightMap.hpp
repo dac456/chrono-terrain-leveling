@@ -10,7 +10,7 @@ private:
     int _height;
 
 public:
-    HeightMap(std::string filename);
+    HeightMap(std::string filename, double scale = 1.0);
     ~HeightMap();
 
     float* getHeights();

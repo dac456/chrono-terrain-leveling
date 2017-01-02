@@ -7,6 +7,7 @@ class Experiment{
 private:
     std::string _name;
     po::variables_map _vm;
+    ChSystem* _system;
 
     PlatformPtr _platform;
     HeightMapPtr _hm;
@@ -30,7 +31,7 @@ public:
     Experiment(ChSystem* system, std::string expConfigFile);
     ~Experiment();
 
-    void step(double dt);
+    void step(double dt, bool createPlatform = false);
     void writeFrame();
 
     PlatformPtr getPlatform();

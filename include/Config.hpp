@@ -24,6 +24,7 @@ public:
             ("map.filename", po::value<std::string>())
             ("map.scale", po::value<double>())
             ("map.particle_radius", po::value<double>()->default_value(0.15))
+            ("map.xy_scale", po::value<double>())
 
             ("raygrid.resolution", po::value<double>())
 

@@ -127,8 +127,8 @@ int main(int argc, char* argv[])
         system->GetSettings()->collision.collision_envelope = 0.1 * 0.15;
         system->GetSettings()->collision.bins_per_axis = I3(10, 10, 10);
     #else
-        system->SetIterLCPmaxItersSpeed(100);  // the higher, the easier to keep the constraints 'mounted'.
-        system->SetLcpSolverType(ChSystem::LCP_ITERATIVE_SOR);
+        //system->SetIterLCPmaxItersSpeed(100);  // the higher, the easier to keep the constraints 'mounted'.
+        //system->SetLcpSolverType(ChSystem::LCP_ITERATIVE_SOR);
         //system->SetIterLCPmaxItersSpeed(70);
         //system->SetIterLCPmaxItersStab(15);
     #endif
@@ -164,8 +164,9 @@ int main(int argc, char* argv[])
             app.AssetBindAll();
             app.AssetUpdateAll();
 
+            size_t f = 0;
             while(app.GetDevice()->run()){
-                app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(exp->getPlatform()->getChassisBody()->GetPos()));
+                if(f > startTime) app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(exp->getPlatform()->getChassisBody()->GetPos()));
 
                 app.BeginScene();
                 app.DrawAll();
@@ -174,7 +175,13 @@ int main(int argc, char* argv[])
                                           ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
                                           irr::video::SColor(255, 60, 60, 60), true);
 
-                if(system->GetChTime() > startTime) exp->step(dt);
+                if(f == startTime) {
+                     exp->step(dt, true);
+                     app.AssetBindAll();
+                     app.AssetUpdateAll();
+                 }
+                else if(f > startTime) exp->step(dt);
+                f++;
 
                 //for(auto r : rg->getRayOrigins()){
                 //    irrlicht::ChIrrTools::drawSegment(app.GetVideoDriver(), r, ChVectord(r.x, -1.0, r.z));
@@ -197,7 +204,7 @@ int main(int argc, char* argv[])
             app.SetOutputScriptFile("rendering_frames.pov");
             app.SetOutputDataFilebase("povray/my_state");
             app.SetPictureFilebase("anim/picture");
-            app.SetCamera(ChVectord(0,45,0), ChVectord(0.0, 0.0, 0.0), 50.0);
+            app.SetCamera(ChVectord(0,60,0), ChVectord(0.0, 0.0, 0.0), 60.0);
             app.SetLight(ChVector<>(-3, 4, 2), ChColor(0.15f, 0.15f, 0.12f), false);
 
             // --Optional: add further POV commands, for example in this case:
@@ -229,7 +236,11 @@ int main(int argc, char* argv[])
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(f > startTime) exp->step(dt);
+                if(f == startTime) {
+                    exp->step(dt, true);
+                    app.AddAll();
+                }
+                else if(f > startTime) exp->step(dt);
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
@@ -239,7 +250,7 @@ int main(int argc, char* argv[])
 
                 std::cout << "time= " << system->GetChTime() << " frame=" << f << std::endl;
 
-                if(f > startTime) if(f % 100 == 0) app.ExportData(prefix, "povray/my_state");
+                if(f > startTime) if(f % 25 == 0) app.ExportData(prefix);
                 f++;
             }
             fout.close();
