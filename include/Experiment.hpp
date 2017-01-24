@@ -2,6 +2,7 @@
 #define __EXPERIMENT_HPP
 
 #include "CtlCommon.hpp"
+#include "chrono_vehicle/terrain/DeformableTerrain.h"
 
 class Experiment{
 private:
@@ -12,6 +13,7 @@ private:
     PlatformPtr _platform;
     HeightMapPtr _hm;
     RayGridPtr _rayGrid;
+    std::shared_ptr<vehicle::DeformableTerrain> _terrain;
     size_t _frameCount;
 
     double _linearVel;

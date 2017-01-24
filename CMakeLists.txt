@@ -33,23 +33,23 @@ if(USE_IRRLICHT)
     add_definitions( -DSIM_USE_IRRLICHT )
     if(USE_PARALLEL)
         find_package(Chrono REQUIRED
-                     COMPONENTS Irrlicht Parallel PostProcess
+                     COMPONENTS Irrlicht Parallel PostProcess Vehicle
                      CONFIG)
         add_definitions( -DSIM_USE_PARALLEL )
     else(USE_PARALLEL)
         find_package(Chrono REQUIRED
-                     COMPONENTS Irrlicht PostProcess
+                     COMPONENTS Irrlicht PostProcess Vehicle
                      CONFIG)
     endif(USE_PARALLEL)
 else(USE_IRRLICHT)
     if(USE_PARALLEL)
         find_package(Chrono REQUIRED
-                     COMPONENTS Parallel PostProcess
+                     COMPONENTS Parallel PostProcess Vehicle
                      CONFIG)
         add_definitions( -DSIM_USE_PARALLEL )
     else(USE_PARALLEL)
         find_package(Chrono REQUIRED
-                     COMPONENTS PostProcess
+                     COMPONENTS PostProcess Vehicle
                      CONFIG)
     endif(USE_PARALLEL)
 endif(USE_IRRLICHT)

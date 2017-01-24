@@ -1,0 +1,8 @@
+# main SMURF file of model "Dagu5-Wheeled"
+# created with Phobos 0.7 - https://github.com/rock-simulation/phobos
+
+SMURF version: 0.7
+modelname: Dagu5-Wheeled
+date: '20161228_20:37'
+files:
+- Dagu5-Wheeled.urdf

@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<!-- created with Phobos 0.7 -->
+  <robot name="Dagu5-Wheeled">
+
+    <link name="link_Body">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="500.0"/>
+        <inertia ixx="320.401184" ixy="1.258749" ixz="6.643906" iyy="233.601669" iyz="0.888276" izz="275.717407"/>
+      </inertial>
+      <visual name="Body.001">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/Cube.001.obj" scale="2.059298 1.0 0.507399"/>
+        </geometry>
+      </visual>
+      <collision name="Body">
+        <origin xyz="0 0 -0.079788" rpy="0 0 0"/>
+        <geometry>
+          <box size="3.604596 2.184321 0.871725"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_Plow">
+      <visual name="Plow">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.057888 2.566197 0.729745"/>
+        </geometry>
+      </visual>
+      <collision name="Plow.001">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.057888 2.566197 0.729745"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_bl_Leg">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="20.0"/>
+        <inertia ixx="12.39954" ixy="0.039447" ixz="-2.498814" iyy="30.488501" iyz="-0.068993" izz="29.675406"/>
+      </inertial>
+      <visual name="bl_Leg.001">
+        <origin xyz="0 0 0" rpy="-3.141593 0 0"/>
+        <geometry>
+          <mesh filename="meshes/Cube.003.obj" scale="0.68 0.126 0.353675"/>
+        </geometry>
+      </visual>
+      <collision name="bl_Leg">
+        <origin xyz="0.518794 0.013662 -0.004787" rpy="0 0 0"/>
+        <geometry>
+          <box size="1.837332 0.298121 0.712926"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_bl_Wheel">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="10.0"/>
+        <inertia ixx="2.7847" ixy="-2.4e-05" ixz="0.00011" iyy="1.587515" iyz="5.5e-05" izz="1.588269"/>
+      </inertial>
+      <visual name="tractor_wheel.004">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/tractor_wheel.004.obj" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision name="tractor_wheel.007">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/tractor_wheel.007.obj" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_br_Leg">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="20.0"/>
+        <inertia ixx="12.39954" ixy="-0.039444" ixz="2.498815" iyy="30.488501" iyz="-0.068995" izz="29.675413"/>
+      </inertial>
+      <visual name="br_Leg.001">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/Cube.006.obj" scale="0.68 0.126 0.353675"/>
+        </geometry>
+      </visual>
+      <collision name="br_Leg">
+        <origin xyz="0.511115 -0.014852 -0.004787" rpy="0 0 0"/>
+        <geometry>
+          <box size="1.837332 0.389566 0.712926"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_br_Wheel">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="10.0"/>
+        <inertia ixx="2.784698" ixy="-2.4e-05" ixz="0.000111" iyy="1.587515" iyz="5.5e-05" izz="1.588269"/>
+      </inertial>
+      <visual name="tractor_wheel">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/tractor_wheel.obj" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision name="tractor_wheel.005">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/tractor_wheel.001.obj" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_fl_Leg">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="20.0"/>
+        <inertia ixx="12.399551" ixy="0.039452" ixz="-2.498817" iyy="30.488501" iyz="-0.069002" izz="29.675413"/>
+      </inertial>
+      <visual name="fl_Leg">
+        <origin xyz="0 0 0" rpy="-3.141593 0 0"/>
+        <geometry>
+          <mesh filename="meshes/Cube.002.obj" scale="0.680185 0.126111 0.353675"/>
+        </geometry>
+      </visual>
+      <collision name="fl_Leg.001">
+        <origin xyz="0.528119 -0.014687 -0.004787" rpy="0 0 0"/>
+        <geometry>
+          <box size="1.837832 0.298121 0.712926"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_fl_Wheel">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="10.0"/>
+        <inertia ixx="2.784698" ixy="-2.3e-05" ixz="0.000111" iyy="1.587514" iyz="5.5e-05" izz="1.588269"/>
+      </inertial>
+      <visual name="tractor_wheel.003">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/tractor_wheel.003.obj" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision name="tractor_wheel.006">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/tractor_wheel.006.obj" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_fr_Leg">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="20.0"/>
+        <inertia ixx="12.399551" ixy="-0.039455" ixz="2.498813" iyy="30.488501" iyz="-0.069003" izz="29.675413"/>
+      </inertial>
+      <visual name="fr_Leg">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/Cube.005.obj" scale="0.680185 0.126 0.353675"/>
+        </geometry>
+      </visual>
+      <collision name="fr_Leg.001">
+        <origin xyz="0.523355 -0.016815 -0.004787" rpy="0 0 0"/>
+        <geometry>
+          <box size="1.837831 0.379697 0.712926"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="link_fr_Wheel">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="10.0"/>
+        <inertia ixx="2.7847" ixy="-2.3e-05" ixz="0.000111" iyy="1.587514" iyz="5.5e-05" izz="1.588269"/>
+      </inertial>
+      <visual name="tractor_wheel.002">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/tractor_wheel.002.obj" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision name="tractor_wheel.001">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="meshes/tractor_wheel.005.obj" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="link_Plow" type="fixed">
+      <origin xyz="-3.102032 0.038879 -1.46112" rpy="0 0.349066 0"/>
+      <parent link="link_Body"/>
+      <child link="link_Plow"/>
+    </joint>
+
+    <joint name="link_bl_Leg" type="fixed">
+      <origin xyz="-1.2458 1.218903 -0.142793" rpy="0 2.268928 0"/>
+      <parent link="link_Body"/>
+      <child link="link_bl_Leg"/>
+    </joint>
+
+    <joint name="link_bl_Wheel" type="revolute">
+      <origin xyz="1.19065 0.485843 0.090356" rpy="-2.443461 0 -1.570796"/>
+      <parent link="link_bl_Leg"/>
+      <child link="link_bl_Wheel"/>
+      <limit effort="0" velocity="1.0"/>
+    </joint>
+
+    <joint name="link_br_Leg" type="fixed">
+      <origin xyz="-1.2458 -1.2189 -0.142793" rpy="0 2.268928 0"/>
+      <parent link="link_Body"/>
+      <child link="link_br_Leg"/>
+    </joint>
+
+    <joint name="link_br_Wheel" type="revolute">
+      <origin xyz="1.19065 -0.500957 0.090356" rpy="-2.443461 0 -1.570796"/>
+      <parent link="link_br_Leg"/>
+      <child link="link_br_Wheel"/>
+      <limit effort="0" velocity="1.0"/>
+    </joint>
+
+    <joint name="link_fl_Leg" type="fixed">
+      <origin xyz="1.245803 1.218903 -0.142793" rpy="0 0.872665 0"/>
+      <parent link="link_Body"/>
+      <child link="link_fl_Leg"/>
+    </joint>
+
+    <joint name="link_fl_Wheel" type="revolute">
+      <origin xyz="1.185563 0.426807 -0.071985" rpy="2.443461 0 -1.570796"/>
+      <parent link="link_fl_Leg"/>
+      <child link="link_fl_Wheel"/>
+      <limit effort="0" velocity="1.0"/>
+    </joint>
+
+    <joint name="link_fr_Leg" type="fixed">
+      <origin xyz="1.245803 -1.2189 -0.142793" rpy="0 0.872665 0"/>
+      <parent link="link_Body"/>
+      <child link="link_fr_Leg"/>
+    </joint>
+
+    <joint name="link_fr_Wheel" type="revolute">
+      <origin xyz="1.185563 -0.49331 -0.071985" rpy="2.443461 0 -1.570796"/>
+      <parent link="link_fr_Leg"/>
+      <child link="link_fr_Wheel"/>
+      <limit effort="0" velocity="1.0"/>
+    </joint>
+
+  </robot>

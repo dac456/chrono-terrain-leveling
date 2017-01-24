@@ -6,10 +6,14 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     const double particleStep = particleSize*2.0;
 
     if(container){
+        ChDEMMaterialPtr containerMat(new ChMaterialSurfaceDEM);
+        containerMat->SetFriction(0.5);
+
         ChBodyPtr floor(new ChBody(DEFAULT_BODY));
         floor->SetCollide(true);
         floor->SetBodyFixed(true);
-        floor->GetMaterialSurface()->SetFriction(1.0);
+        floor->SetMaterialSurface(containerMat);
+        //floor->GetMaterialSurface()->SetFriction(1.0);
 
         ChFrameMoving<> floorFrame(ChVectord(0, -0.05 - particleSize, 0), QUNIT);
         floor->ConcatenatePreTransformation(floorFrame);
@@ -30,7 +34,8 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         ChBodyPtr wall1(new ChBody(DEFAULT_BODY));
         wall1->SetCollide(true);
         wall1->SetBodyFixed(true);
-        wall1->GetMaterialSurface()->SetFriction(1.0);
+        wall1->SetMaterialSurface(containerMat);
+        //wall1->GetMaterialSurface()->SetFriction(1.0);
 
         ChFrameMoving<> wall1Frame(ChVectord((heightMap->getWidth()*particleStep)/2.0 + 0.05, maxHeight/2.0, 0), QUNIT);
         wall1->ConcatenatePreTransformation(wall1Frame);
@@ -51,7 +56,8 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         ChBodyPtr wall2(new ChBody(DEFAULT_BODY));
         wall2->SetCollide(true);
         wall2->SetBodyFixed(true);
-        wall2->GetMaterialSurface()->SetFriction(1.0);
+        wall2->SetMaterialSurface(containerMat);
+        //wall2->GetMaterialSurface()->SetFriction(1.0);
 
         ChFrameMoving<> wall2Frame(ChVectord(-(heightMap->getWidth()*particleStep)/2.0 - 0.05, maxHeight/2.0, 0), QUNIT);
         wall2->ConcatenatePreTransformation(wall2Frame);
@@ -72,7 +78,8 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         ChBodyPtr wall3(new ChBody(DEFAULT_BODY));
         wall3->SetCollide(true);
         wall3->SetBodyFixed(true);
-        wall3->GetMaterialSurface()->SetFriction(1.0);
+        wall3->SetMaterialSurface(containerMat);
+        //wall3->GetMaterialSurface()->SetFriction(1.0);
 
         ChFrameMoving<> wall3Frame(ChVectord(0.0, maxHeight/2.0, -(heightMap->getHeight()*particleStep)/2.0 - 0.05), QUNIT);
         wall3->ConcatenatePreTransformation(wall3Frame);
@@ -93,7 +100,8 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         ChBodyPtr wall4(new ChBody(DEFAULT_BODY));
         wall4->SetCollide(true);
         wall4->SetBodyFixed(true);
-        wall4->GetMaterialSurface()->SetFriction(1.0);
+        wall4->SetMaterialSurface(containerMat);
+        //wall4->GetMaterialSurface()->SetFriction(1.0);
 
         ChFrameMoving<> wall4Frame(ChVectord(0.0, maxHeight/2.0, (heightMap->getHeight()*particleStep)/2.0 - 0.05), QUNIT);
         wall4->ConcatenatePreTransformation(wall4Frame);
@@ -115,7 +123,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * particleDensity;
     double inertia = pow(particleSize, 2) * mass;
 
-    ChMaterialPtr particleMat(new ChMaterialSurface);
+    ChDEMMaterialPtr particleMat(new ChMaterialSurfaceDEM);
     //particleMat->SetFriction(1.7);
 
     std::shared_ptr<ChSphereShape> shape(new ChSphereShape);
@@ -139,7 +147,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
                 ChFrameMoving<> bodyFrame(pos, QUNIT);
 
                 ChBodyPtr particle(new ChBody(DEFAULT_BODY));
-                particle->SetCollide(true);
+
                 particle->SetBodyFixed(false);
                 particle->ConcatenatePreTransformation(bodyFrame);
 
@@ -149,18 +157,12 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
                 particle->GetCollisionModel()->SetEnvelope(0.010);
                 particle->GetCollisionModel()->SetFamily(2);
                 particle->GetCollisionModel()->BuildModel();
+                particle->SetCollide(true);
 
-                //double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * particleDensity;
-                //double inertia = pow(particleSize, 2) * mass;
                 particle->SetMass(mass);
                 particle->SetInertiaXX(ChVectord(inertia,inertia,inertia));
 
-                //ChMaterialPtr particleMat(new ChMaterialSurface);
-                //particleMat->SetFriction(1.7);
                 particle->SetMaterialSurface(particleMat);
-
-                //std::shared_ptr<ChSphereShape> shape(new ChSphereShape);
-                //shape->GetSphereGeometry().rad = particleSize;
 
                 particle->AddAsset(shape);
 
@@ -171,16 +173,17 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         }
     }
     #else
-    //std::shared_ptr<ChParticlesClones> chParticles(new ChParticlesClones);
-    //chParticles->SetCollide(true);
+    std::shared_ptr<ChParticlesClones> chParticles(new ChParticlesClones);
+
     for(int i=0; i<numDiv; i++){
         std::shared_ptr<ChParticlesClones> clone(new ChParticlesClones);
-        clone->SetCollide(true);
 
         clone->GetCollisionModel()->ClearModel();
         clone->GetCollisionModel()->AddSphere(particleSize);
-        clone->GetCollisionModel()->SetFamily(2);
+        //clone->GetCollisionModel()->SetFamily(2);
         clone->GetCollisionModel()->BuildModel();
+        clone->SetCollide(true);
+
 
         clone->SetMass(mass);
         clone->SetInertiaXX(ChVectord(inertia,inertia,inertia));
@@ -192,23 +195,17 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         particleSubSystem.push_back(clone);
     }
 
-    //chParticles->GetCollisionModel()->ClearModel();
-    //chParticles->GetCollisionModel()->AddSphere(particleSize);
-    //chParticles->GetCollisionModel()->BuildModel();
+    /*chParticles->GetCollisionModel()->ClearModel();
+    chParticles->GetCollisionModel()->AddSphere(particleSize);
+    chParticles->GetCollisionModel()->BuildModel();
+    chParticles->SetCollide(true);
 
-    //double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * particleDensity;
-    //double inertia = pow(particleSize, 2) * mass;
-    //chParticles->SetMass(mass);
-    //chParticles->SetInertiaXX(ChVectord(inertia,inertia,inertia));
+    chParticles->SetMass(mass);
+    chParticles->SetInertiaXX(ChVectord(inertia,inertia,inertia));
 
-    //ChMaterialPtr particleMat(new ChMaterialSurface);
-    //particleMat->SetFriction(1.7);
-    //chParticles->SetMaterialSurface(particleMat);
+    chParticles->SetMaterialSurface(particleMat);
 
-    //std::shared_ptr<ChSphereShape> shape(new ChSphereShape);
-    //shape->GetSphereGeometry().rad = particleSize;
-
-    //chParticles->AddAsset(shape);
+    chParticles->AddAsset(shape);*/
 
     size_t numParticles = 0;
 
@@ -217,12 +214,13 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
         int iMax = (heightMap->getHeight()/numDiv)*(n+1);
 
         for(int i=iMin; i<iMax; i++){
+        //for(int i=0; i<heightMap->getHeight(); i++){
             for(int j=0; j<heightMap->getWidth(); j++){
                 double height = heightMap->getHeights()[j + (i*heightMap->getWidth())] * maxHeight;
                 for(double k=0.0; k<height; k+=particleStep){
                     //ChVectord pos(-0.5 * heightMap->getWidth() + ChRandom() * heightMap->getWidth(), ChRandom() * heightMap->getHeight(), -0.5 * maxHeight + ChRandom() * maxHeight);
                     ChVectord pos(j*particleStep - (heightMap->getWidth()*0.5*particleStep), k, i*particleStep - ((heightMap->getHeight())*0.5*particleStep));
-                    pos += ChVectord(ChRandom()*0.05, 0.15, ChRandom()*0.05);
+                    //pos += ChVectord(ChRandom()*0.05, 0.15, ChRandom()*0.05);
                     //pos += ChVectord(0.0, 0.15, 0.0);
 
                     ChFrameMoving<> bodyFrame(pos, QUNIT);

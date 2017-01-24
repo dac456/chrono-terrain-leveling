@@ -1,7 +1,7 @@
 #include "AlgorithmBasic.hpp"
 
-AlgorithmBasic::AlgorithmBasic(TrackedVehiclePtr vehicle)
-    : Platform(vehicle)
+AlgorithmBasic::AlgorithmBasic(std::shared_ptr<TrackedVehicle> vehicle, std::shared_ptr<vehicle::m113::M113_SimplePowertrain> powertrain, std::shared_ptr<vehicle::DeformableTerrain> terrain)
+    : Platform(vehicle, powertrain, terrain)
     , _turning(false)
     , _waiting(true)
     , _turnDirection(1)
@@ -65,5 +65,5 @@ void AlgorithmBasic::actImpl(float dt) {
         }
     }
 
-    move();
+    move(dt);
 }

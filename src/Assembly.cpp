@@ -95,7 +95,7 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position,ChQuatd orientation
         }
 
         //TODO: generate unique ID
-        body->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0); // prevent assemblys from showing up in ray cast
+        //body->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0); // prevent assemblys from showing up in ray cast
         body->GetCollisionModel()->SetFamily(3);
         body->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(3);
 

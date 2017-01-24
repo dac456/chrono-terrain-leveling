@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!-- created with Phobos 0.7 -->
+  <robot name="Dagu5-Wheeled">
+
+    <link_sphere_approximation link="link_Body">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_Plow">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_bl_Leg">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_bl_Wheel">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_br_Leg">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_br_Wheel">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_fl_Leg">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_fl_Wheel">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_fr_Leg">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <link_sphere_approximation link="link_fr_Wheel">
+      <sphere center="0.0 0.0 0.0" radius="0"/>
+    </link_sphere_approximation>
+
+    <disable_collisions link1="link_br_Wheel" link2="link_bl_Leg"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_Body"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_fl_Wheel"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_br_Leg"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_Plow"/>
+    <disable_collisions link1="link_br_Wheel" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_Body"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_fl_Wheel"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_br_Leg"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_Plow"/>
+    <disable_collisions link1="link_bl_Leg" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_fr_Wheel" link2="link_Body"/>
+    <disable_collisions link1="link_fr_Wheel" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_fr_Wheel" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_fr_Wheel" link2="link_fl_Wheel"/>
+    <disable_collisions link1="link_fr_Wheel" link2="link_br_Leg"/>
+    <disable_collisions link1="link_fr_Wheel" link2="link_Plow"/>
+    <disable_collisions link1="link_fr_Wheel" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_Body" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_fl_Wheel"/>
+    <disable_collisions link1="link_Body" link2="link_br_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_Plow"/>
+    <disable_collisions link1="link_Body" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_bl_Wheel" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_bl_Wheel" link2="link_fl_Wheel"/>
+    <disable_collisions link1="link_bl_Wheel" link2="link_br_Leg"/>
+    <disable_collisions link1="link_bl_Wheel" link2="link_Plow"/>
+    <disable_collisions link1="link_bl_Wheel" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_fl_Wheel"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_br_Leg"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_Plow"/>
+    <disable_collisions link1="link_fr_Leg" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_br_Leg"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_Plow"/>
+    <disable_collisions link1="link_fl_Wheel" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_br_Leg" link2="link_Plow"/>
+    <disable_collisions link1="link_br_Leg" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_Plow" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_Body"/>
+    <disable_collisions link1="link_Body" link2="link_Plow"/>
+    <disable_collisions link1="link_Body" link2="link_fr_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_fr_Wheel"/>
+    <disable_collisions link1="link_Body" link2="link_bl_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_bl_Wheel"/>
+    <disable_collisions link1="link_Body" link2="link_br_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_br_Wheel"/>
+    <disable_collisions link1="link_Body" link2="link_fl_Leg"/>
+    <disable_collisions link1="link_Body" link2="link_fl_Wheel"/>
+    <disable_collisions link1="link_fr_Leg.001" link2="link_fr_Leg.001"/>
+
+  </robot>

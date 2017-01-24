@@ -12,7 +12,7 @@ private:
     size_t _waitTicks;
 
 public:
-    AlgorithmBasic(TrackedVehiclePtr vehicle);
+    AlgorithmBasic(std::shared_ptr<TrackedVehicle> vehicle, std::shared_ptr<vehicle::m113::M113_SimplePowertrain> powertrain, std::shared_ptr<vehicle::DeformableTerrain> terrain);
     virtual ~AlgorithmBasic();
 
     void senseImpl(float dt) final;

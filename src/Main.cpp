@@ -94,12 +94,12 @@ int main(int argc, char* argv[])
     #ifdef SIM_USE_PARALLEL
         std::cout << "Using parallel Chrono system" << std::endl;
 
-        ChSystemParallelDVI* system = new ChSystemParallelDVI();
+        ChSystemParallelDEM* system = new ChSystemParallelDEM();
         system->SetParallelThreadNumber(numThreads);
         CHOMPfunctions::SetNumThreads(numThreads);
     #else
         std::cout << "Using single-threaded Chrono system" << std::endl;
-        ChSystem* system = new ChSystem(1000000);
+        ChSystem* system = new ChSystem();
         //system->ChangeCollisionSystem(new collision::ChCollisionSystemSpheres(1000000));
         system->SetParallelThreadNumber(numThreads);
     #endif
@@ -121,11 +121,11 @@ int main(int argc, char* argv[])
         system->GetSettings()->solver.max_iteration_spinning = max_iteration_spinning;
         system->GetSettings()->solver.alpha = 0;
         system->GetSettings()->solver.contact_recovery_speed = contact_recovery_speed;
-        system->ChangeSolverType(APGD);
+        //system->ChangeSolverType(APGD);
 
         system->GetSettings()->collision.narrowphase_algorithm = NARROWPHASE_HYBRID_MPR;
         system->GetSettings()->collision.collision_envelope = 0.1 * 0.15;
-        system->GetSettings()->collision.bins_per_axis = I3(10, 10, 10);
+        system->GetSettings()->collision.bins_per_axis = vec3(10, 10, 10);
     #else
         //system->SetIterLCPmaxItersSpeed(100);  // the higher, the easier to keep the constraints 'mounted'.
         //system->SetLcpSolverType(ChSystem::LCP_ITERATIVE_SOR);
@@ -134,13 +134,14 @@ int main(int argc, char* argv[])
     #endif
 
     //Default material
-    ChMaterialPtr mat(new ChMaterialSurface);
+    //ChMaterialPtr mat(new ChMaterialSurface);
     //mat->SetYoungModulus(2e6);
-    mat->SetFriction(0.4);
-    mat->SetRestitution(0.4);
+    //mat->SetFriction(0.4);
+    //mat->SetRestitution(0.4);
 
     //StaticMeshPtr smGround = std::make_shared<StaticMesh>(static_cast<ChSystem*>(system), "groundplane", "groundplane.obj", ChVectord(0,0,0), mat);
     ExperimentPtr exp = std::make_shared<Experiment>(system, configFile);
+
 
     std::string prefix = exp->getVariables()["output_directory_prefix"].as<std::string>();
     fs::create_directories(prefix + "povray");
@@ -159,7 +160,7 @@ int main(int argc, char* argv[])
             app.AddTypicalCamera(irr::core::vector3df(0,6,-20));
             app.AddTypicalSky();
             app.AddTypicalLights();
-            app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(ChVectord(-20,0,-10)));
+            app.GetSceneManager()->getActiveCamera()->setTarget(irr::core::vector3dfCH(ChVectord(0,0,0)));
 
             app.AssetBindAll();
             app.AssetUpdateAll();
@@ -171,9 +172,9 @@ int main(int argc, char* argv[])
                 app.BeginScene();
                 app.DrawAll();
 
-                irrlicht::ChIrrTools::drawGrid(app.GetVideoDriver(), 2, 2, 30, 30,
-                                          ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
-                                          irr::video::SColor(255, 60, 60, 60), true);
+                //irrlicht::ChIrrTools::drawGrid(app.GetVideoDriver(), 2, 2, 30, 30,
+                //                          ChCoordsys<>(ChVector<>(0, 0.01, 0), Q_from_AngX(CH_C_PI_2)),
+                //                          irr::video::SColor(255, 60, 60, 60), true);
 
                 if(f == startTime) {
                      exp->step(dt, true);

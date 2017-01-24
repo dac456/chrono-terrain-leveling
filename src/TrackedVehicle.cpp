@@ -7,7 +7,7 @@
 TODO: TrackedVehicle does not handle the orientation of the Assembly
     Assumes r=p=y = 0.0
 */
-TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius)
+Trackedvehicle::m113::M113_Vehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius)
     : _name(name)
     , _assembly(assembly)
     , _wheelRadius(wheelRadius)
@@ -314,22 +314,22 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
     for(auto body : bodies){
         if(std::string(body->GetName()).find("bl_Wheel") != std::string::npos){
             blWheel = body;
-            blWheel->GetMaterialSurface()->SetFriction(4.0);
+            //blWheel->GetMaterialSurface()->SetFriction(4.0);
             blWheel->AddAsset(redColor);
         }
         if(std::string(body->GetName()).find("br_Wheel") != std::string::npos){
             brWheel = body;
-            brWheel->GetMaterialSurface()->SetFriction(4.0);
+            //brWheel->GetMaterialSurface()->SetFriction(4.0);
             brWheel->AddAsset(redColor);
         }
         if(std::string(body->GetName()).find("fl_Wheel") != std::string::npos){
             flWheel = body;
-            flWheel->GetMaterialSurface()->SetFriction(4.0);
+            //flWheel->GetMaterialSurface()->SetFriction(4.0);
             flWheel->AddAsset(redColor);
         }
         if(std::string(body->GetName()).find("fr_Wheel") != std::string::npos){
             frWheel = body;
-            frWheel->GetMaterialSurface()->SetFriction(4.0);
+            //frWheel->GetMaterialSurface()->SetFriction(4.0);
             frWheel->AddAsset(redColor);
         }
         if(std::string(body->GetName()).find("Body") != std::string::npos){
@@ -374,7 +374,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             //firstShoeBody->SetMass(0.5);
             firstShoeBody->SetCollide(true);
             firstShoeBody->SetBodyFixed(false);
-            firstShoeBody->GetMaterialSurface()->SetFriction(4.0);
+            //firstShoeBody->GetMaterialSurface()->SetFriction(4.0);
 
             //Create Irrlicht asset for shoe
             std::shared_ptr<ChTriangleMeshShape> shoeMeshAsset(new ChTriangleMeshShape);
@@ -394,7 +394,7 @@ TrackedVehicle::TrackedVehicle(std::string name, std::string shoeVisFile, std::s
             firstShoeBody->GetCollisionModel()->AddTriangleMesh(*(_collisionMesh.get()), false, false);
             //firstShoeBody->GetCollisionModel()->AddBox(shoeDim.x/2.0, shoeDim.y/2.0, shoeDim.z/2.0, ChVectord(0,0,0));
 
-            firstShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0);
+            //firstShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0);
             firstShoeBody->GetCollisionModel()->SetFamily(4);
             firstShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(4);
             firstShoeBody->GetCollisionModel()->BuildModel();
@@ -490,14 +490,14 @@ void TrackedVehicle::setSpeeds(double left, double right){
                 }
             }
         }
-        if(std::string(link->GetName()).find("bl_Wheel") != std::string::npos){
+        /*if(std::string(link->GetName()).find("bl_Wheel") != std::string::npos){
             if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
                 if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
                     fn->Set_yconst(left);
                     _leftMotor = left;
                 }
             }
-        }
+        }*/
         if(std::string(link->GetName()).find("fr_Wheel") != std::string::npos){
             if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
                 if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
@@ -506,14 +506,14 @@ void TrackedVehicle::setSpeeds(double left, double right){
                 }
             }
         }
-        if(std::string(link->GetName()).find("br_Wheel") != std::string::npos){
+        /*if(std::string(link->GetName()).find("br_Wheel") != std::string::npos){
             if(std::shared_ptr<ChLinkEngine> chJoint = std::dynamic_pointer_cast<ChLinkEngine>(link)){
                 if(std::shared_ptr<ChFunction_Const> fn = std::dynamic_pointer_cast<ChFunction_Const>(chJoint->Get_spe_funct())){
                     fn->Set_yconst(right);
                     _rightMotor = right;
                 }
             }
-        }
+        }*/
     }
 }
 
@@ -544,7 +544,7 @@ ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoe
     //nextShoeBody->SetMass(0.5);
     nextShoeBody->SetCollide(true);
     nextShoeBody->SetBodyFixed(false);
-    nextShoeBody->GetMaterialSurface()->SetFriction(4.0);
+    //nextShoeBody->GetMaterialSurface()->SetFriction(4.0);
 
     //Create Irrlicht asset for shoe
     std::shared_ptr<ChTriangleMeshShape> shoeAsset(new ChTriangleMeshShape);
@@ -564,7 +564,7 @@ ChBodyPtr TrackedVehicle::_createShoe(ChBodyPtr previousShoeBody, ChVectord shoe
     nextShoeBody->GetCollisionModel()->AddTriangleMesh(*(_collisionMesh.get()), false, false);
     //nextShoeBody->GetCollisionModel()->AddBox(shoeDim.x/2.0, shoeDim.y/2.0, shoeDim.z/2.0, ChVectord(0,0,0));
 
-    nextShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0);
+    //nextShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(0);
     nextShoeBody->GetCollisionModel()->SetFamily(4);
     nextShoeBody->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(4);
     nextShoeBody->GetCollisionModel()->BuildModel();

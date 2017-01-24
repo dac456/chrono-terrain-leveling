@@ -4,8 +4,8 @@
 std::default_random_engine generator;
 std::uniform_real_distribution<double> distribution(0.25, 1.0);
 
-AlgorithmRandom::AlgorithmRandom(TrackedVehiclePtr vehicle)
-    : Platform(vehicle)
+AlgorithmRandom::AlgorithmRandom(std::shared_ptr<TrackedVehicle> vehicle, std::shared_ptr<vehicle::m113::M113_SimplePowertrain> powertrain, std::shared_ptr<vehicle::DeformableTerrain> terrain)
+    : Platform(vehicle, powertrain, terrain)
     , _ticks(0)
     , _rand(0.0)
 {
@@ -63,5 +63,5 @@ void AlgorithmRandom::actImpl(float dt) {
 
     _ticks++;
 
-    move();
+    move(dt);
 }

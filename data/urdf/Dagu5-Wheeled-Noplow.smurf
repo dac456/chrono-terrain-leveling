@@ -1,0 +1,8 @@
+# main SMURF file of model "Dagu5-Wheeled-Noplow"
+# created with Phobos 0.7 - https://github.com/rock-simulation/phobos
+
+SMURF version: 0.7
+modelname: Dagu5-Wheeled-Noplow
+date: '20170109_19:25'
+files:
+- Dagu5-Wheeled-Noplow.urdf
