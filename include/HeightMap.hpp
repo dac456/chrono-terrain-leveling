@@ -8,6 +8,8 @@ private:
     float* _heights;
     int _width;
     int _height;
+    int _imgWidth;
+    int _imgHeight;
 
 public:
     HeightMap(std::string filename, double scale = 1.0);
@@ -17,6 +19,9 @@ public:
 
     int getWidth();
     int getHeight();
+
+    int getImageWidth();
+    int getImageHeight();
 };
 
 #endif

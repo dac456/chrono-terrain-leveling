@@ -38,8 +38,6 @@ RayGrid::RayGrid(ChSystem* system, po::variables_map vm, ChVectord centre, doubl
             _origins.push_back(p);
         }
     }
-
-    std::cout << _origins.size() << " " << (_numDivWidth*_numDivLength) << std::endl;
 }
 
 RayGrid::~RayGrid(){

@@ -16,6 +16,9 @@ private:
     std::shared_ptr<vehicle::DeformableTerrain> _terrain;
     size_t _frameCount;
 
+    ChVectord _terrainMin;
+    ChVectord _terrainMax;
+
     double _linearVel;
     double _angularVel;
 
@@ -28,6 +31,9 @@ private:
     bool _warped;
     bool _enteringX;
     bool _enteringZ;
+
+    bool _useParticles;
+    bool _useTracks;
 
 public:
     Experiment(ChSystem* system, std::string expConfigFile);

@@ -11,6 +11,8 @@ HeightMap::HeightMap(std::string filename, double scale)
     int w, h, n;
     unsigned char* data = stbi_load(filename.c_str(), &w, &h, &n, 1);
     if(data){
+        _imgWidth = w;
+        _imgHeight = h;
         /*_heights = new float[x*y];
         _width = x;
         _height = y;
@@ -58,4 +60,12 @@ int HeightMap::getWidth(){
 
 int HeightMap::getHeight(){
     return _height;
+}
+
+int HeightMap::getImageWidth() {
+    return _imgWidth;
+}
+
+int HeightMap::getImageHeight() {
+    return _imgHeight;
 }

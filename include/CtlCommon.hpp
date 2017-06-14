@@ -39,7 +39,7 @@ namespace po = boost::program_options;
 #ifdef SIM_USE_PARALLEL
     #define DEFAULT_BODY new collision::ChCollisionModelParallel
 #else
-    #define DEFAULT_BODY ChMaterialSurfaceBase::DEM
+    #define DEFAULT_BODY ChMaterialSurfaceBase::DVI
 #endif
 
 #define streq(x, y) (strcmp(x, y) == 0)

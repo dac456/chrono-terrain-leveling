@@ -6,8 +6,12 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     const double particleStep = particleSize*2.0;
 
     if(container){
+#ifdef SIM_USE_PARALLEL
         ChDEMMaterialPtr containerMat(new ChMaterialSurfaceDEM);
-        containerMat->SetFriction(0.5);
+#else
+        ChMaterialPtr containerMat(new ChMaterialSurface);
+#endif
+        //containerMat->SetFriction(0.5);
 
         ChBodyPtr floor(new ChBody(DEFAULT_BODY));
         floor->SetCollide(true);
@@ -123,8 +127,12 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
     double mass = (4.0 / 3.0) * CH_C_PI * pow(particleSize, 3.0) * particleDensity;
     double inertia = pow(particleSize, 2) * mass;
 
+#ifdef SIM_USE_PARALLEL
     ChDEMMaterialPtr particleMat(new ChMaterialSurfaceDEM);
-    //particleMat->SetFriction(1.7);
+#else
+    ChMaterialPtr particleMat(new ChMaterialSurface);
+#endif
+    particleMat->SetFriction(1.7);
 
     std::shared_ptr<ChSphereShape> shape(new ChSphereShape);
     shape->GetSphereGeometry().rad = particleSize;
@@ -147,7 +155,7 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
                 ChFrameMoving<> bodyFrame(pos, QUNIT);
 
                 ChBodyPtr particle(new ChBody(DEFAULT_BODY));
-
+                particle->SetCollide(true);
                 particle->SetBodyFixed(false);
                 particle->ConcatenatePreTransformation(bodyFrame);
 
@@ -157,7 +165,6 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
                 particle->GetCollisionModel()->SetEnvelope(0.010);
                 particle->GetCollisionModel()->SetFamily(2);
                 particle->GetCollisionModel()->BuildModel();
-                particle->SetCollide(true);
 
                 particle->SetMass(mass);
                 particle->SetInertiaXX(ChVectord(inertia,inertia,inertia));
@@ -172,6 +179,9 @@ ParticleSystem::ParticleSystem(ChSystem* system, HeightMapPtr heightMap, double 
             }
         }
     }
+
+    std::cout << "ParticleSystem: " << numParticles << " particles" << std::endl;
+    std::cout << "Dimensions: " << heightMap->getWidth()*particleStep << "x" << heightMap->getHeight()*particleStep << std::endl;
     #else
     std::shared_ptr<ChParticlesClones> chParticles(new ChParticlesClones);
 

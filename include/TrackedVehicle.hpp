@@ -21,7 +21,7 @@ private:
     double _rightMotor;
 
 public:
-    TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius);
+    TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius, bool tracks);
     ChBodyPtr getChassisBody();
 
     float getWheelRadius();
@@ -61,7 +61,7 @@ private:
     double _rightMotor;
 
 public:
-    TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius);
+    TrackedVehicle(std::string name, std::string shoeVisFile, std::string shoeColFile, AssemblyPtr assembly, double wheelRadius, bool tracks);
     ChBodyPtr getChassisBody();
 
     float getWheelRadius();

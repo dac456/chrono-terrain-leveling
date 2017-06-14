@@ -26,6 +26,8 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     , _warped(false)
     , _enteringX(false)
     , _enteringZ(false)
+    , _useParticles(false)
+    , _useTracks(false)
 {
     Config cfg(expConfigFile);
     _vm = cfg.getVariables();
@@ -36,10 +38,19 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     vehicle::SetDataPath(fs::canonical(_vm["chrono_data_path"].as<std::string>()).string() + "/vehicle/");
 
     _name = _vm["experiment.name"].as<std::string>();
+    _useTracks = _vm["vehicle.tracks"].as<bool>();
 
     double particleSize = _vm["map.particle_radius"].as<double>();
 
-#if 0
+    if(_vm["map.model"].as<std::string>() == "particle") {
+        _useParticles = true;
+    } else if(_vm["map.model"].as<std::string>() == "scm") {
+        _useParticles = false;
+    } else {
+        std::cout << "Unknown terrain model '" << _vm["map.model"].as<std::string>() << "'" << std::endl;
+    }
+
+#if 1
     ChVectord startPos = ChVectord(
         _vm["vehicle.x"].as<double>(),
         _vm["vehicle.y"].as<double>(),
@@ -57,13 +68,13 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     _lastTheta = 0.0;
 
 
-    UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5.urdf"));
-    AssemblyPtr testAsm = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(system));
+    UrdfLoader urdf(GetChronoDataFile("urdf/" + _vm["vehicle.model"].as<std::string>() + ".urdf"));
+    AssemblyPtr assembly = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(system));
 
-    TrackedVehiclePtr dagu = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", testAsm, 0.5);
+    TrackedVehiclePtr vehicle = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", assembly, 0.5, _useTracks);
 
     if(!_vm.count("experiment.algorithm")){
-        _platform = std::make_shared<Platform>(dagu);
+        _platform = std::make_shared<Platform>(vehicle, nullptr, nullptr);
         _linearVel = _vm["experiment.linear"].as<double>();
         _angularVel = _vm["experiment.angular"].as<double>();
         _platform->setDesiredLinearVelocity(_linearVel);
@@ -71,10 +82,10 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
     }
     else{
         if(_vm["experiment.algorithm"].as<std::string>() == "basic"){
-            _platform = std::make_shared<AlgorithmBasic>(dagu);
+            _platform = std::make_shared<AlgorithmBasic>(vehicle, nullptr, nullptr);
         }
         else if(_vm["experiment.algorithm"].as<std::string>() == "random"){
-            _platform = std::make_shared<AlgorithmRandom>(dagu);
+            _platform = std::make_shared<AlgorithmRandom>(vehicle, nullptr, nullptr);
         }
         else{
             std::cout << "Error: Unknown algorithm selected." << std::endl;
@@ -83,24 +94,48 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
 #endif
 
     _hm = std::make_shared<HeightMap>(GetChronoDataFile(_vm["map.filename"].as<std::string>()), _vm["map.xy_scale"].as<double>());
-    //ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem*>(system), _hm, _vm["map.scale"].as<double>(), 500.0/*1788.0*/, particleSize, true, false);
-    _terrain = std::make_shared<vehicle::DeformableTerrain>(system);
-    /*_terrain->SetSoilParametersSCM(2e7,   // Bekker Kphi
-                                 0,     // Bekker Kc
-                                 1.1,   // Bekker n exponent
-                                 0,     // Mohr cohesive limit (Pa)
-                                 20,    // Mohr friction limit (degrees)
-                                 0.01,  // Janosi shear coefficient (m)
-                                 2e8,   // Elastic stiffness (Pa/m), before plastic yeld
-                                 3e4    // Damping (Pa s/m), proportional to negative vertical speed (optional)
-                                 );
+    if(_useParticles) {
+        ParticleSystemPtr particles = std::make_shared<ParticleSystem>(static_cast<ChSystem *>(system), _hm,
+                                                                       _vm["map.scale"].as<double>(), _vm["map.particle_density"].as<double>(),
+                                                                       particleSize, true, false);
+    } else {
+        _terrain = std::make_shared<vehicle::DeformableTerrain>(system);
 
-    _terrain->SetAutomaticRefinement(true);
-    _terrain->SetAutomaticRefinementResolution(0.04);*/
-    //_terrain->SetPlane(ChCoordsys<>(ChVector<>(0,0,0), Q_from_AngX(CH_C_PI)));
-    _terrain->SetPlotType(vehicle::DeformableTerrain::PLOT_LEVEL, 0.0, 5.0);
-    //_terrain->SetBulldozingFlow(true);
-    _terrain->Initialize(GetChronoDataFile(_vm["map.filename"].as<std::string>()), "terrain1", _hm->getWidth(), _hm->getHeight(), 0, 5);
+       /* _terrain->SetSoilParametersSCM(2e7,   // Bekker Kphi
+                                     0,     // Bekker Kc
+                                     1.1,   // Bekker n exponent
+                                     0,     // Mohr cohesive limit (Pa)
+                                     20,    // Mohr friction limit (degrees)
+                                     0.01,  // Janosi shear coefficient (m)
+                                     2e8,   // Elastic stiffness (Pa/m), before plastic yeld
+                                     3e4    // Damping (Pa s/m), proportional to negative vertical speed (optional)
+                                     );
+
+        _terrain->SetAutomaticRefinement(true);
+        _terrain->SetAutomaticRefinementResolution(0.04);*/
+        //_terrain->SetPlane(ChCoordsys<>(ChVector<>(0,0,0), Q_from_AngX(CH_C_PI)));
+        _terrain->SetPlotType(vehicle::DeformableTerrain::PLOT_LEVEL, 0.0, 5.0);
+        //_terrain->SetBulldozingFlow(true);
+        _terrain->Initialize(GetChronoDataFile(_vm["map.filename"].as<std::string>()), "terrain1", _hm->getWidth(), _hm->getHeight(), 0, 5);
+        std::vector<ChVectord> verts = _terrain->GetMesh()->GetMesh().getCoordsVertices();
+
+        ChVectord min(10e10, 10e10, 10e10);
+        ChVectord max(-10e10, -10e10, -10e10);
+
+        for(auto v : verts) {
+            if(v.x < min.x) min.x = v.x;
+            if(v.x > max.x) max.x = v.x;
+            if(v.y < min.y) min.y = v.y;
+            if(v.y > max.y) max.y = v.y;
+            if(v.z < min.z) min.z = v.z;
+            if(v.z > max.z) max.z = v.z;
+        }
+        _terrainMin = min;
+        _terrainMax = max;
+
+        std::cout << "Terrain min: " << min.x << " " << min.y << " " << min.z << std::endl;
+        std::cout << "Terrain max: " << max.x << " " << max.y << " " << max.z << std::endl;
+    }
 
     double rgRes = _vm["raygrid.resolution"].as<double>();
     _rayGrid = std::make_shared<RayGrid>(system, _vm, ChVectord(0.0, _vm["map.scale"].as<double>(), 0.0), _hm->getHeight()*particleSize*2.0, _hm->getWidth()*particleSize*2.0, _hm->getHeight()*rgRes, _hm->getWidth()*rgRes);
@@ -108,18 +143,18 @@ Experiment::Experiment(ChSystem* system, std::string expConfigFile)
 
 Experiment::~Experiment(){}
 
-void Experiment::step(double dt, bool createPlatform){
-    if(createPlatform) {
+void Experiment::step(double dt, bool createPlatform) {
+    if (createPlatform) {
         ChVectord startPos = ChVectord(
-            _vm["vehicle.x"].as<double>(),
-            _vm["vehicle.y"].as<double>(),
-            _vm["vehicle.z"].as<double>()
+                _vm["vehicle.x"].as<double>(),
+                _vm["vehicle.y"].as<double>(),
+                _vm["vehicle.z"].as<double>()
         );
         ChQuatd startOrient;
         startOrient.Q_from_NasaAngles(ChVectord(
-            _vm["vehicle.h"].as<double>(),
-            _vm["vehicle.r"].as<double>(),
-            _vm["vehicle.p"].as<double>()
+                _vm["vehicle.h"].as<double>(),
+                _vm["vehicle.r"].as<double>(),
+                _vm["vehicle.p"].as<double>()
         ));
 
         _lastX = startPos.x;
@@ -127,10 +162,12 @@ void Experiment::step(double dt, bool createPlatform){
         _lastTheta = 0.0;
 
 
-        UrdfLoader urdf(GetChronoDataFile("urdf/Dagu5-Wheeled-Noplow.urdf"));
-        AssemblyPtr assembly = std::make_shared<Assembly>(urdf, startPos, startOrient, static_cast<ChSystem*>(_system));
+        UrdfLoader urdf(GetChronoDataFile("urdf/" + _vm["vehicle.model"].as<std::string>() + ".urdf"));
+        AssemblyPtr assembly = std::make_shared<Assembly>(urdf, startPos, startOrient,
+                                                          static_cast<ChSystem *>(_system));
 
-        TrackedVehiclePtr vehicle = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj", assembly, 0.5);
+        TrackedVehiclePtr vehicle = std::make_shared<TrackedVehicle>("dagu001", "shoe_view.obj", "shoe_collision.obj",
+                                                                     assembly, 0.5, _useTracks);
         //std::shared_ptr<vehicle::m113::M113_Vehicle> vehicle = std::make_shared<vehicle::m113::M113_Vehicle>(_system, vehicle::GetDataFile(std::string("M113/vehicle/M113_Vehicle.json")));
         /*std::shared_ptr<vehicle::m113::M113_Vehicle> vehicle = std::make_shared<vehicle::m113::M113_Vehicle>(false, vehicle::TrackShoeType::SINGLE_PIN, _system);
         vehicle->Initialize(ChCoordsys<>(startPos, startOrient));
@@ -151,21 +188,18 @@ void Experiment::step(double dt, bool createPlatform){
         std::shared_ptr<vehicle::m113::M113_SimplePowertrain> powertrain = std::make_shared<vehicle::m113::M113_SimplePowertrain>();
         powertrain->Initialize(vehicle->GetChassisBody(), vehicle->GetDriveshaft());*/
 
-        if(!_vm.count("experiment.algorithm")){
+        if (!_vm.count("experiment.algorithm")) {
             _platform = std::make_shared<Platform>(vehicle, nullptr/*powertrain*/, _terrain);
             _linearVel = _vm["experiment.linear"].as<double>();
             _angularVel = _vm["experiment.angular"].as<double>();
             _platform->setDesiredLinearVelocity(_linearVel);
             _platform->setDesiredAngularVelocity(_angularVel);
-        }
-        else{
-            if(_vm["experiment.algorithm"].as<std::string>() == "basic"){
+        } else {
+            if (_vm["experiment.algorithm"].as<std::string>() == "basic") {
                 _platform = std::make_shared<AlgorithmBasic>(vehicle, nullptr/*powertrain*/, _terrain);
-            }
-            else if(_vm["experiment.algorithm"].as<std::string>() == "random"){
+            } else if (_vm["experiment.algorithm"].as<std::string>() == "random") {
                 _platform = std::make_shared<AlgorithmRandom>(vehicle, nullptr/*powertrain*/, _terrain);
-            }
-            else{
+            } else {
                 std::cout << "Error: Unknown algorithm selected." << std::endl;
             }
         }
@@ -173,9 +207,12 @@ void Experiment::step(double dt, bool createPlatform){
 
 
     (_vm.count("experiment.algorithm") > 0) ? _platform->step(dt) : _platform->move(dt);
-    _terrain->Synchronize(_system->GetChTime());
-    _terrain->Advance(dt);
-    //_rayGrid->castRays();
+    if (_useParticles) {
+        //_rayGrid->castRays();
+    } else {
+        _terrain->Synchronize(_system->GetChTime());
+        _terrain->Advance(dt);
+    }
 
     writeFrame();
     if(_warped) _warped = false;
@@ -186,10 +223,14 @@ void Experiment::step(double dt, bool createPlatform){
     double vehicleLength = aabbMax.x - aabbMin.x;
     double vehicleWidth = aabbMax.z - aabbMin.z;
     //double vehicleLength = 2.0;
-    //double mapLength = _rayGrid->getLength() * 0.5;
-    //double mapWidth = _rayGrid->getWidth() * 0.5;
-    double mapLength = _hm->getHeight()*0.5;
-    double mapWidth = _hm->getWidth()*0.5;
+    double mapLength, mapWidth;
+    if(_useParticles) {
+        mapLength = _rayGrid->getLength() * 0.5;
+        mapWidth = _rayGrid->getWidth() * 0.5;
+    } else {
+        mapLength = _hm->getHeight() * 0.5;
+        mapWidth = _hm->getWidth() * 0.5;
+    }
 
     ChVectord pos = _platform->getChassisBody()->GetPos();
     std::cout << pos.x << " " << mapLength << " " << vehicleLength << std::endl;
@@ -239,13 +280,22 @@ void Experiment::writeFrame(){
     fout << "rl = " << _rayGrid->getLength() << std::endl;
 
     (_warped == true) ? fout << "warped = Yes" << std::endl : fout << "warped = No" << std::endl;
-    std::pair<int,int> transformedPos = _rayGrid->transformRealPositionToGrid(_platform->getChassisBody()->GetPos());
+
     fout << "vxr = " << _platform->getChassisBody()->GetPos().x << std::endl;
     fout << "vyr = " << _platform->getChassisBody()->GetPos().z << std::endl;
     fout << "vdxr = " << _platform->getChassisBody()->GetPos().x - _lastX << std::endl;
     fout << "vdyr = " << _platform->getChassisBody()->GetPos().z - _lastY << std::endl;
-    fout << "vx = " << transformedPos.first << std::endl;
-    fout << "vy = " << transformedPos.second << std::endl;
+    if(_useParticles) {
+        std::pair<int,int> transformedPos = _rayGrid->transformRealPositionToGrid(_platform->getChassisBody()->GetPos());
+        fout << "vx = " << transformedPos.first << std::endl;
+        fout << "vy = "  << transformedPos.second << std::endl;
+    } else {
+        ChVectord pos = _platform->getChassisBody()->GetPos();
+        double xs = (pos.x + _terrainMax.x) / (_terrainMax.x - _terrainMin.x);
+        double zs = (pos.z + _terrainMax.z) / (_terrainMax.z - _terrainMin.z);
+        fout << "vx = " << std::round(xs * _hm->getImageWidth()) << std::endl;
+        fout << "vy = " << std::round(zs * _hm->getImageHeight()) << std::endl;
+    }
     fout << "vtheta = " << _platform->getAccelYaw() << std::endl;
     fout << "vdtheta = " << _platform->getAccelYaw() - _lastTheta << std::endl;
     fout << "vpitch = " << _platform->getAccelPitch() << std::endl;
@@ -266,7 +316,7 @@ void Experiment::writeFrame(){
     _lastLeftSpeed = leftSpeed;
     _lastRightSpeed = rightSpeed;
 
-    ChVectord aabbMin, aabbMax;
+    /*ChVectord aabbMin, aabbMax;
     _platform->getChassisBody()->GetTotalAABB(aabbMin, aabbMax);
 
     std::pair<int,int> gx1 = _rayGrid->transformRealPositionToGrid(_platform->getChassisBody()->GetPos() + ChVectord(0.0,0.0,aabbMax.z));
@@ -283,7 +333,7 @@ void Experiment::writeFrame(){
     fout << "gy1x = " << gy1.first << std::endl;
     fout << "gy1y = " << gy1.second << std::endl;
     fout << "gy2x = " << gy2.first << std::endl;
-    fout << "gy2y = " << gy2.second << std::endl;
+    fout << "gy2y = " << gy2.second << std::endl;*/
 
     /*std::pair<int,int> gx1Pos = _rayGrid->transformRealPositionToGrid(_platform->getChassisBody()->GetPos() + ChVectord(0.0,0.0,aabbMax.z));
     double gx1 = _rayGrid->getRayResults()[gx1Pos.first + (gx1Pos.second*_rayGrid->getNumDivWidth())];
@@ -308,29 +358,31 @@ void Experiment::writeFrame(){
     fout.close();
 
     // Write heightmap
-    size_t halfWidth = _hm->getWidth()*0.5;
-    size_t halfHeight = _hm->getHeight()*0.5;
+    if(!_useParticles) {
+        size_t halfWidth = _hm->getWidth()*0.5;
+        size_t halfHeight = _hm->getHeight()*0.5;
 
-    std::vector<ChVectord> verts = _terrain->GetMesh()->GetMesh().getCoordsVertices();
-    std::vector<uint8_t> pixels;
-    pixels.resize(verts.size());
-    size_t side = static_cast<size_t>(sqrt(verts.size()));
+        std::vector<ChVectord> verts = _terrain->GetMesh()->GetMesh().getCoordsVertices();
+        std::vector<uint8_t> pixels;
+        pixels.resize(verts.size());
+        size_t side = static_cast<size_t>(sqrt(verts.size()));
 
-    uint8_t* img = new uint8_t[side*side];
+        uint8_t* img = new uint8_t[side*side];
 
-    for(int i = 0; i < side; i++) {
-        for(int j = 0; j < side; j++) {
-            size_t idx = i + (j*side);
-            double h = verts[idx].y/5.0;
-            img[idx] = static_cast<uint8_t>(h*255.0);
+        for(int i = 0; i < side; i++) {
+            for(int j = 0; j < side; j++) {
+                size_t idx = i + (j*side);
+                double h = verts[idx].y/5.0;
+                img[idx] = static_cast<uint8_t>(h*255.0);
+            }
         }
+
+        std::stringstream ssFrame;
+        ssFrame << _vm["output_directory_prefix"].as<std::string>() << "raygrid/frame" << _frameCount << ".tga";
+        stbi_write_tga(ssFrame.str().c_str(), side, side, 1, &img[0]);
+
+        delete img;
     }
-
-    std::stringstream ssFrame;
-    ssFrame << _vm["output_directory_prefix"].as<std::string>() << "raygrid/frame" << _frameCount << ".tga";
-    stbi_write_tga(ssFrame.str().c_str(), side, side, 1, &img[0]);
-
-    delete img;
 
     _frameCount++;
 }

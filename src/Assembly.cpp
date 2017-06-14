@@ -20,6 +20,13 @@ Assembly::Assembly(UrdfLoader urdfLoader, ChVectord position,ChQuatd orientation
         body->SetCollide(true);
         body->GetCollisionModel()->ClearModel();
 
+#ifdef SIM_USE_PARALLEL
+        ChDEMMaterialPtr mat(new ChMaterialSurfaceDEM);
+#else
+        ChMaterialPtr mat(new ChMaterialSurface);
+#endif
+        body->SetMaterialSurface(mat);
+
         for(auto visual : link->visuals){
             if(visual->geometry->type != ""){
                 UrdfGeometryPtr geom = visual->geometry;

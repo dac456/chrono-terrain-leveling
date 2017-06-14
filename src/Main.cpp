@@ -177,10 +177,10 @@ int main(int argc, char* argv[])
                 //                          irr::video::SColor(255, 60, 60, 60), true);
 
                 if(f == startTime) {
-                     exp->step(dt, true);
+                     //exp->step(dt, true);
                      app.AssetBindAll();
                      app.AssetUpdateAll();
-                 }
+                }
                 else if(f > startTime) exp->step(dt);
                 f++;
 
@@ -232,16 +232,16 @@ int main(int argc, char* argv[])
             app.ExportScript(prefix, "rendering_frames.pov");
 
             size_t f = 0;
-            std::ofstream fout("./runtime.csv");
+            std::ofstream fout(exp->getVariables()["output_directory_prefix"].as<std::string>() + "/runtime.csv");
             while(f < timeout){
                 std::cout << "start step" << std::endl;
 
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-                if(f == startTime) {
+                /*if(f == startTime) {
                     exp->step(dt, true);
                     app.AddAll();
                 }
-                else if(f > startTime) exp->step(dt);
+                else */if(f > startTime) exp->step(dt);
                 system->DoStepDynamics(dt);
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 

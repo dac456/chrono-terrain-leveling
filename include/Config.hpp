@@ -14,6 +14,8 @@ public:
             ("output_directory_prefix", po::value<std::string>()->required(), "Directory prefix for various simulation output")
             ("chrono_data_path", po::value<std::string>()->default_value("../data"), "Path for chrono data files")
 
+            ("vehicle.tracks", po::value<bool>())
+            ("vehicle.model", po::value<std::string>())
             ("vehicle.x", po::value<double>())
             ("vehicle.y", po::value<double>())
             ("vehicle.z", po::value<double>())
@@ -22,8 +24,10 @@ public:
             ("vehicle.h", po::value<double>())
 
             ("map.filename", po::value<std::string>())
+            ("map.model", po::value<std::string>())
             ("map.scale", po::value<double>())
             ("map.particle_radius", po::value<double>()->default_value(0.15))
+            ("map.particle_density", po::value<double>())
             ("map.xy_scale", po::value<double>())
 
             ("raygrid.resolution", po::value<double>())

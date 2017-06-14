@@ -22,7 +22,7 @@ void AlgorithmRandom::senseImpl(float dt) {
 }
 
 void AlgorithmRandom::actImpl(float dt) {
-    const size_t interval = 2000;
+    const size_t interval = 8000;
 
     if(_ticks < interval){
         setDesiredLinearVelocity(_rand * 3.0f);
